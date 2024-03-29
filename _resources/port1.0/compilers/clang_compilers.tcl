@@ -26,9 +26,9 @@ if {${os.major} >= 11 || ${os.platform} ne "darwin"} {
             lappend compilers macports-clang-17
         }
     }
-    lappend compilers macports-clang-16 \
-                      macports-clang-15 \
-                      macports-clang-14
+    lappend compilers macports-clang-14 \
+                      macports-clang-13 \
+                      macports-clang-12
     if {${os.major} < 23 || ${os.platform} ne "darwin"} {
         # https://trac.macports.org/ticket/68257
         # Versions of clang older than clang-14 probably have build issues on
