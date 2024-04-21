@@ -2,11 +2,11 @@
 
 PortSystem                  1.0
 PortGroup                   clang_dependency 1.0
-#PortGroup                   compiler_blacklist_versions 1.0
+PortGroup                   compiler_blacklist_versions 1.0
 PortGroup                   debug 1.0
-#PortGroup                   legacysupport 1.1
+PortGroup                   legacysupport 1.1
 PortGroup                   meson 1.0
-#PortGroup                   muniversal 1.0
+PortGroup                   muniversal 1.0
 
 # Please keep the glib2 and glib2-devel ports as similar as possible.
 
@@ -40,7 +40,7 @@ master_sites                gnome:sources/${my_name}/${branch}/
 meson.wrap_mode             nodownload
 
 # Needed for clock_gettime
-#legacysupport.newest_darwin_requires_legacy 15
+legacysupport.newest_darwin_requires_legacy 15
 
 patchfiles-append           libintl.patch
 patchfiles-append           patch-gio-tests-meson.build.diff
@@ -99,10 +99,10 @@ compiler.cxx_standard       2011
 # Issues for Clang 6.x:
 # - gcocoanotificationbackend.c:115:52: error: array subscript is not an integer
 # - Checking if "GCC size_t typedef is long" compiles: NO
-#compiler.blacklist-append   clang
-configure.compiler macports-clang-16
+compiler.blacklist-append   clang
+#configure.compiler macports-clang-16
 # https://bugzilla.gnome.org/show_bug.cgi?id=697017
-#compiler.blacklist-append   gcc-3.3 *gcc-4.0 *gcc-4.2
+compiler.blacklist-append   gcc-3.3 *gcc-4.0 *gcc-4.2
 
 # -lresolv is needed at least on Tiger PPC.
 configure.ldflags-append    -lresolv \
