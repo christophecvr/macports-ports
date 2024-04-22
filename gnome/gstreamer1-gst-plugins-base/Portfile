@@ -117,7 +117,7 @@ variant cdparanoia description {Enable (currently broken) cdparanoia plugin} {
 
 
 # Prefer X11 implementation.
-default_variants    +ogg +x11
+default_variants    +ogg +x11 -universall
 
 gobject_introspection yes
 

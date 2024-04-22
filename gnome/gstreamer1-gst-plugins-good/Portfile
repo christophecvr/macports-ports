@@ -158,7 +158,7 @@ variant qt description {Enable Qt5 MAC windowing elements } {
     configure.cxxflags-append -std=c++11
 }
 
-default_variants            +pulseaudio +qt +gtk3 +jack
+default_variants            +pulseaudio +qt +gtk3 +jack +x11 
 
 livecheck.type      regex
 livecheck.url       ${master_sites}
