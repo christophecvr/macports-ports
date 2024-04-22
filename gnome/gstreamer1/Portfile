@@ -3,14 +3,15 @@
 PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           conflicts_build 1.0
-PortGroup           legacysupport 1.1
+PortGroup           gobject_introspection 1.0
+#PortGroup           legacysupport 1.1
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-PortGroup           muniversal 1.0
+#PortGroup           muniversal 1.0
 
 # _strnlen
-legacysupport.newest_darwin_requires_legacy 10
+#legacysupport.newest_darwin_requires_legacy 10
 
 name                gstreamer1
 set my_name         gstreamer
@@ -79,14 +80,26 @@ configure.cflags-append -funroll-loops -fstrict-aliasing -fno-common
 # Match blacklist used in gstreamer1-gst-plugins-base
 # error: redefinition of typedef ‘GstHarness’
 compiler.blacklist-append \
-                    *gcc-3.* *gcc-4.* {clang < 212}
+                    *gcc-3.* *gcc-4.* clang
 
 configure.args-append \
                     -Dexamples=disabled \
-                    -Dintrospection=enabled \
                     -Dlibdw=disabled \
                     -Dlibunwind=disabled \
                     -Dbash-completion=disabled
+
+gobject_introspection yes
+
+# uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+}
 
 test.run            yes
 test.target         check

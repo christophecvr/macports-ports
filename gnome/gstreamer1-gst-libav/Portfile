@@ -5,7 +5,9 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-PortGroup           muniversal 1.0
+#PortGroup           muniversal 1.0
+
+compiler.blacklist clang
 
 name                gstreamer1-gst-libav
 set my_name         gst-libav

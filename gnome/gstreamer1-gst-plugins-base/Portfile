@@ -2,10 +2,11 @@
 
 PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
+PortGroup           gobject_introspection 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-PortGroup           muniversal 1.0
+#PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-plugins-base
 set my_name         gst-plugins-base
@@ -45,18 +46,17 @@ depends_lib-append  path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-intr
                     path:lib/pkgconfig/pango.pc:pango \
                     port:zlib
 
+patchfiles header-patch.diff
+
 # Embedded systems are not our primary target, so disable OpenGL|ES support.
 configure.args-append \
                     -Dalsa=disabled \
                     -Dcdparanoia=disabled \
                     -Dexamples=disabled \
-                    -Dgl=disabled \
                     -Dgl-graphene=enabled \
-                    -Dintrospection=enabled \
-                    -Dlibvisual=disabled \
-                    -Dnls=disabled \
+                    -Dnls=enabled \
                     -Dogg=disabled \
-                    -Dqt5=disabled \
+                    -Dqt5=enabled \
                     -Dtheora=disabled \
                     -Dvorbis=disabled \
                     -Dx11=disabled \
@@ -67,7 +67,7 @@ configure.args-append \
 configure.cflags-append -std=c99
 
 # gst-libs/gst/gl/gstgldebug.h:28: error: redefinition of typedef ‘GstGLAsyncDebug’
-compiler.blacklist-append *gcc-3.* *gcc-4.* {clang < 212}
+compiler.blacklist-append *gcc-3.* *gcc-4.* clang
 
 post-patch {
     reinplace "s|/usr/bin/env python3|${python.bin}|" \
@@ -91,8 +91,6 @@ variant x11 {
                     -Dxshm=enabled \
                     -Dxvideo=disabled \
                     -Dxvideo=enabled
-    configure.args-append \
-                    -Dgl_winsys=x11
 }
 
 variant ogg description {Build with support for libogg, libvorbis, libtheora} {
@@ -117,8 +115,11 @@ variant cdparanoia description {Enable (currently broken) cdparanoia plugin} {
                     -Dcdparanoia=enabled
 }
 
+
 # Prefer X11 implementation.
 default_variants    +ogg +x11
+
+gobject_introspection yes
 
 # Cocoa-GL
 # Only enable on OS X 10.9 or later, if the x11 variant is not enabled.
@@ -130,19 +131,20 @@ default_variants    +ogg +x11
 # version of clang is used, since the Xcode clang may be too old.
 platform macosx {
     if {![variant_isset x11] && ${os.major} >= 13} {
-        if {(${universal_possible} && [variant_isset universal]) || ${build_arch} eq "i386"} {
-            compiler.blacklist-append *gcc* {macports-clang-3.[0-8]} {clang < 703}
-        }
-        # Use mesa headers if found else use gl-headers to ensure we don't conflict with gl-headers & mesa later
-        depends_build-append \
-                    path:include/GL/glext.h:gl-headers
-
-        configure.args-replace \
-                    -Dgl=disabled \
-                    -Dgl=enabled
         configure.args-append \
                     -Dgl_winsys=cocoa
     }
+}
+
+# uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
 }
 
 test.run            yes

@@ -6,7 +6,7 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-PortGroup           muniversal 1.0
+#PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-plugins-good
 set my_name         gst-plugins-good
@@ -30,6 +30,8 @@ distname            ${my_name}-${version}
 checksums           rmd160  4ee4a68c307489bbd3645b6833c471691fcb158a \
                     sha256  c02ba5583863e0bd9e265e5e4a27a03a3c473eb9ec1c10b07238f7176d9368a2 \
                     size    2904196
+
+compiler.blacklist clang
 
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
@@ -156,7 +158,7 @@ variant qt description {Enable Qt5 MAC windowing elements } {
     configure.cxxflags-append -std=c++11
 }
 
-default_variants            +pulseaudio +x11 +gtk3
+default_variants            +pulseaudio +qt +gtk3 +jack
 
 livecheck.type      regex
 livecheck.url       ${master_sites}

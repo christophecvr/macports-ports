@@ -2,9 +2,11 @@
 
 PortSystem          1.0
 PortGroup           meson 1.0
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           gobject_introspection 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-PortGroup           muniversal 1.0
+#PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-plugins-ugly
 set my_name         gst-plugins-ugly
@@ -28,6 +30,8 @@ checksums           rmd160  fc9c78d0a7f254028db5add5f24eaaee14d6604b \
                     sha256  6462d36ce64b74203a8b302c109e762b1dd404a6235dfec3c4255106b7b86976 \
                     size    217704
 
+compiler.blacklist clang
+
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
 set python.bin      ${prefix}/bin/python${py_ver}
@@ -43,6 +47,8 @@ depends_lib-append  port:a52dec \
                     port:libdvdread \
                     port:libmpeg2 \
                     port:x264
+
+patchfiles meson-gst-ugly-introspec.diff
 
 post-patch {
     reinplace "s|/usr/bin/env python3|${python.bin}|" \
@@ -60,6 +66,19 @@ variant gpl description "Build plug-ins that have GPL-licensed dependencies" {
 }
 
 default_variants    +gpl
+
+gobject_introspection yes
+
+# uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+}
 
 livecheck.type      regex
 livecheck.url       ${master_sites}

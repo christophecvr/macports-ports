@@ -1,0 +1,10 @@
+--- meson_options.txt-org	2024-03-21 21:47:53.000000000 +0100
++++ meson_options.txt	2024-04-04 14:48:42.000000000 +0200
+@@ -38,3 +38,7 @@
+        description : 'package origin URL to use in plugins')
+ option('doc', type : 'feature', value : 'auto', yield: true,
+        description: 'Enable documentation.')
++       
++# Fake options
++option('introspection', type: 'feature', value: 'auto',
++    description: 'Fake option so that the MacPorts gobject_introspection PortGroup does not barf')
