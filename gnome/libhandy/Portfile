@@ -19,6 +19,8 @@ checksums           rmd160  f0f4f8a65d9e81654585248d3d78b0e1b38575fd \
                     sha256  1c8403a467bdd16b84bb423573fc0da4b7bc2ba74dc1729ac5e385de35b662b7 \
                     size    575746
 
+configure.compiler macports-clang-16
+
 # Disable unexpected download of subprojects
 meson.wrap_mode     nodownload
 
