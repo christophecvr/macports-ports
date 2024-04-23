@@ -2,12 +2,12 @@
 
 PortSystem          1.0
 PortGroup           xcodeversion 1.0
-PortGroup           muniversal 1.0
+#PortGroup           muniversal 1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           active_variants 1.1
 
 # For 'TARGET_OS_OSX', 'TARGET_CPU_ARM64' macros
-PortGroup           legacysupport 1.1
+#PortGroup           legacysupport 1.1
 
 # https://trac.macports.org/ticket/59246
 # https://trac.macports.org/ticket/59308
@@ -132,6 +132,7 @@ minimum_xcodeversions {9 3.1}
 # requires a C11 compiler
 compiler.c_standard 2011
 
+configure.compiler macports-clang-17
 # clang-3.1 hits https://trac.macports.org/ticket/30137 (<rdar://problem/11542429>)
 # clang-139 hits https://trac.macports.org/ticket/38141
 # warning: unknown warning option '-Werror=partial-availability'; did you mean '-Werror=availability'? [-Wunknown-warning-option]
@@ -140,7 +141,7 @@ compiler.blacklist-append {clang < 800}
 
 # The old ffmpeg port was GPL-2+ as base and had a no_gpl variant, so this keeps us consistent
 # Also, -gpl2 causes other ports to fail to build due to the missing libpostproc (#35473)
-default_variants-append +gpl2
+default_variants-append +gpl2 +nonfree +gpl3 +flite +rav1e +libdc1394 +librtmp +jack -universall
 
 if {[tbool configure.ccache]} {
     set ccache_path ${prefix}/bin/ccache

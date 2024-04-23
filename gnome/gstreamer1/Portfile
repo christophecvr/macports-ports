@@ -3,14 +3,14 @@
 PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           conflicts_build 1.0
-PortGroup           legacysupport 1.1
+#PortGroup           legacysupport 1.1
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-PortGroup           muniversal 1.0
+#PortGroup           muniversal 1.0
 
 # _strnlen
-legacysupport.newest_darwin_requires_legacy 10
+#legacysupport.newest_darwin_requires_legacy 10
 
 name                gstreamer1
 set my_name         gstreamer
@@ -75,7 +75,7 @@ post-patch {
 
 configure.env-append    PERL_PATH=${prefix}/bin/perl
 configure.cflags-append -funroll-loops -fstrict-aliasing -fno-common
-
+configure.compiler macports-clang-17
 # Match blacklist used in gstreamer1-gst-plugins-base
 # error: redefinition of typedef ‘GstHarness’
 compiler.blacklist-append \
