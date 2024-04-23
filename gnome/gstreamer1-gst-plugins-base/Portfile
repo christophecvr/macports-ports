@@ -3,9 +3,10 @@
 PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
+PortGroup           gobject_introspection 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-PortGroup           muniversal 1.0
+#PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-plugins-base
 set my_name         gst-plugins-base
@@ -52,11 +53,10 @@ configure.args-append \
                     -Dexamples=disabled \
                     -Dgl=disabled \
                     -Dgl-graphene=enabled \
-                    -Dintrospection=enabled \
-                    -Dlibvisual=disabled \
-                    -Dnls=disabled \
+                    -Dlibvisual=auto \
+                    -Dnls=enabled \
                     -Dogg=disabled \
-                    -Dqt5=disabled \
+                    -Dqt5=enabled \
                     -Dtheora=disabled \
                     -Dvorbis=disabled \
                     -Dx11=disabled \
@@ -68,6 +68,8 @@ configure.cflags-append -std=c99
 
 # gst-libs/gst/gl/gstgldebug.h:28: error: redefinition of typedef ‘GstGLAsyncDebug’
 compiler.blacklist-append *gcc-3.* *gcc-4.* {clang < 212}
+
+configure.compiler macports-clang-17
 
 post-patch {
     reinplace "s|/usr/bin/env python3|${python.bin}|" \
@@ -90,9 +92,9 @@ variant x11 {
                     -Dxshm=disabled \
                     -Dxshm=enabled \
                     -Dxvideo=disabled \
-                    -Dxvideo=enabled
-    configure.args-append \
-                    -Dgl_winsys=x11
+                    -Dxvideo=enabled \
+                    -Dgl=disabled \
+                    -Dgl=enabled
 }
 
 variant ogg description {Build with support for libogg, libvorbis, libtheora} {
@@ -118,8 +120,9 @@ variant cdparanoia description {Enable (currently broken) cdparanoia plugin} {
 }
 
 # Prefer X11 implementation.
-default_variants    +ogg +x11
+default_variants    +ogg -universall
 
+gobject_introspection yes
 # Cocoa-GL
 # Only enable on OS X 10.9 or later, if the x11 variant is not enabled.
 # Requires ARC (automatic reference counting, a clang feature enabled
@@ -140,9 +143,20 @@ platform macosx {
         configure.args-replace \
                     -Dgl=disabled \
                     -Dgl=enabled
-        configure.args-append \
-                    -Dgl_winsys=cocoa
+        #configure.args-append \
+                    #-Dgl_winsys=cocoa
     }
+}
+
+# uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
 }
 
 test.run            yes
