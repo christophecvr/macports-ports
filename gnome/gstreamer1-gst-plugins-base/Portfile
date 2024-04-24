@@ -69,7 +69,7 @@ configure.cflags-append -std=c99
 # gst-libs/gst/gl/gstgldebug.h:28: error: redefinition of typedef ‘GstGLAsyncDebug’
 compiler.blacklist-append *gcc-3.* *gcc-4.* {clang < 212}
 
-configure.compiler macports-clang-17
+configure.compiler macports-clang-14
 
 post-patch {
     reinplace "s|/usr/bin/env python3|${python.bin}|" \

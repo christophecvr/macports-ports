@@ -3,10 +3,11 @@
 PortSystem          1.0
 PortGroup           active_variants 1.1
 PortGroup           compiler_blacklist_versions 1.0
+PortGroup           gobject_introspection 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-PortGroup           muniversal 1.0
+#PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-plugins-bad
 set my_name         gst-plugins-bad
@@ -29,6 +30,10 @@ use_xz              yes
 checksums           rmd160  7cf6a9f405034e10017f93602b2c831279a4573c \
                     sha256  f1a183966ea9136a00f159ee42db4d1d106abef022d1b49e63fba2fcbe50c8f8 \
                     size    7044828
+
+configure.compiler macports-clang-14
+
+gobject_introspection yes
 
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
@@ -145,7 +150,7 @@ variant x11 {
     configure.args-append   -Dx11=enabled
 }
 
-default_variants    +x11
+default_variants    +fdkaac +faac +gpl
 
 # plugin applemedia (Apple video) now only builds on darwin 18 and later
 platform macosx {
@@ -156,6 +161,18 @@ platform macosx {
                                 -Dapplemedia=enabled
     }
 }
+
+# uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+}
+
 
 livecheck.type      regex
 livecheck.url       ${master_sites}
