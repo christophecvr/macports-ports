@@ -4,6 +4,7 @@ PortSystem          1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
+# on macos-10.13.6 intel universall support not needed works better without.
 #PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-plugins-ugly
@@ -28,6 +29,7 @@ checksums           rmd160  fc9c78d0a7f254028db5add5f24eaaee14d6604b \
                     sha256  6462d36ce64b74203a8b302c109e762b1dd404a6235dfec3c4255106b7b86976 \
                     size    217704
 
+# Most stable compiler version on macos-10.13.6 intel 
 configure.compiler macports-clang-14
 
 set py_ver          3.12
