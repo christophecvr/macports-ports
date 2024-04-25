@@ -7,12 +7,12 @@
 PortSystem          1.0
 PortGroup           active_variants 1.1
 PortGroup           cmake 1.1
-PortGroup           legacysupport 1.1
+#PortGroup           legacysupport 1.1
 
 compiler.cxx_standard 2017
 cmake.generator     Ninja
 # Fix compilation for Angle subproject: platform.h: error: 'TARGET_OS_OSX' is not defined
-legacysupport.newest_darwin_requires_legacy 15
+#legacysupport.newest_darwin_requires_legacy 15
 
 name                webkit2-gtk
 conflicts           webkit2-gtk-devel
@@ -36,6 +36,8 @@ dist_subdir         webkit-gtk
 checksums           rmd160  a626f58cf30b6dd1ef8a63c165ce85770c4da675 \
                     sha256  b9d23525cfd8d22c37b5d964a9fe9a8ce7583042a2f8d3922e71e6bbc68c30bd \
                     size    21427772
+
+configure.compiler macports-clang-14
 
 depends_build-append \
                     port:gperf \
@@ -213,7 +215,7 @@ if {${os.platform} eq "darwin" && ${os.major} <= 16} {
     # gl cocoa build continues to fail due to use of API not available on darwin 12 or earlier
     # so gstreamergl is not available at present for darwin 12 or earlier
     # todo clarify further where this is exactly needed
-    configure.args-append -DUSE_GSTREAMER_GL=OFF
+    #configure.args-append -DUSE_GSTREAMER_GL=OFF
 
     # for the webcore/page/crypt code to flow correctly,
     # ENABLE_WEB_CRYPTO has to be ON for 10.10+ and OFF for 10.9 and less
