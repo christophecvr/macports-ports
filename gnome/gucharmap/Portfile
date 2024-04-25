@@ -58,7 +58,7 @@ depends_build-append \
                     port:itstool \
                     port:gettext \
                     port:gtk-doc \
-                    port:python311
+                    port:python312
 
 depends_lib         port:desktop-file-utils \
                     port:freetype \
@@ -73,7 +73,7 @@ depends_run         port:adwaita-icon-theme
 patchfiles          patch-no-Bsymbolic-functions.diff
 
 post-patch {
-    reinplace "s|^#!.*|#!${prefix}/bin/python3.11|" \
+    reinplace "s|^#!.*|#!${prefix}/bin/python3.12|" \
         ${worksrcpath}/data/meson_desktopfile.py
 }
 
