@@ -7,6 +7,7 @@ PortGroup           gobject_introspection 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
+# macos-10.13.6 on intel does not need universal support runs better without.
 #PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-plugins-bad
@@ -31,6 +32,7 @@ checksums           rmd160  7cf6a9f405034e10017f93602b2c831279a4573c \
                     sha256  f1a183966ea9136a00f159ee42db4d1d106abef022d1b49e63fba2fcbe50c8f8 \
                     size    7044828
 
+# Most stable compiler at this time for macos-10.13.6 intel.
 configure.compiler macports-clang-14
 
 gobject_introspection yes
