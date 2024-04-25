@@ -6,6 +6,7 @@ PortGroup           meson 1.0
 PortGroup           gobject_introspection 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
+# for macos-10.13.6 universal build must be removed.
 #PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-plugins-base
@@ -69,6 +70,7 @@ configure.cflags-append -std=c99
 # gst-libs/gst/gl/gstgldebug.h:28: error: redefinition of typedef ‘GstGLAsyncDebug’
 compiler.blacklist-append *gcc-3.* *gcc-4.* {clang < 212}
 
+# On macos-10.13.6 the macports clang-14 is the most stable for this package.
 configure.compiler macports-clang-14
 
 post-patch {
@@ -79,6 +81,11 @@ post-patch {
         ${worksrcpath}/scripts/update-orc-dist-files.py \
         ${worksrcpath}/gst-libs/gst/gl/gl_mkenum.py
 }
+
+
+# on macos 10.13.6 intel gl MUST be enabled when using x11
+# meson take cares about the rest and will build gl for x11 and cocoa without any conflict
+# That last is a requirement on macos.
 
 variant x11 {
     depends_lib-append \
@@ -123,6 +130,8 @@ variant cdparanoia description {Enable (currently broken) cdparanoia plugin} {
 default_variants    +ogg -universall
 
 gobject_introspection yes
+# For os-major >= 13 and intel processor.
+# Cocoa-GL is implemented by default as soon meson detects it
 # Cocoa-GL
 # Only enable on OS X 10.9 or later, if the x11 variant is not enabled.
 # Requires ARC (automatic reference counting, a clang feature enabled
@@ -143,8 +152,6 @@ platform macosx {
         configure.args-replace \
                     -Dgl=disabled \
                     -Dgl=enabled
-        #configure.args-append \
-                    #-Dgl_winsys=cocoa
     }
 }
 
