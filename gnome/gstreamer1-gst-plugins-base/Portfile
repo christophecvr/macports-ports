@@ -94,8 +94,6 @@ variant x11 {
                     -Dxshm=enabled \
                     -Dxvideo=disabled \
                     -Dxvideo=enabled
-    configure.args-append \
-                    -Dgl_winsys=x11
 }
 
 variant ogg description {Build with support for libogg, libvorbis, libtheora} {
