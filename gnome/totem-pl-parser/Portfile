@@ -23,6 +23,8 @@ checksums           rmd160  2aa57b399c39a85000cbaa6290d5a979c0984fd5 \
                     sha256  c0df0f68d5cf9d7da43c81c7f13f11158358368f98c22d47722f3bd04bd3ac1c \
                     size    1503888
 
+configure.compiler macports-clang-14
+
 depends_build-append \
                     port:pkgconfig \
                     port:gtk-doc

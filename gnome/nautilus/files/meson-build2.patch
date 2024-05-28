@@ -1,0 +1,10 @@
+--- meson.build.org	2020-11-20 15:04:26.000000000 +0100
++++ meson.build	2024-04-29 12:54:47.000000000 +0200
+@@ -57,6 +57,7 @@
+     '-Werror=format=2',
+     '-Werror=implicit-function-declaration',
+     '-Werror=incompatible-pointer-types',
++    '-Wno-error=incompatible-pointer-types-discards-qualifiers',
+     '-Werror=init-self',
+     '-Werror=missing-include-dirs',
+     '-Werror=missing-prototypes',

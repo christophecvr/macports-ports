@@ -1,0 +1,12 @@
+--- src/libtracker-miners-common/tracker-seccomp.c.org	2021-04-02 23:32:31.000000000 +0200
++++ src/libtracker-miners-common/tracker-seccomp.c	2024-04-29 18:23:22.000000000 +0200
+@@ -131,7 +131,9 @@
+ 	ALLOW_RULE (eventfd);
+ 	ALLOW_RULE (eventfd2);
+ 	ALLOW_RULE (pipe);
++#ifndef __APPLE__
+ 	ALLOW_RULE (pipe2);
++#endif
+ 	/* System */
+ 	ALLOW_RULE (uname);
+ 	ALLOW_RULE (sysinfo);
