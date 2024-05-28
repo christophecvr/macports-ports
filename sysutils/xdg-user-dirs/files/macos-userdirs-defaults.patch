@@ -1,0 +1,12 @@
+--- user-dirs.defaults.orig	2022-08-01 12:06:02.000000000 +0200
++++ user-dirs.defaults	2024-05-23 15:00:01.000000000 +0200
+@@ -9,7 +9,8 @@
+ DOCUMENTS=Documents
+ MUSIC=Music
+ PICTURES=Pictures
+-VIDEOS=Videos
++VIDEOS=Video's
++MOVIES=Movies
+ # Another alternative is:
+ #MUSIC=Documents/Music
+ #PICTURES=Documents/Pictures
