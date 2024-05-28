@@ -1,5 +1,5 @@
 --- configure.orig	2019-07-18 02:05:22.000000000 +0200
-+++ configure	2024-05-27 17:59:44.000000000 +0200
++++ configure	2024-05-28 17:21:50.000000000 +0200
 @@ -575,7 +575,7 @@
  #
  # Initializations.
@@ -43,8 +43,8 @@
    PYTHON_CONFIG=`which $PYTHON`-config
    if test -x "$PYTHON_CONFIG"; then
 -    PYTHON_LIBS=`$PYTHON_CONFIG --libs --embed 2>/dev/null` || PYTHON_LIBS=`$PYTHON_CONFIG --libs  2>/dev/null`
-+    # on macports build we need the macports paths the command below does give the wrong xcode python paths
 +    #PYTHON_LIBS=`$PYTHON_CONFIG --libs --embed 2>/dev/null` || PYTHON_LIBS=`$PYTHON_CONFIG --libs  2>/dev/null`
++    # need macports python libs not the xcode python libs.
 +    PYTHON_LIBS="-L${py_prefix}/lib -lpython${PYTHON_VERSION}"
    else
      PYTHON_LIBS="-L${py_prefix}/lib -lpython${PYTHON_VERSION}"

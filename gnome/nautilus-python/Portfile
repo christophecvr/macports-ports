@@ -3,7 +3,6 @@
 PortSystem          1.0
 PortGroup           active_variants 1.1
 PortGroup           compiler_blacklist_versions 1.0
-#PortGroup           meson 1.0
 
 name                nautilus-python
 version             1.2.3
@@ -32,10 +31,11 @@ depends_build       port:pkgconfig
 
 depends_lib        port:nautilus
 
-configure.compiler macports-clang-14
+#configure.compiler macports-clang-17
 
 patchfiles  configure-python-version.patch \
-            datarootdit-warning.patch
+            datarootdit-warning.patch \
+            pygobject-duplicate-symbol.patch
 
 variant python38 conflicts python39 python310 description {Use python 3.8} {
     depends_lib-append        port:py38-gobject3
@@ -73,7 +73,7 @@ variant python312 conflicts python38 python39 description {Use python 3.12} {
     configure.pkg_config_path ${python_framework}/lib/pkgconfig
 }
 
-
+default_variants-append +python312
 
 if {![variant_isset python38] && \
     ![variant_isset python39] && \
@@ -94,8 +94,8 @@ if {![variant_isset python38] && \
 #    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
 #}
 
-configure.args  --enable-static=no \
-                --enable-shared=yes
+#configure.args  --enable-static=no \
+#                --enable-shared=yes
                 #LDFLAGS="-L/opt/local/lib -Wl,-headerpad_max_install_names -all_load -arch x86_64"
 
 
