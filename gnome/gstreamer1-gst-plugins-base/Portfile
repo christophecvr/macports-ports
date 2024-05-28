@@ -5,7 +5,7 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-PortGroup           muniversal 1.0
+#PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-plugins-base
 set my_name         gst-plugins-base
@@ -26,6 +26,8 @@ checksums           rmd160  2b6ab7dd6e5a5301b0f020d05628f7348337a41e \
                     sha256  884045d1d7c5d6bb8605e45c7ee0e9f1341888e81c2b7c42dff52bb98ede8ec3 \
                     size    2418392
 
+configure.compiler macports-clang-14
+
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
 set python.bin      ${prefix}/bin/python${py_ver}
@@ -33,7 +35,8 @@ set python.bin      ${prefix}/bin/python${py_ver}
 depends_build-append \
                     port:gtk-doc \
                     path:bin/pkg-config:pkgconfig \
-                    port:python${py_ver_nodot}
+                    port:python${py_ver_nodot} \
+                    path:include/GL/glext.h:gl-headers
 
 depends_lib-append  path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
                     port:graphene \
@@ -50,13 +53,11 @@ configure.args-append \
                     -Dalsa=disabled \
                     -Dcdparanoia=disabled \
                     -Dexamples=disabled \
-                    -Dgl=disabled \
                     -Dgl-graphene=enabled \
-                    -Dintrospection=enabled \
-                    -Dlibvisual=disabled \
-                    -Dnls=disabled \
+                    -Dlibvisual=auto \
+                    -Dnls=enabled \
                     -Dogg=disabled \
-                    -Dqt5=disabled \
+                    -Dqt5=enabled \
                     -Dtheora=disabled \
                     -Dvorbis=disabled \
                     -Dx11=disabled \
@@ -136,12 +137,9 @@ platform macosx {
             compiler.blacklist-append *gcc* {macports-clang-3.[0-8]} {clang < 703}
         }
         # Use mesa headers if found else use gl-headers to ensure we don't conflict with gl-headers & mesa later
-        depends_build-append \
-                    path:include/GL/glext.h:gl-headers
+        #depends_build-append \
+                    #path:include/GL/glext.h:gl-headers
 
-        configure.args-replace \
-                    -Dgl=disabled \
-                    -Dgl=enabled
         configure.args-append \
                     -Dgl_winsys=cocoa
     }
