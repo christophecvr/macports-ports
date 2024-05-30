@@ -73,8 +73,6 @@ variant python312 conflicts python38 python39 description {Use python 3.12} {
     configure.pkg_config_path ${python_framework}/lib/pkgconfig
 }
 
-default_variants-append +python312
-
 if {![variant_isset python38] && \
     ![variant_isset python39] && \
     ![variant_isset python310] && \

@@ -1,64 +1,162 @@
+diff -Naur src.orig/nautilus-python-object.c src/nautilus-python-object.c
+--- src.orig/nautilus-python-object.c	2019-07-18 02:04:25.000000000 +0200
++++ src/nautilus-python-object.c	2024-05-30 16:02:45.000000000 +0200
+@@ -23,7 +23,12 @@
+ #include "nautilus-python.h"
+ 
+ #include <nautilus-extension.h>
+-
++/* using here the extern function struct _PyGObject_Functions *_PyGObject_API; 
++in nautilus-python we will use the global. This to avoid duplicate symbol error 
++the both modules will end up in a single library*/
++#ifndef NO_IMPORT
++#define NO_IMPORT
++#endif
+ #include <pygobject.h>
+ 
+ #include <string.h>
+@@ -39,14 +44,15 @@
+     return PyString_Check(obj);
+ #endif
+ }
+-
+-char* __PyString_AsString(PyObject *obj) {
+ #if PY_MAJOR_VERSION >= 3
+-    return PyUnicode_AsUTF8(obj);
++const char* __PyString_AsString(PyObject *obj) {
++	return PyUnicode_AsUTF8(obj);
++}	
+ #else
++char* __PyString_AsString(PyObject *obj) {
+     return PyString_AsString(obj);
+-#endif
+ }
++#endif
+ 
+ PyObject* __PyString_FromString(const char *c) {
+ #if PY_MAJOR_VERSION >= 3
 diff -Naur src.orig/nautilus-python.c src/nautilus-python.c
 --- src.orig/nautilus-python.c	2019-07-18 02:04:25.000000000 +0200
-+++ src/nautilus-python.c	2024-05-29 12:15:19.000000000 +0200
-@@ -22,7 +22,7 @@
++++ src/nautilus-python.c	2024-05-30 16:05:52.000000000 +0200
+@@ -22,7 +22,15 @@
  #endif
  
  #include <Python.h>
--#include <pygobject.h>
-+#include <pygobjectext.h>
++
++/*  using here the global declaration struct _PyGObject_Functions *_PyGObject_API;
++In nautilus-python-object.c we will use extern  this avoids the duplicate symbol error 
++The both modules will be in one lib */
++#ifdef NO_IMPORT
++#undef NO_IMPORT
++#endif
+ #include <pygobject.h>
++
  #include <gmodule.h>
  #include <gtk/gtk.h>
  
+@@ -31,6 +39,42 @@
+ 
+ #include <nautilus-extension.h>
+ 
++/* declaring the global functions here 
++We add them as extern declarations into header file 
++To avoid duplicate symbol error */
++PyTypeObject *_PyGtkWidget_Type;
++#define PyGtkWidget_Type (*_PyGtkWidget_Type)
++
++PyTypeObject *_PyNautilusColumn_Type;
++#define PyNautilusColumn_Type (*_PyNautilusColumn_Type)
++
++PyTypeObject *_PyNautilusColumnProvider_Type;
++#define PyNautilusColumnProvider_Type (*_PyNautilusColumnProvider_Type)
++
++PyTypeObject *_PyNautilusInfoProvider_Type;
++#define PyNautilusInfoProvider_Type (*_PyNautilusInfoProvider_Type)
++
++PyTypeObject *_PyNautilusLocationWidgetProvider_Type;
++#define PyNautilusLocationWidgetProvider_Type (*_PyNautilusLocationWidgetProvider_Type)
++
++PyTypeObject *_PyNautilusMenu_Type;
++#define PyNautilusMenu_Type (*_PyNautilusMenu_Type)
++
++PyTypeObject *_PyNautilusMenuItem_Type;
++#define PyNautilusMenuItem_Type (*_PyNautilusMenuItem_Type)
++
++PyTypeObject *_PyNautilusMenuProvider_Type;
++#define PyNautilusMenuProvider_Type (*_PyNautilusMenuProvider_Type)
++
++PyTypeObject *_PyNautilusPropertyPage_Type;
++#define PyNautilusPropertyPage_Type (*_PyNautilusPropertyPage_Type)
++
++PyTypeObject *_PyNautilusPropertyPageProvider_Type;
++#define PyNautilusPropertyPageProvider_Type (*_PyNautilusPropertyPageProvider_Type)
++
++PyTypeObject *_PyNautilusOperationHandle_Type;
++#define PyNautilusOperationHandle_Type (*_PyNautilusOperationHandle_Type)
++
+ static const GDebugKey nautilus_python_debug_keys[] = {
+     {"misc", NAUTILUS_PYTHON_DEBUG_MISC},
+ };
+@@ -153,8 +197,8 @@
+     if (Py_IsInitialized())
+         return TRUE;
+ 
+-    debug("g_module_open " PY_LIB_LOC "/lib" PY_LIB_NAME "." G_MODULE_SUFFIX ".1.0");  
+-    libpython = g_module_open (PY_LIB_LOC "/lib" PY_LIB_NAME "." G_MODULE_SUFFIX ".1.0", 0);
++    debug("g_module_open " PY_LIB_LOC "/lib" PY_LIB_NAME "." "dylib");  
++    libpython = g_module_open (PY_LIB_LOC "/lib" PY_LIB_NAME "." "dylib", 0);
+     if (!libpython)
+         g_warning("g_module_open libpython failed: %s", g_module_error());
+ 
 diff -Naur src.orig/nautilus-python.h src/nautilus-python.h
 --- src.orig/nautilus-python.h	2018-01-01 19:19:54.000000000 +0100
-+++ src/nautilus-python.h	2024-05-28 17:26:40.000000000 +0200
++++ src/nautilus-python.h	2024-05-30 14:56:35.000000000 +0200
 @@ -43,37 +43,37 @@
  #define debug_enter_args(x, y) { if (nautilus_python_debug & NAUTILUS_PYTHON_DEBUG_MISC) \
                                       g_printf("%s: entered " x "\n", __FUNCTION__, y); }
  
 -PyTypeObject *_PyGtkWidget_Type;
-+static PyTypeObject *_PyGtkWidget_Type;
++extern PyTypeObject *_PyGtkWidget_Type;
  #define PyGtkWidget_Type (*_PyGtkWidget_Type)
  
 -PyTypeObject *_PyNautilusColumn_Type;
-+static PyTypeObject *_PyNautilusColumn_Type;
++extern PyTypeObject *_PyNautilusColumn_Type;
  #define PyNautilusColumn_Type (*_PyNautilusColumn_Type)
  
 -PyTypeObject *_PyNautilusColumnProvider_Type;
-+static PyTypeObject *_PyNautilusColumnProvider_Type;
++extern PyTypeObject *_PyNautilusColumnProvider_Type;
  #define PyNautilusColumnProvider_Type (*_PyNautilusColumnProvider_Type)
  
 -PyTypeObject *_PyNautilusInfoProvider_Type;
-+static PyTypeObject *_PyNautilusInfoProvider_Type;
++extern PyTypeObject *_PyNautilusInfoProvider_Type;
  #define PyNautilusInfoProvider_Type (*_PyNautilusInfoProvider_Type)
  
 -PyTypeObject *_PyNautilusLocationWidgetProvider_Type;
-+static PyTypeObject *_PyNautilusLocationWidgetProvider_Type;
++extern PyTypeObject *_PyNautilusLocationWidgetProvider_Type;
  #define PyNautilusLocationWidgetProvider_Type (*_PyNautilusLocationWidgetProvider_Type)
  
 -PyTypeObject *_PyNautilusMenu_Type;
-+static PyTypeObject *_PyNautilusMenu_Type;
++extern PyTypeObject *_PyNautilusMenu_Type;
  #define PyNautilusMenu_Type (*_PyNautilusMenu_Type)
  
 -PyTypeObject *_PyNautilusMenuItem_Type;
-+static PyTypeObject *_PyNautilusMenuItem_Type;
++extern PyTypeObject *_PyNautilusMenuItem_Type;
  #define PyNautilusMenuItem_Type (*_PyNautilusMenuItem_Type)
  
 -PyTypeObject *_PyNautilusMenuProvider_Type;
-+static PyTypeObject *_PyNautilusMenuProvider_Type;
++extern PyTypeObject *_PyNautilusMenuProvider_Type;
  #define PyNautilusMenuProvider_Type (*_PyNautilusMenuProvider_Type)
  
 -PyTypeObject *_PyNautilusPropertyPage_Type;
-+static PyTypeObject *_PyNautilusPropertyPage_Type;
++extern PyTypeObject *_PyNautilusPropertyPage_Type;
  #define PyNautilusPropertyPage_Type (*_PyNautilusPropertyPage_Type)
  
 -PyTypeObject *_PyNautilusPropertyPageProvider_Type;
-+static PyTypeObject *_PyNautilusPropertyPageProvider_Type;
++extern PyTypeObject *_PyNautilusPropertyPageProvider_Type;
  #define PyNautilusPropertyPageProvider_Type (*_PyNautilusPropertyPageProvider_Type)
  
 -PyTypeObject *_PyNautilusOperationHandle_Type;
-+static PyTypeObject *_PyNautilusOperationHandle_Type;
++extern PyTypeObject *_PyNautilusOperationHandle_Type;
  #define PyNautilusOperationHandle_Type (*_PyNautilusOperationHandle_Type)
  
  #endif /* NAUTILUS_PYTHON_H */
