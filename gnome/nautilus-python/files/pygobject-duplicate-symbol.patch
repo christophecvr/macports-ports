@@ -1,3 +1,15 @@
+diff -Naur src.orig/nautilus-python.c src/nautilus-python.c
+--- src.orig/nautilus-python.c	2019-07-18 02:04:25.000000000 +0200
++++ src/nautilus-python.c	2024-05-29 12:15:19.000000000 +0200
+@@ -22,7 +22,7 @@
+ #endif
+ 
+ #include <Python.h>
+-#include <pygobject.h>
++#include <pygobjectext.h>
+ #include <gmodule.h>
+ #include <gtk/gtk.h>
+ 
 diff -Naur src.orig/nautilus-python.h src/nautilus-python.h
 --- src.orig/nautilus-python.h	2018-01-01 19:19:54.000000000 +0100
 +++ src/nautilus-python.h	2024-05-28 17:26:40.000000000 +0200
