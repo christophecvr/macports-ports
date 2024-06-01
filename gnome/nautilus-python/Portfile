@@ -35,7 +35,7 @@ depends_lib        port:nautilus
 
 patchfiles  configure-python-version.patch \
             datarootdit-warning.patch \
-            pygobject-duplicate-symbol.patch
+            pygobject-duplicate-symbol-extras.patch
 
 variant python38 conflicts python39 python310 description {Use python 3.8} {
     depends_lib-append        port:py38-gobject3
