@@ -1,8 +1,6 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-#PortGroup           active_variants 1.1
-#PortGroup           compiler_blacklist_versions 1.0
 
 name                nautilus-python
 version             1.2.3
@@ -31,71 +29,36 @@ depends_build       port:pkgconfig
 
 depends_lib        port:nautilus
 
-#configure.compiler macports-clang-17
-
 patchfiles  configure-python-version.patch \
             datarootdit-warning.patch \
             pygobject-duplicate-symbol-extras.patch
 
-variant python38 conflicts python39 python310 description {Use python 3.8} {
-    depends_lib-append        port:py38-gobject3
-    configure.python          ${prefix}/bin/python3.8
-    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.8
-    configure.pkg_config_path ${python_framework}/lib/pkgconfig
-}
-
-
-variant python39 conflicts python38 python310 description {Use python 3.9} {
-    depends_lib-append        port:py39-gobject3
-    configure.python          ${prefix}/bin/python3.9
-    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.9
-    configure.pkg_config_path ${python_framework}/lib/pkgconfig
-}
-
-variant python310 conflicts python38 python39 description {Use python 3.10} {
+variant python310 conflicts python311 python312 description {Use python 3.10} {
     depends_lib-append        port:py310-gobject3
     configure.python          ${prefix}/bin/python3.10
     set python_framework      ${frameworks_dir}/Python.framework/Versions/3.10
     configure.pkg_config_path ${python_framework}/lib/pkgconfig
 }
 
-variant python311 conflicts python38 python39 description {Use python 3.11} {
+variant python311 conflicts python310 python312 description {Use python 3.11} {
     depends_lib-append        port:py311-gobject3
     configure.python          ${prefix}/bin/python3.11
     set python_framework      ${frameworks_dir}/Python.framework/Versions/3.11
     configure.pkg_config_path ${python_framework}/lib/pkgconfig
 }
 
-variant python312 conflicts python38 python39 description {Use python 3.12} {
+variant python312 conflicts python310 python311 description {Use python 3.12} {
     depends_lib-append        port:py312-gobject3
     configure.python          ${prefix}/bin/python3.12
     set python_framework      ${frameworks_dir}/Python.framework/Versions/3.12
     configure.pkg_config_path ${python_framework}/lib/pkgconfig
 }
 
-if {![variant_isset python38] && \
-    ![variant_isset python39] && \
-    ![variant_isset python310] && \
+if {![variant_isset python310] && \
     ![variant_isset python311] && \
     ![variant_isset python312] } {
     default_variants-append +python312
 }
-
-# gobject-introspection uses g-ir-scanner, which uses $CC from env
-#if {${universal_possible} && [variant_isset universal]} {
-#    foreach arch ${configure.universal_archs} {
-#        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
-#        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
-#    }
-#} else {
-#    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
-#    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
-#}
-
-#configure.args  --enable-static=no \
-#                --enable-shared=yes
-                #LDFLAGS="-L/opt/local/lib -Wl,-headerpad_max_install_names -all_load -arch x86_64"
-
 
 # blacklist compilers that do not support C11 (redefinition of typedef ‘NautilusLocationEntryClass’ at nautilus-location-entry.h:39)
 compiler.blacklist  *gcc-3.* *gcc-4.* {clang < 300}
