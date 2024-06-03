@@ -610,8 +610,14 @@ go.vendors          lukechampine.com/blake3 \
 # Replace all occurrences of metacubex with MetaCubeX
 
 post-extract {
+    ln -s ${gopath}/src/github.com/MetaCubeX ${gopath}/src/github.com/metacubex
+    ln -s ${gopath}/src/github.com/SagerNet ${gopath}/src/github.com/sagernet
     ln -s ${gopath}/src/github.com/MetaCubeX/sing ${gopath}/src/github.com/SagerNet/sing
     ln -s ${gopath}/src/gitlab.com/yawning/bsaes ${gopath}/src/gitlab.com/yawning/bsaes.git
+}
+
+post-patch {
+    reinplace "s|\/\/ import \"crypto/internal/subtle\"||" ${gopath}/src/github.com/RyuaNerin/go-krypto/internal/subtle/aliasing.go
 }
 
 set time [clock format [clock seconds] -format "%a %b %e %H:%M:%S %Z %Y"]
