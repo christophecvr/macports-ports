@@ -3,8 +3,6 @@
 PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 
-set buildpython     0
-
 name                nautilus-python
 version             1.2.3
 revision            0
@@ -40,7 +38,6 @@ patchfiles  configure-python-version.patch \
 variant python310 conflicts python311 python312 description {Use python 3.10} {
     depends_lib-append        port:py310-gobject3
     configure.python          ${prefix}/bin/python3.10
-    set buildpython           ${prefix}/bin/python3.10
     set python_framework      ${frameworks_dir}/Python.framework/Versions/3.10
     configure.pkg_config_path ${python_framework}/lib/pkgconfig
 }
@@ -48,7 +45,6 @@ variant python310 conflicts python311 python312 description {Use python 3.10} {
 variant python311 conflicts python310 python312 description {Use python 3.11} {
     depends_lib-append        port:py311-gobject3
     configure.python          ${prefix}/bin/python3.11
-    set buildpython           ${prefix}/bin/python3.11
     set python_framework      ${frameworks_dir}/Python.framework/Versions/3.11
     configure.pkg_config_path ${python_framework}/lib/pkgconfig
 }
@@ -56,7 +52,6 @@ variant python311 conflicts python310 python312 description {Use python 3.11} {
 variant python312 conflicts python310 python311 description {Use python 3.12} {
     depends_lib-append        port:py312-gobject3
     configure.python          ${prefix}/bin/python3.12
-    set buildpython           ${prefix}/bin/python3.12
     set python_framework      ${frameworks_dir}/Python.framework/Versions/3.12
     configure.pkg_config_path ${python_framework}/lib/pkgconfig
 }
@@ -73,7 +68,7 @@ compiler.blacklist  *gcc-3.* *gcc-4.* {clang < 300}
 post-destroot {
     xinstall -d -m 0755 ${destroot}/opt/local/share/nautilus-python/extensions
     xinstall -m 0644 ${worksrcpath}/examples/open-terminal.py ${destroot}/opt/local/share/nautilus-python/extensions/open-terminal.py
-    system "${buildpython} -m compileall ${destroot}/opt/local/share/nautilus-python/extensions/open-terminal.py"
+    system "${configure.python} -m compileall ${destroot}/opt/local/share/nautilus-python/extensions/open-terminal.py"
 }
 
 post-activate {
