@@ -69,6 +69,7 @@ post-destroot {
     xinstall -d -m 0755 ${destroot}/opt/local/share/nautilus-python/extensions
     xinstall -m 0644 ${worksrcpath}/examples/open-terminal.py ${destroot}/opt/local/share/nautilus-python/extensions/open-terminal.py
     xinstall -m 0644 ${portpath}/files/Quit-Nautilus.py ${destroot}/opt/local/share/nautilus-python/extensions/Quit-Nautilus.py
+    xinstall -m 0644 ${portpath}/files/new-file-here.py ${destroot}/opt/local/share/doc/nautilus-python/examples/new-file-here.py
     system "${configure.python} -m compileall ${destroot}/opt/local/share/nautilus-python/extensions/open-terminal.py"
     system "${configure.python} -m compileall ${destroot}/opt/local/share/nautilus-python/extensions/Quit-Nautilus.py"
 }
