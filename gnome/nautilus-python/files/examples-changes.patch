@@ -1,0 +1,153 @@
+diff -ur examples.orig/open-terminal.py examples/open-terminal.py
+--- examples.orig/open-terminal.py	2019-07-18 02:04:25.000000000 +0200
++++ examples/open-terminal.py	2024-06-09 10:41:16.000000000 +0200
+@@ -1,50 +1,106 @@
+ # This example is contributed by Martin Enlund
++# Adapted by christophecvr to work with :
++# Gkt3 and Gtk4, Nautilus 3.x and 4.x
++# It uses the Mac default Terminal instead of gnome-terminal.
+ import os
++from urllib.parse import unquote
++from gi.repository import Nautilus, GObject
++from typing import List
++# version used to make it compatible with nautilus 3.x (gtk 3) and nautilus 4.x (gtk 4)
++version = Nautilus._version
+ 
+-# A way to get unquote working with python 2 and 3
+-try:
+-    from urllib import unquote
+-except ImportError:
+-    from urllib.parse import unquote
+-
+-import gi
+-gi.require_version('GConf', '2.0')
+-from gi.repository import Nautilus, GObject, GConf
+-
+-
+-class OpenTerminalExtension(Nautilus.MenuProvider, GObject.GObject):
+-    def __init__(self):
+-        self.client = GConf.Client.get_default()
+-        
+-    def _open_terminal(self, file):
++class OpenTerminalExtension(GObject.GObject, Nautilus.MenuProvider):
++    def _open_terminal(self, file: Nautilus.FileInfo) -> None:
+         filename = unquote(file.get_uri()[7:])
+-
+         os.chdir(filename)
+-        os.system('gnome-terminal')
+-        
+-    def menu_activate_cb(self, menu, file):
++        # changed for macos it will open Standard mac terminal
++        os.system("open -a Terminal '" + filename + "'")
++
++    def menu_activate_cb(
++        self,
++        menu: Nautilus.MenuItem,
++        file: Nautilus.FileInfo,
++    ) -> None:
+         self._open_terminal(file)
+-        
+-    def menu_background_activate_cb(self, menu, file): 
++
++    def menu_background_activate_cb(
++        self,
++        menu: Nautilus.MenuItem,
++        file: Nautilus.FileInfo,
++    ) -> None:
+         self._open_terminal(file)
+-       
+-    def get_file_items(self, window, files):
+-        if len(files) != 1:
+-            return
+-        
+-        file = files[0]
+-        if not file.is_directory() or file.get_uri_scheme() != 'file':
+-            return
+-       
+-        item = Nautilus.MenuItem(name='NautilusPython::openterminal_file_item',
+-                                 label='Open Terminal' ,
+-                                 tip='Open Terminal In %s' % file.get_name())
+-        item.connect('activate', self.menu_activate_cb, file)
+-        return item,
+-
+-    def get_background_items(self, window, file):
+-        item = Nautilus.MenuItem(name='NautilusPython::openterminal_file_item2',
+-                                 label='Open Terminal' ,
+-                                 tip='Open Terminal In %s' % file.get_name())
+-        item.connect('activate', self.menu_background_activate_cb, file)
+-        return item,
++
++    if version == "3.0":
++        def get_file_items(
++            self,
++            # added window, needed for gtk-3 version nautilus versions 3.x
++            window,
++            files: List[Nautilus.FileInfo],
++            ) -> List[Nautilus.MenuItem]:
++            # Only one item may be selected.
++            if len(files) != 1:
++                return []
++
++            file = files[0]
++            # the selected item can only be a directory.
++            if not file.is_directory() or file.get_uri_scheme() != "file":
++                return []
++
++            item = Nautilus.MenuItem(
++                name="NautilusPython::openterminal_file_item",
++                label="Open Terminal In Selected Map",
++                tip="Open Terminal In %s" % file.get_name())
++            item.connect("activate", self.menu_activate_cb, file)
++
++            return [item]
++    else:
++        # for gtk-4 version nautilus versions 4.x
++        def get_file_items(
++            self,
++            files: List[Nautilus.FileInfo],
++            ) -> List[Nautilus.MenuItem]:
++            # Only one item may be selected.
++            if len(files) != 1:
++                return []
++
++            file = files[0]
++            # the selected item can only be a directory.
++            if not file.is_directory() or file.get_uri_scheme() != "file":
++                return []
++
++            item = Nautilus.MenuItem(
++                name="NautilusPython::openterminal_file_item",
++                label="Open Terminal In Selected Map",
++                tip="Open Terminal In %s" % file.get_name())
++            item.connect("activate", self.menu_activate_cb, file)
++
++            return [item]
++
++    if version == "3.0":
++        def get_background_items(
++            self,
++            # added window, needed for gtk-3 version nautilus versions 3.x
++            window,
++            current_folder: Nautilus.FileInfo,
++            ) -> List[Nautilus.MenuItem]:
++            item = Nautilus.MenuItem(
++                name="NautilusPython::openterminal_file_item2",
++                label="Open Terminal Here",
++                tip="Open Terminal In %s" % current_folder.get_name())
++            item.connect("activate", self.menu_background_activate_cb, current_folder)
++
++            return [item]
++
++    else:
++        # for gtk-4 version nautilus versions 4.x
++        def get_background_items(
++            self,
++            current_folder: Nautilus.FileInfo,
++            ) -> List[Nautilus.MenuItem]:
++            item = Nautilus.MenuItem(
++                name="NautilusPython::openterminal_file_item2",
++                label="Open Terminal Here",
++                tip="Open Terminal In %s" % current_folder.get_name())
++            item.connect("activate", self.menu_background_activate_cb, current_folder)
++
++            return [item]
