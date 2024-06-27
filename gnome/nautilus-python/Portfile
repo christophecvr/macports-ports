@@ -65,13 +65,18 @@ if {![variant_isset python310] && \
 # blacklist compilers that do not support C11 (redefinition of typedef ‘NautilusLocationEntryClass’ at nautilus-location-entry.h:39)
 compiler.blacklist  *gcc-3.* *gcc-4.* {clang < 300}
 
+# install.user
 post-destroot {
     xinstall -d -m 0755 ${destroot}/opt/local/share/nautilus-python/extensions
+    xinstall -d -m 0755 ${destroot}/Users/${install.user}/.local/share/nautilus-python/extensions
     xinstall -m 0644 ${worksrcpath}/examples/open-terminal.py ${destroot}/opt/local/share/nautilus-python/extensions/open-terminal.py
+    xinstall -m 0644 ${portpath}/files/Quit-Nautilus.py ${destroot}/opt/local/share/doc/nautilus-python/examples/Quit-Nautilus.py
     xinstall -m 0644 ${portpath}/files/Quit-Nautilus.py ${destroot}/opt/local/share/nautilus-python/extensions/Quit-Nautilus.py
     xinstall -m 0644 ${portpath}/files/new-file-here.py ${destroot}/opt/local/share/doc/nautilus-python/examples/new-file-here.py
+    xinstall -m 0644 ${portpath}/files/new-file-here.py ${destroot}/opt/local/share/nautilus-python/extensions/new-file-here.py
     system "${configure.python} -m compileall ${destroot}/opt/local/share/nautilus-python/extensions/open-terminal.py"
     system "${configure.python} -m compileall ${destroot}/opt/local/share/nautilus-python/extensions/Quit-Nautilus.py"
+    system "${configure.python} -m compileall ${destroot}/opt/local/share/nautilus-python/extensions/new-file-here.py"
 }
 
 post-activate {
