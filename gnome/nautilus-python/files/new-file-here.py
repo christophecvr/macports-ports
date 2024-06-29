@@ -65,7 +65,7 @@ class SelectionMenu(Gtk.Window):
         self.set_position(Gtk.WindowPosition.CENTER)
         self.set_decorated(True)
         self.set_default_size(500, 300)
-        self.connect("destroy", Gtk.main_quit)
+        self.connect("destroy", self.destroy_SelectionMenu)
         # main box will expand vertical for labels and parent(childs)
         main_box = Gtk.Box()
         main_box.set_orientation(Gtk.Orientation.VERTICAL)
@@ -168,7 +168,7 @@ class SelectionMenu(Gtk.Window):
         image = Gtk.Image()
         # still works but is deprecated
         #image.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
-        # using linux icons adwaita theme.
+        # using linux icons adwaita theme instead of icons from stock
         image.set_from_icon_name ("dialog-information-symbolic", Gtk.IconSize.DIALOG)
         image.show()
         dialog.set_image(image)
@@ -228,7 +228,7 @@ class SelectionMenu(Gtk.Window):
         image = Gtk.Image()
         # still works but is deprecated
         #image.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
-        # using linux icons adwaita theme.
+        # using linux icons adwaita theme instead of icons from stock
         image.set_from_icon_name ("dialog-information-symbolic", Gtk.IconSize.DIALOG)
         image.show()
         dialog.set_image(image)
@@ -325,7 +325,7 @@ class SelectionMenu(Gtk.Window):
         image = Gtk.Image()
         # still works but is deprecated
         #image.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
-        # using linux icons adwaita theme.
+        # using linux icons adwaita theme instead of icons from stock
         image.set_from_icon_name ("dialog-information-symbolic", Gtk.IconSize.DIALOG)
         image.show()
         dialog.set_image(image)
@@ -425,7 +425,7 @@ class SelectionMenu(Gtk.Window):
         image = Gtk.Image()
         # still works but is deprecated
         #image.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
-        # using linux icons adwaita theme.
+        # using linux icons adwaita theme instead of icons from stock
         image.set_from_icon_name ("dialog-information-symbolic", Gtk.IconSize.DIALOG)
         image.show()
         dialog.set_image(image)
@@ -521,7 +521,7 @@ class SelectionMenu(Gtk.Window):
         image = Gtk.Image()
         # still works but is deprecated
         #image.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
-        # using linux icons adwaita theme.
+        # using linux icons adwaita theme instead of icons from stock
         image.set_from_icon_name ("dialog-information-symbolic", Gtk.IconSize.DIALOG)
         image.show()
         dialog.set_image(image)
@@ -619,7 +619,7 @@ class SelectionMenu(Gtk.Window):
         image = Gtk.Image()
         # still works but is deprecated
         #image.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
-        # using linux icons adwaita theme.
+        # using linux icons adwaita theme instead of icons from stock
         image.set_from_icon_name ("dialog-information-symbolic", Gtk.IconSize.DIALOG)
         image.show()
         dialog.set_image(image)
@@ -715,7 +715,7 @@ class SelectionMenu(Gtk.Window):
         image = Gtk.Image()
         # still works but is deprecated
         #image.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
-        # using linux icons adwaita theme.
+        # using linux icons adwaita theme instead of icons from stock
         image.set_from_icon_name ("dialog-information-symbolic", Gtk.IconSize.DIALOG)
         image.show()
         dialog.set_image(image)
@@ -800,7 +800,7 @@ class SelectionMenu(Gtk.Window):
         image = Gtk.Image()
         # still works but is deprecated
         #image.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
-        # using linux icons adwaita theme.
+        # using linux icons adwaita theme instead of icons from stock
         image.set_from_icon_name ("dialog-information-symbolic", Gtk.IconSize.DIALOG)
         image.show()
         dialog.set_image(image)
@@ -897,7 +897,7 @@ class SelectionMenu(Gtk.Window):
         image = Gtk.Image()
         # still works but is deprecated
         #image.set_from_stock(Gtk.STOCK_DIALOG_INFO, Gtk.IconSize.DIALOG)
-        # using linux icons adwaita theme.
+        # using linux icons adwaita theme instead of icons from stock
         image.set_from_icon_name ("dialog-information-symbolic", Gtk.IconSize.DIALOG)
         image.show()
         dialog.set_image(image)
