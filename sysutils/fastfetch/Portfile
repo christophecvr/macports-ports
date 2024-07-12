@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github  1.0
 PortGroup           cmake   1.1
 
-github.setup        fastfetch-cli fastfetch 2.17.2
+github.setup        fastfetch-cli fastfetch 2.18.1
 github.tarball_from archive
 revision            0
 
@@ -20,9 +20,9 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  5d5a707bd3d8cbc8f7ee0b86f44efad54190d111 \
-                    sha256  f41322a9d9601a5a5a74f67a3253c7e8631e6241053094d050cf02bbade8cbcd \
-                    size    1051381
+checksums           rmd160  14ceaa57018ef190d5fefad1abcc708abbec797a \
+                    sha256  53421de317bfc918e168751cf910e7faa51ebbd71f6f4de3b56d2cc74794365f \
+                    size    1067696
 
 set py_version      312
 
