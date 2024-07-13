@@ -5,7 +5,7 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 
 name                tracker-miners
-version             3.0.5
+version             3.2.2
 revision            1
 license             GPL-2+ LGPL-2.1+ BSD
 set branch          [join [lrange [split ${version} .] 0 1] .]
@@ -14,7 +14,7 @@ long_description    Tracker contains \
                     the indexer daemon (*tracker-miner-fs*) and tools to extract metadata \
                     from many different filetypes.
 
-maintainers         {devans @dbevans} openmaintainer
+maintainers         {christophecvr @christophecvr}
 categories          gnome
 homepage            https://gitlab.gnome.org/GNOME/tracker-miners
 master_sites        gnome:sources/${name}/${branch}/
@@ -22,9 +22,9 @@ use_xz              yes
 distname            ${name}-${version}
 dist_subdir         ${name}
 
-checksums   rmd160 2c410f82d2a6f79f85c6aac811b1764e98ba6b98 \
-            sha256 c9be14871b1398e6e656a354a8f8f59e69e93169017f2b28308ef439324fd12b \
-            size    4020324
+checksums   rmd160 723c875f3697e28aea40e00044175cc9ffc82d97 \
+            sha256 fd84c71e621bc2b81cacb5f908932436246d1b8a4fc3a6353e2b8dbaebc0236c \
+            size    4073752
 
 configure.compiler macports-clang-14
 
@@ -34,22 +34,15 @@ depends_build   port:pkgconfig \
                 port:clang-14 \
                 port:libtool
 
-depends_lib     port:tracker-3.0
+depends_lib     port:tracker3
 
 configure.args  -Dfunctional_tests=false \
                 -Dman=false \
                 -Dminer_rss=false \
-                -Dabiword=false \
-                -Ddvi=false \
-                -Dicon=false \
-                -Dmp3=false \
-                -Dps=false \
-                -Dtext=false \
                 -Dunzip_ps_gz_files=false \
                 -Dsystemd_user_services=false
 
-patchfiles  pipe2func-1.patch \
-            pipe2func-2.patch
+patchfiles  pipe2-func.patch
 
 
  # blacklist compilers that do not support C11 (redefinition of typedef ‘TrackerSparqlBuilder’ at tracker-generated-no-checks.h:27)
