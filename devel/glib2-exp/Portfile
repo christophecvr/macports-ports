@@ -224,18 +224,22 @@ platform darwin 8 {
 }
 
 variant quartz {
-    configure.args-append   -Dappinfo_backend=native
+    if {![variant_isset x11]} {
+        configure.args-append   -Dappinfo_backend=native
+    }
 }
 
 variant x11 {
-    configure.args-append   -Dappinfo_backend=generic
+    if {![variant_isset quartz]} {
+        configure.args-append   -Dappinfo_backend=generic
+    }
 }
 
-variant quartzx11 {
+if {[variant_isset quartz] && [variant_isset x11]} {
     configure.args-append   -Dappinfo_backend=mixed
 }
 
-if {![variant_isset quartz] && ![variant_isset x11] && ![variant_isset quartzx11]} {
+if {![variant_isset quartz] && ![variant_isset x11]} {
     default_variants +x11
 }
 
