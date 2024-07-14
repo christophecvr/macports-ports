@@ -223,6 +223,8 @@ platform darwin 8 {
     }
 }
 
+# to build mixed use +quartz +x11 does not work yet
+
 variant quartz {
     if {![variant_isset x11]} {
         configure.args-append   -Dappinfo_backend=native
