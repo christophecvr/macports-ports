@@ -53,7 +53,7 @@ patchfiles-append           patch-glib_gunicollate.c.diff
 patchfiles-append           patch-gio_xdgmime_xdgmime.c.diff
 patchfiles-append           patch-get-launchd-dbus-session-address.diff
 patchfiles-append           patch-gmodule-gmodule-dl.c.diff
-patchfiles-append           patch-meson_build-meson_options-appinfo.diff
+patchfiles-append           meson-gio-appinfo.patch
 patchfiles-append           patch-meson-build-python-path.diff
 patchfiles-append           patch-meson_build-atomic-test-older-clang-versions.diff
 patchfiles-append           universal.patch
@@ -231,17 +231,14 @@ variant x11 {
     configure.args-append   -Dappinfo_backend=generic
 }
 
-if {![variant_isset quartz]} {
+variant quartzx11 {
+    configure.args-append   -Dappinfo_backend=mixed
+}
+
+if {![variant_isset quartz] && ![variant_isset x11] && ![variant_isset quartzx11]} {
     default_variants +x11
 }
-if {![variant_isset x11]} {
-    default_variants +quartz
-}
-if {![variant_isset quartz] && ![variant_isset x11]} {
-    pre-configure {
-        return -code error "Either +x11 or +quartz is required"
-    }
-}
+
 
 proc port_conflict_check {p_port_name p_conflict_ver_min p_conflict_ver_max} {
     ui_debug "port_conflict_check: Checking for conflict against port: ${p_port_name}"

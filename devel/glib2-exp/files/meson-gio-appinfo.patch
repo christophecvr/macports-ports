@@ -1,0 +1,126 @@
+diff -ur gio.orig/giomodule.c gio/giomodule.c
+--- gio.orig/giomodule.c	2024-01-21 20:48:20.000000000 +0100
++++ gio/giomodule.c	2024-07-14 13:24:39.000000000 +0200
+@@ -61,11 +61,15 @@
+ #endif
+ #include <glib/gstdio.h>
+ 
+-#if defined(G_OS_UNIX) && !defined(__APPLE__)
++#if defined(G_OS_UNIX)
++#if !defined(HAVE_COCOA) || defined(USE_APPINFO_GENERIC)
++#include "gdesktopappinfo.h"
++#elif defined(HAVE_COCOA) && defined(USE_APPINFO_MIXED)
+ #include "gdesktopappinfo.h"
+-#endif
+-#ifdef HAVE_COCOA
+ #include "gosxappinfo.h"
++#elif defined(HAVE_COCOA)
++#include "gosxappinfo.h"
++#endif
+ #endif
+ 
+ #ifdef __APPLE__
+@@ -1192,7 +1196,7 @@
+ 
+   if (g_once_init_enter (&registered_extensions))
+     {
+-#if defined(G_OS_UNIX) && !defined(__APPLE__)
++#if defined(G_OS_UNIX) && (!defined(HAVE_COCOA) || defined(USE_APPINFO_GENERIC) || defined(USE_APPINFO_MIXED))
+ #if !GLIB_CHECK_VERSION (3, 0, 0)
+       ep = g_io_extension_point_register (G_DESKTOP_APP_INFO_LOOKUP_EXTENSION_POINT_NAME);
+       g_io_extension_point_set_required_type (ep, G_TYPE_DESKTOP_APP_INFO_LOOKUP);
+@@ -1361,8 +1365,10 @@
+ #endif
+ #ifdef HAVE_COCOA
+       g_type_ensure (g_nextstep_settings_backend_get_type ());
++#if defined(USE_APPINFO_NATIVE) || defined(USE_APPINFO_MIXED)
+       g_type_ensure (g_osx_app_info_get_type ());
+ #endif
++#endif
+ #ifdef G_OS_UNIX
+       g_type_ensure (_g_unix_volume_monitor_get_type ());
+       g_type_ensure (g_debug_controller_dbus_get_type ());
+diff -ur gio.orig/meson.build gio/meson.build
+--- gio.orig/meson.build	2024-01-21 20:48:20.000000000 +0100
++++ gio/meson.build	2024-07-14 12:58:08.000000000 +0200
+@@ -389,16 +389,49 @@
+     'gunixoutputstream.h',
+   )
+ 
++  appinfo_backend = get_option('appinfo_backend')
+   if glib_have_cocoa
+     settings_sources += files('gnextstepsettingsbackend.m')
+-    contenttype_sources += files('gosxcontenttype.m')
+-    appinfo_sources += files('gosxappinfo.m')
++    if appinfo_backend == 'native'
++      contenttype_sources += files('gosxcontenttype.m')
++      appinfo_sources += files('gosxappinfo.m')
++      application_headers += files('gosxappinfo.h')
++    elif appinfo_backend == 'generic'
++      contenttype_sources += files('gcontenttype.c')
++      appinfo_sources += files('gdesktopappinfo.c')
++      gio_unix_include_headers += files('gdesktopappinfo.h')
++      launch_desktop_sources = files('gio-launch-desktop.c')
++      gio_launch_desktop = executable('gio-launch-desktop', launch_desktop_sources,
++        include_directories : glibinc,
++        install : true,
++        install_dir : multiarch_libexecdir,
++        install_tag : 'bin',
++        c_args : gio_c_args,
++        # intl.lib is not compatible with SAFESEH
++        link_args : noseh_link_args)
++    elif appinfo_backend == 'mixed'
++      contenttype_sources += files('gosxcontenttype.m')
++      contenttype_sources += files('gcontenttype.c')
++      appinfo_sources += files('gosxappinfo.m')
++      appinfo_sources += files('gdesktopappinfo.c')
++      application_headers += files('gosxappinfo.h')
++      gio_unix_include_headers += files('gdesktopappinfo.h')
++      launch_desktop_sources = files('gio-launch-desktop.c')
++      gio_launch_desktop = executable('gio-launch-desktop', launch_desktop_sources,
++        include_directories : glibinc,
++        install : true,
++        install_dir : multiarch_libexecdir,
++        install_tag : 'bin',
++        c_args : gio_c_args,
++        # intl.lib is not compatible with SAFESEH
++        link_args : noseh_link_args)
++    endif
++    
+     framework_dep = dependency('appleframeworks', modules : ['Foundation', 'CoreFoundation', 'AppKit'])
+     platform_deps += [framework_dep]
+     if glib_have_os_x_9_or_later
+       unix_sources += files('gcocoanotificationbackend.m')
+     endif
+-    application_headers += files('gosxappinfo.h')
+   else
+     contenttype_sources += files('gcontenttype.c')
+     appinfo_sources += files('gdesktopappinfo.c')
+@@ -828,6 +861,15 @@
+   )
+ endif
+ 
++appinfo_backend = get_option('appinfo_backend') 
++if appinfo_backend == 'native'
++  glib_conf.set('USE_APPINFO_NATIVE', 1)
++elif appinfo_backend == 'generic'
++  glib_conf.set('USE_APPINFO_GENERIC', 1)
++elif appinfo_backend == 'mixed'
++  glib_conf.set('USE_APPINFO_MIXED', 1)
++endif
++
+ if enable_dtrace
+   gio_dtrace_obj = dtrace_obj_gen.process('gio_probes.d')
+   gio_dtrace_hdr = dtrace_hdr_gen.process('gio_probes.d')
+--- meson_options.txt.orig	2024-07-14 11:59:55.000000000 +0200
++++ meson_options.txt	2024-07-14 12:04:06.000000000 +0200
+@@ -1,3 +1,9 @@
++option('appinfo_backend',
++       type : 'combo',
++       choices : ['generic', 'native', 'mixed'],
++       value : 'generic',
++       description : 'appinfo backend to use; either freedesktop (for x11 based builds), native (for quartz based builds) or mixed (experimental)')
++
+ option('runtime_libdir',
+        type : 'string',
+        value : '',
