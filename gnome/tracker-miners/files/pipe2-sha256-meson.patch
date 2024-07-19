@@ -1,0 +1,48 @@
+diff -ur src-orig/libtracker-miners-common/tracker-seccomp.c src/libtracker-miners-common/tracker-seccomp.c
+--- src-orig/libtracker-miners-common/tracker-seccomp.c	2022-03-06 23:27:16.000000000 +0100
++++ src/libtracker-miners-common/tracker-seccomp.c	2024-07-13 14:23:13.000000000 +0200
+@@ -178,7 +178,6 @@
+ 	ALLOW_RULE (eventfd);
+ 	ALLOW_RULE (eventfd2);
+ 	ALLOW_RULE (pipe);
+-	ALLOW_RULE (pipe2);
+ 	ALLOW_RULE (epoll_create);
+ 	ALLOW_RULE (epoll_ctl);
+ 	/* System */
+diff -ur src-orig/libtracker-miners-common/tracker-term-utils.c src/libtracker-miners-common/tracker-term-utils.c
+--- src-orig/libtracker-miners-common/tracker-term-utils.c	2022-03-06 23:27:16.000000000 +0100
++++ src/libtracker-miners-common/tracker-term-utils.c	2024-07-13 14:27:19.000000000 +0200
+@@ -157,8 +157,13 @@
+ 	if (!tracker_term_is_tty ())
+ 		return FALSE;
+ 
+-	if (pipe2 (fds, O_CLOEXEC) < 0)
+-		return FALSE;
++#ifdef __APPLE__
++    if (pipe(fds) < 0 )
++        return FALSE;
++#else
++ 	if (pipe2 (fds, O_CLOEXEC) < 0)
++ 		return FALSE;
++#endif
+ 
+ 	pager_command = best_pager ();
+ 	if (!pager_command)
+diff -ur src-orig/tracker-extract/calculate-hash.sh src/tracker-extract/calculate-hash.sh
+--- src-orig/tracker-extract/calculate-hash.sh	2022-03-06 23:27:16.000000000 +0100
++++ src/tracker-extract/calculate-hash.sh	2024-07-19 09:36:01.000000000 +0200
+@@ -1,2 +1,2 @@
+ #!/bin/sh
+-cat $@ | sha256sum | cut -f 1 -d ' '
++cat $@ | openssl sha256 | cut -f 2 -d ' '
+--- meson.build.orig	2022-03-06 23:27:16.000000000 +0100
++++ meson.build	2024-07-19 09:41:17.000000000 +0200
+@@ -109,7 +109,7 @@
+   xsltproc = find_program('xsltproc')
+ endif
+ 
+-sha256sum = find_program('sha256sum')
++openssl = find_program('openssl')
+ 
+ add_project_arguments('-Wformat', '-Wformat-security', language: 'c')
+ 

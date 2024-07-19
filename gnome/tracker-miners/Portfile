@@ -42,7 +42,7 @@ configure.args  -Dfunctional_tests=false \
                 -Dunzip_ps_gz_files=false \
                 -Dsystemd_user_services=false
 
-patchfiles  pipe2-func.patch
+patchfiles  pipe2-sha256-meson.patch
 
 
  # blacklist compilers that do not support C11 (redefinition of typedef ‘TrackerSparqlBuilder’ at tracker-generated-no-checks.h:27)
