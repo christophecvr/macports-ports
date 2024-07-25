@@ -5,13 +5,13 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-#PortGroup           muniversal 1.0
+PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-libav
 set my_name         gst-libav
 # please only commit stable updates (even numbered releases)
 version             1.24.5
-revision            1
+revision            0
 description         This is gst-libav, a set of plug-ins for GStreamer.
 long_description    ${description}
 maintainers         nomaintainer
@@ -25,8 +25,6 @@ use_xz              yes
 checksums           rmd160  92ee589facd0f997ac853f1957e1c56f609aec48 \
                     sha256  7fd16bdfa56ed51c40b474648fc35c4edde3e8ac934b12b82b49727b5d703521 \
                     size    208704
-
-configure.compiler macports-clang-14
 
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
@@ -43,8 +41,6 @@ depends_lib-append  port:ffmpeg${ffmpeg_ver} \
                     port:gstreamer1-gst-plugins-base
 
 configure.pkg_config_path   ${prefix}/libexec/ffmpeg${ffmpeg_ver}/lib/pkgconfig
-
-patchfiles gst-ffmpeg6.patch
 
 post-patch {
     reinplace "s|/usr/bin/env python3|${python.bin}|" \

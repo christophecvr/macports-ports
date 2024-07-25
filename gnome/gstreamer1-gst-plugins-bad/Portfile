@@ -6,13 +6,13 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-#PortGroup           muniversal 1.0
+PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-plugins-bad
 set my_name         gst-plugins-bad
 # please only commit stable updates (even numbered releases)
 version             1.24.5
-revision            1
+revision            0
 description         A set of plug-ins for GStreamer that need more quality.
 long_description    GStreamer Bad Plug-ins is a set of plug-ins that aren't up to par compared \
                     to the rest. They might be close to being good quality, but they're missing \
@@ -29,8 +29,6 @@ use_xz              yes
 checksums           rmd160  bd447ac7145ebd3e75f9e8a1c8e0ca5efd3d9a64 \
                     sha256  3029bfd7265314d609dc8eab503675a344ea46e8274fd73ab34566c8442dc847 \
                     size    7061664
-
-configure.compiler macports-clang-14
 
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
@@ -148,7 +146,7 @@ variant x11 {
     configure.args-append   -Dx11=enabled
 }
 
-default_variants    +x11 +gpl +fdkaac +faac -universall
+default_variants    +x11
 
 # plugin applemedia (Apple video) now only builds on darwin 18 and later
 platform macosx {

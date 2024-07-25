@@ -5,13 +5,13 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-#PortGroup           muniversal 1.0
+PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-plugins-base
 set my_name         gst-plugins-base
 # please only commit stable updates (even numbered releases)
 version             1.24.5
-revision            1
+revision            0
 description         This is gst-plugins, a set of plug-ins for GStreamer.
 long_description    ${description}
 maintainers         nomaintainer
@@ -26,8 +26,6 @@ checksums           rmd160  210c2bed28b5b2dcb87e1cbf2c7466bbb21f169a \
                     sha256  0e33ec9b59eef5ef3a6a53bbd55c44340e681d0000910caca12541a73db38a7d \
                     size    2430552
 
-configure.compiler macports-clang-14
-
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
 set python.bin      ${prefix}/bin/python${py_ver}
@@ -35,8 +33,7 @@ set python.bin      ${prefix}/bin/python${py_ver}
 depends_build-append \
                     port:gtk-doc \
                     path:bin/pkg-config:pkgconfig \
-                    port:python${py_ver_nodot} \
-                    path:include/GL/glext.h:gl-headers
+                    port:python${py_ver_nodot}
 
 depends_lib-append  path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
                     port:graphene \
@@ -53,11 +50,13 @@ configure.args-append \
                     -Dalsa=disabled \
                     -Dcdparanoia=disabled \
                     -Dexamples=disabled \
+                    -Dgl=disabled \
                     -Dgl-graphene=enabled \
-                    -Dlibvisual=auto \
-                    -Dnls=enabled \
+                    -Dintrospection=enabled \
+                    -Dlibvisual=disabled \
+                    -Dnls=disabled \
                     -Dogg=disabled \
-                    -Dqt5=enabled \
+                    -Dqt5=disabled \
                     -Dtheora=disabled \
                     -Dvorbis=disabled \
                     -Dx11=disabled \
@@ -94,6 +93,8 @@ variant x11 {
                     -Dxshm=enabled \
                     -Dxvideo=disabled \
                     -Dxvideo=enabled
+    configure.args-append \
+                    -Dgl_winsys=x11
 }
 
 variant ogg description {Build with support for libogg, libvorbis, libtheora} {
@@ -135,9 +136,12 @@ platform macosx {
             compiler.blacklist-append *gcc* {macports-clang-3.[0-8]} {clang < 703}
         }
         # Use mesa headers if found else use gl-headers to ensure we don't conflict with gl-headers & mesa later
-        #depends_build-append \
-                    #path:include/GL/glext.h:gl-headers
+        depends_build-append \
+                    path:include/GL/glext.h:gl-headers
 
+        configure.args-replace \
+                    -Dgl=disabled \
+                    -Dgl=enabled
         configure.args-append \
                     -Dgl_winsys=cocoa
     }
