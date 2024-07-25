@@ -54,9 +54,9 @@ configure.args-append \
                     -Dgl-graphene=enabled \
                     -Dintrospection=enabled \
                     -Dlibvisual=disabled \
-                    -Dnls=disabled \
+                    -Dnls=auto \
                     -Dogg=disabled \
-                    -Dqt5=disabled \
+                    -Dqt5=auto \
                     -Dtheora=disabled \
                     -Dvorbis=disabled \
                     -Dx11=disabled \
@@ -80,6 +80,13 @@ post-patch {
         ${worksrcpath}/gst-libs/gst/gl/gl_mkenum.py
 }
 
+default_variants    +ogg
+
+# Prefer X11 implementation.
+if {![variant_isset quartz] && ![variant_isset x11]} {
+    default_variants-append +x11
+}
+
 variant x11 {
     depends_lib-append \
                     port:mesa \
@@ -93,8 +100,14 @@ variant x11 {
                     -Dxshm=enabled \
                     -Dxvideo=disabled \
                     -Dxvideo=enabled
-    configure.args-append \
-                    -Dgl_winsys=x11
+    if {![variant_isset quartz] && ${os.major} >= 13} {
+        configure.args-replace \
+                        -Dgl=disabled \
+                        -Dgl=enabled
+        configure.args-append \
+                        -Dgl_winsys=x11 \
+                        -Dgl_platform=glx
+    }
 }
 
 variant ogg description {Build with support for libogg, libvorbis, libtheora} {
@@ -119,9 +132,6 @@ variant cdparanoia description {Enable (currently broken) cdparanoia plugin} {
                     -Dcdparanoia=enabled
 }
 
-# Prefer X11 implementation.
-default_variants    +ogg +x11
-
 # Cocoa-GL
 # Only enable on OS X 10.9 or later, if the x11 variant is not enabled.
 # Requires ARC (automatic reference counting, a clang feature enabled
@@ -130,7 +140,7 @@ default_variants    +ogg +x11
 # (https://llvm.org/viewvc/llvm-project?view=revision&revision=250955).
 # If building universal or for i386 then ensure that a sufficiently recent
 # version of clang is used, since the Xcode clang may be too old.
-platform macosx {
+variant quartz {
     if {![variant_isset x11] && ${os.major} >= 13} {
         if {(${universal_possible} && [variant_isset universal]) || ${build_arch} eq "i386"} {
             compiler.blacklist-append *gcc* {macports-clang-3.[0-8]} {clang < 703}
@@ -145,6 +155,14 @@ platform macosx {
         configure.args-append \
                     -Dgl_winsys=cocoa
     }
+}
+
+if {[variant_isset quartz] && [variant_isset x11] && ${os.major} >= 13} {
+        configure.args-replace \
+                    -Dgl=disabled \
+                    -Dgl=enabled
+        configure.args-append \
+                    -Dgl_winsys='cocoa, x11'
 }
 
 test.run            yes
