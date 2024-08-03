@@ -146,7 +146,7 @@ variant x11 {
     configure.args-append   -Dx11=enabled
 }
 
-default_variants    +x11
+default_variants    +x11 +fdkaac +gpl +faac
 
 # plugin applemedia (Apple video) now only builds on darwin 18 and later
 platform macosx {
