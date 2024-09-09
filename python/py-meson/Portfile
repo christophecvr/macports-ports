@@ -6,13 +6,15 @@ PortGroup           github 1.0
 
 name                py-meson
 # update version and revision also in the meson port
-github.setup        mesonbuild meson 1.5.1
-github.tarball_from releases
-revision            1
 
-checksums           rmd160  9d8c02bf13789368f7af53c0cc66fe0ccc88c476 \
-                    sha256  567e533adf255de73a2de35049b99923caf872a455af9ce03e01077e0d384bed \
-                    size    2257106
+github.setup        christophecvr meson 53e11488d9ce01b14c2b280d66c3efeda1c60abc
+version             1.5.99
+#github.tarball_from releases
+revision            0
+
+checksums           rmd160  a665ed8e21e995dd4c967f16aa053573a1d98188 \
+                    sha256  a6dd545fce7d2592648033a98cad94d272ec3c0177f1aab104fc86b2e9793ac2 \
+                    size    4817572
 
 license             Apache-2
 categories-append   devel
@@ -56,9 +58,6 @@ if {${subport} ne ${name}} {
     # https://github.com/mesonbuild/meson/issues/6187
     patchfiles-append   patch-meson-32bit-apple.diff
 
-    # https://github.com/mesonbuild/meson/pull/9211
-    patchfiles-append   patch-meson-gcc-appleframeworks.diff
-
     # Compiled typelib files need their dylibs' full install path
     patchfiles-append   patch-meson-gnome.diff
 
@@ -75,6 +74,12 @@ if {${subport} ne ${name}} {
 
     # add a search path for crossfiles in our prefix
     patchfiles-append   patch-meson-search-prefix-for-cross-files.diff
+    
+    # https://github.com/mesonbuild/meson/pull/9211 (never merged in meson)
+    # replaces patch-meson-gcc-appleframeworks.diff
+    # adds extra patch for 'std=c++<ver>','std=gnu++<ver>' are valid for C++/ObjC++ but not for 'C'
+    # upstream pull request link will be set the day it is made.
+    patchfiles-append   patch-meson-find-framework-path.diff
 
     platform darwin 8 {
         # this meson is modified for systems without @rpath support

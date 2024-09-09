@@ -22,6 +22,8 @@ checksums           rmd160  67891cc09e22383f4a1a6bac50279a35209fc588 \
                     sha256  978c58fc1bcdf5f1e6235105e624ee16c32deb1482f34d4c98e1847092f43db0 \
                     size    958668
 
+configure.compiler macports-clang-14
+
 depends_build-append \
                     port:pkgconfig \
                     port:appstream-glib \
@@ -123,12 +125,29 @@ variant python310 conflicts python38 python39 description {Plugins use Python 3.
     configure.python    ${prefix}/bin/python3.10
 }
 
-if {![variant_isset python38] && \
-    ![variant_isset python39] && \
-    ![variant_isset python310]} {
-    default_variants +python310
+variant python311 conflicts python38 python39 description {Plugins use Python 3.11} {
+    depends_lib-append  port:py311-gobject3 \
+                        port:dbus-python311
+
+    configure.python    ${prefix}/bin/python3.11
 }
 
+variant python312 conflicts python38 python39 description {Plugins use Python 3.12} {
+    depends_lib-append  port:py312-gobject3 \
+                        port:dbus-python312
+
+    configure.python    ${prefix}/bin/python3.12
+}
+
+if {![variant_isset python38] && \
+    ![variant_isset python39] && \
+    ![variant_isset python310] && \
+    ![variant_isset python311] && \
+    ![variant_isset python312] } {
+    default_variants +python312
+}
+
+default_variants-append +charmap +synctex
 # libpeas expects plugin modules with .so extensions
 # make .so symlink for each plugin module built as .dylib
 post-destroot {

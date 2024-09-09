@@ -1,0 +1,8 @@
+--- nautilus-python.pc.in.orig	2024-05-27 12:09:50.000000000 +0200
++++ nautilus-python.pc.in	2024-05-27 12:11:37.000000000 +0200
+@@ -4,4 +4,4 @@
+ 
+ prefix=@prefix@
+ libdir=${prefix}/lib
+-pythondir=@datadir@/nautilus-python/extensions
++pythondir=@datarootdir@/nautilus-python/extensions

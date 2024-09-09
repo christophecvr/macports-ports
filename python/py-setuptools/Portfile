@@ -35,7 +35,7 @@ python.pep517_backend
 if {$subport ne $name} {
 
     set pythonpath [list ${worksrcpath}]
-     if {${python.version} in {37 38 39}} {
+     if {${python.version} in {37 38 39 310 311 312}} {
         # break circular dependencies
         python.add_dependencies no
         depends_build   port:py-bootstrap-modules \
@@ -111,8 +111,8 @@ if {$subport ne $name} {
         }
     }
 
-    build.env-append    SETUPTOOLS_INSTALL_WINDOWS_SPECIFIC_FILES=0
-    destroot.env-append SETUPTOOLS_INSTALL_WINDOWS_SPECIFIC_FILES=0
+    build.env-append    SETUPTOOLS_INSTALL_WINDOWS_SPECIFIC_FILES=1
+    destroot.env-append SETUPTOOLS_INSTALL_WINDOWS_SPECIFIC_FILES=1
     set docfiles [list README.rst]
     if {${python.version} >= 38} {
         lappend docfiles NEWS.rst

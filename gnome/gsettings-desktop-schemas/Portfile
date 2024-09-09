@@ -4,9 +4,10 @@ PortSystem          1.0
 PortGroup           meson 1.0
 
 name                gsettings-desktop-schemas
-version             3.38.0
+version             46.1
+revision            0
 license             LGPL-2.1
-set branch          [join [lrange [split ${version} .] 0 1] .]
+set branch          [join [lrange [split ${version} .] 0 0] .]
 
 description         gsettings-desktop-schemas contains a collection of GSettings schemas \
                     for settings shared by various components of a desktop.
@@ -21,23 +22,23 @@ master_sites        gnome:sources/${name}/${branch}/
 
 use_xz              yes
 
-checksums           rmd160  338b1af688cfa2adb58a563a518bee25034cb759 \
-                    sha256  5704c8266004b296036671f223c705dc046aa694a1b1abb87c67e7d2747a8c67 \
-                    size    685868
+checksums           rmd160  3f32666e3b0114c8f07c63d584c0cb7b256cf3b3 \
+                    sha256  9b88101437a6958ebe6bbd812e49bbf1d09cc667011e415559d847e870468a61 \
+                    size    779204
 
 supported_archs     noarch
 
 depends_build-append \
                     port:pkgconfig \
-                    port:python310
+                    port:python312
 
 depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection
 
-# make sure post-install.py uses python3.10 not generic python3
-post-patch {
-    reinplace "s|#!.*|#!${prefix}/bin/python3.10|" ${worksrcpath}/build-aux/meson/post-install.py
-}
+# make sure post-install.py uses python3.12 not generic python3
+#post-patch {
+#    reinplace "s|#!.*|#!${prefix}/bin/python3.12|" ${worksrcpath}/build-aux/meson/post-install.py
+#}
 
 # gobject-introspection uses g-ir-scanner, which uses $CC from env
 if {${universal_possible} && [variant_isset universal]} {

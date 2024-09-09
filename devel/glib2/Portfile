@@ -7,15 +7,16 @@ PortGroup                   conflicts_build 1.0
 PortGroup                   debug 1.0
 PortGroup                   legacysupport 1.1
 PortGroup                   meson 1.0
-PortGroup                   muniversal 1.0
-
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    PortGroup                   muniversal 1.0
+}
 # Please keep the glib2 and glib2-devel ports as similar as possible.
 
 name                        glib2
 conflicts                   glib2-devel
 set my_name                 glib
 version                     2.78.4
-revision                    1
+revision                    2
 epoch                       1
 
 checksums                   rmd160  7941be85af18c428d86f4a00e52f41542b061aa9 \
@@ -56,7 +57,9 @@ patchfiles-append           patch-gmodule-gmodule-dl.c.diff
 patchfiles-append           patch-meson_build-meson_options-appinfo.diff
 patchfiles-append           patch-meson-build-python-path.diff
 patchfiles-append           patch-meson_build-atomic-test-older-clang-versions.diff
-patchfiles-append           universal.patch
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    patchfiles-append           universal.patch
+}
 patchfiles-append           patch-glib2-findfolders-before-SL.diff
 patchfiles-append           patch-declarations.diff
 patchfiles-append           no-distutils.patch
@@ -94,9 +97,13 @@ depends_lib-append          port:gettext-runtime \
 # Python only needed for scripts
 depends_skip_archcheck-append \
                             python${py_ver_nodot}
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    compiler.cxx_standard       2011
+}
 
-compiler.cxx_standard       2011
-
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    compiler.cxx_standard       2017
+}
 # Issues for Clang 5.x:
 # - fatal error: error in backend: Cannot select: 0x103357f10: i8,ch = AtomicLoad 0x10334b410,
 #   0x103354b10<Volatile LD1[@is_running.b]> [ID=18]

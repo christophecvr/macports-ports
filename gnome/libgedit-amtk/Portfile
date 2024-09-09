@@ -1,0 +1,57 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+
+PortSystem          1.0
+PortGroup           active_variants 1.1
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           meson 1.0
+
+name                libgedit-amtk
+#conflicts           amtk
+version             5.8.0
+revision            0
+license             GPL-3.0
+description         libgedit-amtk - Actions, Menus and Toolbars Kit for GTK-3 applications
+long_description    Amtk is the acronym for “Actions, Menus and Toolbars Kit”. It is a basic \
+                    GtkUIManager replacement based on GAction. It is suitable for both a \
+                    traditional UI or a modern UI with a GtkHeaderBar. \
+                    libgedit-amtk currently targets GTK 3.
+categories          gnome
+maintainers         {christophecvr @christophecvr}
+platforms           darwin
+homepage            https://gitlab.gnome.org/World/gedit/libgedit-amtk
+master_sites        https://gitlab.gnome.org/World/gedit/${name}/-/archive/${version}/
+distname            ${name}-${version}
+
+checksums           rmd160  e0151d4137424a0a70b7de74dc7ef887a26fd82a \
+                    sha256  014d90bdc611ef855655c846a37341b8394db794b06344e07066b87c259b4f31 \
+                    size    70971
+
+#patchfiles          meson-install-loc-name.patch
+
+depends_build-append \
+                    path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
+                    port:meson \
+                    port:ninja \
+                    port:pkgconfig
+
+depends_lib-append \
+                    path:lib/pkgconfig/gtk+-3.0.pc:gtk3
+
+
+# gobject-introspection uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+}
+# sources are looking for <amtk/..h>
+#post-destroot {
+#    ln -s amtk-5 ${destroot}${prefix}/include/amtk
+#}
+
+livecheck.type      gnome

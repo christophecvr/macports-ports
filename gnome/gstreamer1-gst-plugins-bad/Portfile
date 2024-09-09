@@ -6,7 +6,9 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-PortGroup           muniversal 1.0
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    PortGroup           muniversal 1.0
+}
 
 name                gstreamer1-gst-plugins-bad
 set my_name         gst-plugins-bad
@@ -79,6 +81,13 @@ patchfiles          modplug.patch \
                     libressl.patch \
                     no_pqueue_size.patch
 
+# added this patch to build gstreamer with mjpegtools en mpeg2enc
+# sets buffer size in gstreamer for ext mpeg2enc to uint64_t instead of guint64
+# on macos guint64 is unsigned long project mepg2enc needs unsigned long long.
+# I leave patch below for now but commented when building glib2 with universal support that is required
+# On macos 10.14 and above builds must all be done whitout universal support !!                 
+#patchfiles-append   mjpegtools-mpeg2enc.patch
+
 post-patch {
     reinplace "s|/usr/bin/env python3|${python.bin}|" \
         ${worksrcpath}/scripts/extract-release-date-from-doap-file.py \
@@ -93,7 +102,6 @@ post-patch {
 # the following ports are available but don't configure
 # and/or build correctly
 #
-# port:mjpegtools (mpeg2enc mplex build fails) need to disable mpeg2enc mplex explicitly in case mjpegtools is installed
 # port:faac has a restrictive license, disable faac plugin by default
 # port:libfdk-aac has a restrictive license, disable fdkaac plugin by default
 # path:lib/opencv3/libopencv_core.dylib:opencv3 (opencv plugin fails to configure with opencv 3.0.0+, can't find opencv2/bgsegm.hpp, now opencv2/video/background_segm.hpp)
@@ -102,11 +110,18 @@ post-patch {
 
 # fatal error: 'stdatomic.h' file not found
 compiler.blacklist-append {clang < 700}
-# requires support for C11 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
-compiler.c_standard         2011
-# OpenExr requires C++11
-compiler.cxx_standard       2011
-
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    # requires support for C11 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
+    compiler.c_standard         2011
+    # OpenExr requires C++11
+    compiler.cxx_standard       2011
+}
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    # requires support for C17 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
+    compiler.c_standard         2017
+    # OpenExr requires C++17
+    compiler.cxx_standard       2017
+}
 configure.args-append \
                     -Dapplemedia=disabled \
                     -Dexamples=disabled \
@@ -114,12 +129,21 @@ configure.args-append \
                     -Dfdkaac=disabled \
                     -Dopencv=disabled \
                     -Dsctp=disabled \
-                    -Dsrtp=disabled \
-                    -Dvulkan=disabled
+                    -Dsrtp=auto \
+                    -Dvulkan=auto \
+                    -Dintrospection=enabled
 
-configure.cppflags-append   -L${prefix}/lib
-configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
-configure.cxxflags-append   -std=gnu++11
+configure.cppflags-append   -L${prefix}/lib -Wno-unused-command-line-argument
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    # patched meson 1.5.1 to not include this flag when searching frameworks.
+    configure.cxxflags-append   -std=c++11
+}
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    configure.cflags-append     -std=c17 -funroll-loops -fstrict-aliasing
+    # patched meson 1.5.1 to not include this flag when searching frameworks.
+    configure.cxxflags-append   -std=c++17
+}
 configure.env-append        "HAVE_CXX=yes"
 
 variant faac description {Enable faac AAC plugin} {
@@ -146,16 +170,58 @@ variant x11 {
     configure.args-append   -Dx11=enabled
 }
 
-default_variants    +x11
+variant quartz {
+    # new cvr gstreamer can be installed with dual gl support cgl and gfx !!
+    # possibility to install gstreamer with only x11 always avbl.
+    require_active_variants port:gstreamer1-gst-plugins-base quartz
+}
+
+default_variants    +fdkaac +gpl +faac
+
+# Prefer +x11 +quartz  implementation.
+if {![variant_isset quartz] && ![variant_isset x11] && ${os.major} >= 13} {
+    default_variants-append +x11 +quartz
+}
+
+# Only gl x11 glx avbl below macos-10.9
+
+if {${os.major} < 13 && ![variant_isset x11]} {
+    default_variants-append +x11
+}
+
 
 # plugin applemedia (Apple video) now only builds on darwin 18 and later
 platform macosx {
     if {![variant_isset x11] && ${os.major} >= 18} {
+        # possibility to install gstreamer without x11 is still avbl. but not needed.
         # Apple_Media requires CGL, which can only be provided on newer platforms and without X11 enabled.
         require_active_variants port:gstreamer1-gst-plugins-base {} x11
         configure.args-replace  -Dapplemedia=disabled \
                                 -Dapplemedia=enabled
+
+        patchfiles-append   apple-media-vtdec-removed-error.patch
     }
+    if {[variant_isset x11] && [variant_isset quartz] && ${os.major} >= 18} {
+        # new cvr gstreamer can be installed with dual gl support cgl and gfx !!
+        # Apple_Media requires CGL, which can only be provided on newer platforms and with (x11 and quartz) enabled or x11 disabled.
+        require_active_variants port:gstreamer1-gst-plugins-base x11
+        require_active_variants port:gstreamer1-gst-plugins-base quartz
+        configure.args-replace  -Dapplemedia=disabled \
+                                -Dapplemedia=enabled
+
+        patchfiles-append   apple-media-vtdec-removed-error.patch
+    }        
+}
+
+# gobject-introspection uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
 }
 
 livecheck.type      regex

@@ -6,9 +6,11 @@ PortGroup           conflicts_build 1.0
 PortGroup           legacysupport 1.1
 PortGroup           meson 1.0
 
+# No universal support on macos higher then 10.13 Darwin 17
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-PortGroup           muniversal 1.0
-
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    PortGroup           muniversal 1.0
+}
 # _strnlen
 legacysupport.newest_darwin_requires_legacy 10
 
@@ -16,7 +18,7 @@ name                gstreamer1
 set my_name         gstreamer
 # please only commit stable updates (even numbered releases)
 version             1.24.7
-revision            0
+revision            1
 description         GStreamer is a library for constructing graphs of media-handling components.
 long_description    The applications it supports range from simple Ogg/Vorbis playback, audio/video \
                     streaming to complex audio (mixing) and video (non-linear editing) processing.

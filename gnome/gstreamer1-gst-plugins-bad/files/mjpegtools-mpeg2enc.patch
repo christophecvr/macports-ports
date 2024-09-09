@@ -1,0 +1,22 @@
+--- ext/mpeg2enc/gstmpeg2encstreamwriter.hh.orig	2024-08-21 13:25:15.000000000 +0200
++++ ext/mpeg2enc/gstmpeg2encstreamwriter.hh	2024-09-07 09:13:02.000000000 +0200
+@@ -35,7 +35,7 @@
+   /* output functions */
+   void WriteOutBufferUpto (const guint8 * buffer,
+       const guint32 flush_upto);
+-  guint64 BitCount ();
++  uint64_t BitCount ();
+ 
+   private:
+   GstVideoEncoder *video_encoder;
+--- ext/mpeg2enc/gstmpeg2encstreamwriter.cc.orig	2024-08-21 13:25:15.000000000 +0200
++++ ext/mpeg2enc/gstmpeg2encstreamwriter.cc	2024-09-07 09:20:11.000000000 +0200
+@@ -69,7 +69,7 @@
+   GST_MPEG2ENC_MUTEX_UNLOCK (enc);
+ }
+ 
+-guint64
++uint64_t
+ GstMpeg2EncStreamWriter::BitCount ()
+ {
+   return flushed * 8ll;

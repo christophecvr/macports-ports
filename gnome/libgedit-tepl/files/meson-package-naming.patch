@@ -1,0 +1,11 @@
+--- tepl/meson.build.orig	2022-05-27 04:09:06.000000000 +0200
++++ tepl/meson.build	2024-08-14 11:47:27.000000000 +0200
+@@ -165,7 +165,7 @@
+ # pkg-config file generation. Supports GtkSourceView being built as a
+ # subproject.
+ PKG_CONFIG.generate(tepl_lib,
+-  filebase: 'tepl-@0@'.format(TEPL_API_VERSION),
++  filebase: 'libgedit-tepl-@0@'.format(TEPL_API_VERSION),
+   name: 'Tepl',
+   description: 'Text editor product line',
+   subdirs: 'tepl-@0@'.format(TEPL_API_VERSION),

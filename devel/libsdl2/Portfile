@@ -27,11 +27,13 @@ checksums       rmd160 408b712702f1532585122233b93b7f2857a079c9 \
 depends_lib     port:libiconv
 
 configure.args  --without-x \
-                --disable-jack \
-                --disable-esd \
-                --disable-pulseaudio \
-                --disable-libsamplerate \
-                --disable-dbus
+
+#--disable-jack \
+#--disable-esd \
+#--disable-pulseaudio \
+#--disable-libsamplerate \
+#--disable-dbus
+
 build.args      V=1
 
 if {${os.subplatform} eq "macosx" && ${os.major} <= 10} {
@@ -71,8 +73,9 @@ platform macosx {
 variant x11 {
     configure.args-delete --without-x
     configure.args-append --x-includes=${prefix}/include \
-                          --x-libraries=${prefix}/lib \
-                          --disable-x11-shared
+                          --x-libraries=${prefix}/lib
+
+#--disable-x11-shared
     depends_lib-append \
         port:xorg-libX11 \
         port:xorg-libXcursor \

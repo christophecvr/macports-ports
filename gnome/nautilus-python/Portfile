@@ -1,0 +1,90 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+name                nautilus-python
+version             1.2.3
+revision            0
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         The GNOME python plugin for nautilus
+
+long_description    This plugin is to add menu items to the Gnome file manager \
+                    Nautilus. With this you can adapt the Nautilus menu and add \
+                    extra items.
+
+maintainers         {christophecvr @christophecvr}
+categories          gnome
+license             GPL-2+
+platforms           darwin
+homepage            https://wiki.gnome.org/Apps/Nautilus
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  a5da429bdeb7f682ba4046e38d03d4046a3f5fe6 \
+                    sha256  073ce0297282259937ab473d189b97a04f42b97197c9292fc3bde9d135282098
+
+depends_build       port:pkgconfig
+
+
+depends_lib        port:nautilus
+
+patchfiles  configure-python-version.patch \
+            datarootdit-warning.patch \
+            pygobject-duplicate-symbol-extras.patch \
+            examples-changes.patch
+
+variant python310 conflicts python311 python312 description {Use python 3.10} {
+    depends_lib-append        port:py310-gobject3
+    configure.python          ${prefix}/bin/python3.10
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.10
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+variant python311 conflicts python310 python312 description {Use python 3.11} {
+    depends_lib-append        port:py311-gobject3
+    configure.python          ${prefix}/bin/python3.11
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.11
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+variant python312 conflicts python310 python311 description {Use python 3.12} {
+    depends_lib-append        port:py312-gobject3
+    configure.python          ${prefix}/bin/python3.12
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.12
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+if {![variant_isset python310] && \
+    ![variant_isset python311] && \
+    ![variant_isset python312] } {
+    default_variants-append +python312
+}
+
+# blacklist compilers that do not support C11 (redefinition of typedef ‘NautilusLocationEntryClass’ at nautilus-location-entry.h:39)
+compiler.blacklist  *gcc-3.* *gcc-4.* {clang < 300}
+
+# install.user
+post-destroot {
+    xinstall -d -m 0755 ${destroot}/opt/local/share/nautilus-python/extensions
+    #xinstall -d -m 0755 ${destroot}/Users/${install.user}/.local/share/nautilus-python/extensions
+    xinstall -m 0644 ${worksrcpath}/examples/open-terminal.py ${destroot}/opt/local/share/nautilus-python/extensions/open-terminal.py
+    xinstall -m 0644 ${portpath}/files/Quit-Nautilus.py ${destroot}/opt/local/share/doc/nautilus-python/examples/Quit-Nautilus.py
+    xinstall -m 0644 ${portpath}/files/Quit-Nautilus.py ${destroot}/opt/local/share/nautilus-python/extensions/Quit-Nautilus.py
+    xinstall -m 0644 ${portpath}/files/new-file-here.py ${destroot}/opt/local/share/doc/nautilus-python/examples/new-file-here.py
+    #xinstall -m 0644 ${portpath}/files/new-file-here.py ${destroot}/opt/local/share/nautilus-python/extensions/new-file-here.py
+    system "${configure.python} -m compileall ${destroot}/opt/local/share/nautilus-python/extensions/open-terminal.py"
+    system "${configure.python} -m compileall ${destroot}/opt/local/share/nautilus-python/extensions/Quit-Nautilus.py"
+    #system "${configure.python} -m compileall ${destroot}/opt/local/share/nautilus-python/extensions/new-file-here.py"
+}
+
+post-activate {
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "${prefix}/bin/update-mime-database ${prefix}/share/mime"
+    system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+}
+
+livecheck.type      gnome
+
+

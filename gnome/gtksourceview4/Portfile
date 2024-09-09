@@ -75,14 +75,14 @@ if {${universal_possible} && [variant_isset universal]} {
                     "CC=${configure.cc} ${configure.cc_archflags}"
 }
 
-variant quartz conflicts x11 {}
-variant x11 conflicts quartz {}
+#variant quartz conflicts x11 {}
+#variant x11 conflicts quartz {}
 
-if {[variant_isset quartz]} {
-    require_active_variants gtk3 quartz
-} else {
-    require_active_variants gtk3 x11
-}
+#if {[variant_isset quartz]} {
+#    require_active_variants gtk3 quartz
+#} else {
+#    require_active_variants gtk3 x11
+#}
 
 variant glade description {Install a glade catalog file} {
     configure.args-append \

@@ -21,7 +21,7 @@ checksums           md5     3e96c1d47bd7c1e23285360d88ce1bea \
                     sha1    9a4b0c993b2ebe24565c31b5beaf912635153c8f \
                     rmd160  fc1f37647ae8e9652413c0ba683743d43c149573
 
-depends_lib         port:libsdl \
+depends_lib         port:libsdl2 \
                     port:libsdl-framework \
                     port:erlang
 

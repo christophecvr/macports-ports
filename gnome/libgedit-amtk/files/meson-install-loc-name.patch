@@ -1,0 +1,42 @@
+--- amtk/meson.build.orig	2023-07-25 16:00:00.000000000 +0200
++++ amtk/meson.build	2024-08-15 09:51:49.000000000 +0200
+@@ -29,7 +29,8 @@
+   'amtk-utils.c',
+ ]
+ 
+-headers_install_dir = get_option('includedir') / '@0@-@1@/amtk/'.format(meson.project_name(), AMTK_API_VERSION)
++#headers_install_dir = get_option('includedir') / '@0@-@1@/amtk/'.format(meson.project_name(), AMTK_API_VERSION)
++headers_install_dir = get_option('includedir') / 'amtk-@1@'.format(meson.project_name(), AMTK_API_VERSION)
+ install_headers(
+   amtk_public_headers,
+   install_dir: headers_install_dir
+@@ -68,7 +69,7 @@
+ ])
+ 
+ amtk_lib = library(
+-  'gedit-amtk-@0@'.format(AMTK_API_VERSION),
++  'amtk-@0@'.format(AMTK_API_VERSION),
+   dependencies: AMTK_DEPS,
+   link_args: amtk_lib_link_args,
+   link_depends: symbol_map,
+@@ -86,17 +87,17 @@
+ )
+ 
+ PKG_CONFIG.generate(amtk_lib,
+-  filebase: '@0@-@1@'.format(meson.project_name(), AMTK_API_VERSION),
++  filebase: 'amtk-@1@'.format(meson.project_name(), AMTK_API_VERSION),
+   name: meson.project_name(),
+   description: 'Actions, Menus and Toolbars Kit',
+-  subdirs: '@0@-@1@'.format(meson.project_name(), AMTK_API_VERSION),
++  subdirs: 'amtk-@1@'.format(meson.project_name(), AMTK_API_VERSION),
+   libraries: AMTK_DEPS,
+ )
+ 
+ if get_option('gobject_introspection')
+   GNOME.generate_gir(
+     amtk_lib,
+-    export_packages: '@0@-@1@'.format(meson.project_name(), AMTK_API_VERSION),
++    export_packages: 'amtk-@1@'.format(meson.project_name(), AMTK_API_VERSION),
+     header: 'amtk/amtk.h',
+     identifier_prefix: 'Amtk',
+     include_directories: ROOT_INCLUDE_DIR,

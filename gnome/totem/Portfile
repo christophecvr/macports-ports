@@ -31,6 +31,8 @@ checksums           rmd160  d15c029a7155358b3bfec0a0f49a41a4c827631e \
                     sha256  fce562e2b26cbcfc0c678538dcc81f9dc15ce60d5a89ee4358907bf634304c40 \
                     size    2190700
 
+#configure.compiler macports-clang-17
+
 depends_build-append \
                     port:pkgconfig \
                     port:appstream-glib \
@@ -67,7 +69,7 @@ depends_run         port:adwaita-icon-theme
 patchfiles          patch-meson-0.61.0.diff
 
 configure.args      -Denable-easy-codec-installation=yes \
-                    -Dwith-plugins=auto \
+                    -Dwith-plugins=all \
                     -Denable-python=no \
                     -Denable-gtk-doc=true
 
@@ -101,10 +103,32 @@ variant python310 conflicts python38 python39 description {Use python 3.10} {
     configure.args-replace    -Denable-python=no -Denable-python=yes
 }
 
+variant python311 conflicts python38 python39 description {Use python 3.11} {
+    depends_build-append      port:py311-pylint
+    depends_lib-append        port:py311-gobject3
+    configure.python          ${prefix}/bin/python3.11
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.11
+    configure.env             PATH=${python_framework}/bin:$env(PATH)
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+    configure.args-replace    -Denable-python=no -Denable-python=yes
+}
+
+variant python312 conflicts python38 python39 description {Use python 3.12} {
+    depends_build-append      port:py312-pylint
+    depends_lib-append        port:py312-gobject3
+    configure.python          ${prefix}/bin/python3.12
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.12
+    configure.env             PATH=${python_framework}/bin:$env(PATH)
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+    configure.args-replace    -Denable-python=no -Denable-python=yes
+}
+
 if {![variant_isset python38] && \
     ![variant_isset python39] && \
-    ![variant_isset python310]} {
-    default_variants    +python310
+    ![variant_isset python310] && \
+    ![variant_isset python311] && \
+    ![variant_isset python312] } {
+    default_variants    +python312
 }
 
 # uses g-ir-scanner, which uses $CC from env

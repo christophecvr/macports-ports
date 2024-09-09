@@ -1,0 +1,63 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           meson 1.0
+
+name                tracker-miners
+version             3.2.2
+revision            1
+license             GPL-2+ LGPL-2.1+ BSD
+set branch          [join [lrange [split ${version} .] 0 1] .]
+description         Tracker-miners contains the indexer daemon and tools
+long_description    Tracker contains \
+                    the indexer daemon (*tracker-miner-fs*) and tools to extract metadata \
+                    from many different filetypes.
+
+maintainers         {christophecvr @christophecvr}
+categories          gnome
+homepage            https://gitlab.gnome.org/GNOME/tracker-miners
+master_sites        gnome:sources/${name}/${branch}/
+use_xz              yes
+distname            ${name}-${version}
+dist_subdir         ${name}
+
+checksums   rmd160 723c875f3697e28aea40e00044175cc9ffc82d97 \
+            sha256 fd84c71e621bc2b81cacb5f908932436246d1b8a4fc3a6353e2b8dbaebc0236c \
+            size    4073752
+
+configure.compiler macports-clang-14
+
+depends_build   port:pkgconfig \
+                port:intltool \
+                port:gtk-doc \
+                port:clang-14 \
+                port:libtool
+
+depends_lib     port:tracker3
+
+configure.args  -Dfunctional_tests=false \
+                -Dman=false \
+                -Dminer_rss=false \
+                -Dunzip_ps_gz_files=false \
+                -Dsystemd_user_services=false
+
+patchfiles  pipe2-sha256-meson.patch
+
+
+ # blacklist compilers that do not support C11 (redefinition of typedef ‘TrackerSparqlBuilder’ at tracker-generated-no-checks.h:27)
+compiler.blacklist  *gcc-3.* *gcc-4.* {clang < 300}
+                    
+# gobject-introspection uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+}                    
+                    
+livecheck.type      gnome
+

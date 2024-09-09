@@ -1,0 +1,56 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           active_variants 1.1
+PortGroup           meson 1.0
+
+name                libgedit-gtksourceview
+version             299.2.1
+revision            0
+license             GPL-2.0+
+description         Gedit Technology - Source code editing widget gtk3+
+long_description    libgedit-gtksourceview is part of Gedit Technology. \
+                    libgedit-gtksourceview is a library that extends GtkTextView, the standard GTK \
+                    widget for multiline text editing. This library adds support for syntax \
+                    highlighting, undo/redo, file loading and saving, search and replace, a \
+                    completion system, printing, displaying line numbers, and other features typical \
+                    of a source code editor. Targets Gtk3
+categories          gnome
+maintainers         {christophecvr @christophecvr}
+platforms           darwin
+homepage            https://gitlab.gnome.org/World/gedit/libgedit-gtksourceview
+master_sites        https://gitlab.gnome.org/World/gedit/${name}/-/archive/${version}/
+distname            ${name}-${version}
+
+checksums           rmd160  cc1e664d20aac742cc53eaf29a63481dff87f1e7 \
+                    sha256  76385683fa3f734cd2b3aa51defe6bd6e082d0f390273f78dccb085938ae9afd \
+                    size    898496
+
+depends_build-append \
+                    port:gettext \
+                    path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
+                    port:meson \
+                    port:ninja \
+                    port:pkgconfig
+
+depends_lib-append \
+                    port:cairo-devel \
+                    port:gdk-pixbuf2 \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2-exp \
+                    path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
+                    port:libxml2 \
+                    port:pango-devel \
+                    port:gettext
+
+# gobject-introspection uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+}
+
+livecheck.type      gnome

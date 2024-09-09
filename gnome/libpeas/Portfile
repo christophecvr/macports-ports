@@ -80,10 +80,26 @@ variant python310 conflicts python38 python39 description {Enable Python 3.10 pl
     configure.args-replace      -Dpython3=false -Dpython3=true
 }
 
+variant python311 conflicts python38 python39 description {Enable Python 3.11 plugin support} {
+    depends_lib-append          port:py311-gobject3
+    set python_prefix           ${frameworks_dir}/Python.framework/Versions/3.11
+    configure.pkg_config_path-append   ${python_prefix}/lib/pkgconfig
+    configure.args-replace      -Dpython3=false -Dpython3=true
+}
+
+variant python312 conflicts python38 python39 description {Enable Python 3.12 plugin support} {
+    depends_lib-append          port:py312-gobject3
+    set python_prefix           ${frameworks_dir}/Python.framework/Versions/3.12
+    configure.pkg_config_path-append   ${python_prefix}/lib/pkgconfig
+    configure.args-replace      -Dpython3=false -Dpython3=true
+}
+
 if {![variant_isset python38] && \
     ![variant_isset python39] && \
-    ![variant_isset python310] } {
-    default_variants +python310
+    ![variant_isset python310] && \
+    ![variant_isset python311] && \
+    ![variant_isset python312] } {
+    default_variants +python312
 }
 
 post-destroot {

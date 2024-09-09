@@ -1,0 +1,42 @@
+diff -Naur src.org/nautilus-file-operations.c src/nautilus-file-operations.c
+--- src.org/nautilus-file-operations.c	2020-11-20 15:04:26.000000000 +0100
++++ src/nautilus-file-operations.c	2024-05-02 13:20:10.000000000 +0200
+@@ -4530,7 +4530,7 @@
+         {
+             const gchar *target;
+ 
+-            target = g_file_info_get_symlink_target (info);
++            target = g_file_info_get_attribute_byte_string (info, G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET);
+             real_file = g_file_resolve_relative_path (volatile_file, target);
+         }
+     }
+@@ -4574,7 +4574,7 @@
+         {
+             const gchar *target;
+ 
+-            target = g_file_info_get_symlink_target (info);
++            target = g_file_info_get_attribute_byte_string (info, G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET);
+             real_file = g_file_resolve_relative_path (volatile_file, target);
+         }
+     }
+diff -Naur src.org/nautilus-file.c src/nautilus-file.c
+--- src.org/nautilus-file.c	2020-11-20 15:04:26.000000000 +0100
++++ src/nautilus-file.c	2024-05-02 13:17:12.000000000 +0200
+@@ -2765,7 +2765,7 @@
+     }
+     file->details->size = size;
+ 
+-    sort_order = g_file_info_get_sort_order (info);
++    sort_order = g_file_info_get_attribute_int32 (info, G_FILE_ATTRIBUTE_STANDARD_SORT_ORDER);
+     if (file->details->sort_order != sort_order)
+     {
+         changed = TRUE;
+@@ -2822,7 +2822,7 @@
+         file->details->thumbnailing_failed = thumbnailing_failed;
+     }
+ 
+-    symlink_name = g_file_info_get_symlink_target (info);
++    symlink_name = g_file_info_get_attribute_byte_string (info, G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET);
+     if (g_strcmp0 (file->details->symlink_name, symlink_name) != 0)
+     {
+         changed = TRUE;

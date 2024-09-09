@@ -3,17 +3,19 @@
 PortSystem          1.0
 PortGroup           active_variants 1.1
 PortGroup           compiler_blacklist_versions 1.0
-PortGroup           gobject_introspection 1.0
+PortGroup           app   1.0
+PortGroup           meson 1.0
+PortGroup           yelp  1.0
 
 name                nautilus
-version             3.24.2.1
+version             3.38.2
 revision            6
 set branch          [join [lrange [split ${version} .] 0 1] .]
 description         The GNOME filemanager
 long_description    Nautilus is the official file manager for the \
                     GNOME desktop. It is designed to be primarly a file manager, \
                     but there are support for web and file viewing too.
-maintainers         {devans @dbevans} openmaintainer
+maintainers         {devans @dbevans} openmaintainer {christophecvr @christophecvr}
 categories          gnome
 license             GPL-2+
 platforms           darwin
@@ -22,47 +24,114 @@ master_sites        gnome:sources/${name}/${branch}/
 
 use_xz              yes
 
-checksums           rmd160  f636f18f3af8e4bc87b3b0632255c051234e9116 \
-                    sha256  357d9d051fcc2c385ce9b3beb2db2ea1874b7cdf507ca10274a063023e1a61b3 \
-                    size    5143440
+checksums           rmd160  d37c80d4c1553cf57f5e0e5deed4e971154db7c8 \
+                    sha256  d09ceb54c274e50084c8757a73cd247fee5bde02a0b0d13733b0006d1a4196a6 \
+                    size    3221128
 
-depends_build       port:pkgconfig
+depends_build       port:pkgconfig \
+                    port:appstream-glib \
+                    port:gettext \
+                    port:gtk-doc \
+                    port:itstool
 
 depends_lib         port:desktop-file-utils \
                     port:shared-mime-info \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:gettext-runtime \
                     path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
+                    path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
                     port:gnome-autoar \
                     port:gnome-desktop \
                     port:gsettings-desktop-schemas \
                     port:exempi \
                     port:libexif \
                     port:libxml2 \
-                    port:xorg-libX11
+                    port:xorg-libX11 \
+                    path:lib/pkgconfig/tracker-sparql-3.0.pc:tracker3 \
+                    port:tracker-miners \
+                    port:gexiv2 \
+                    port:dconf-editor
+#path:lib/pkgconfig/tracker-miner-1.0.pc:tracker-miners \
 
-depends_run         port:adwaita-icon-theme
+depends_run         port:adwaita-icon-theme \
+                    port:gedit
 
-require_active_variants gtk3 x11
+#require_active_variants gtk3 x11
+patchfiles  meson-build1.patch \
+            meson-build2.patch \
+            nautilus-fileinfo.patch
 
-gobject_introspection yes
+variant python38 conflicts python39 python310 description {Use python 3.8} {
+    depends_lib-append        port:py38-gobject3
+    configure.python          ${prefix}/bin/python3.8
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.8
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+
+variant python39 conflicts python38 python310 description {Use python 3.9} {
+    depends_lib-append        port:py39-gobject3
+    configure.python          ${prefix}/bin/python3.9
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.9
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+variant python310 conflicts python38 python39 description {Use python 3.10} {
+    depends_lib-append        port:py310-gobject3
+    configure.python          ${prefix}/bin/python3.10
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.10
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+variant python311 conflicts python38 python39 description {Use python 3.11} {
+    depends_lib-append        port:py311-gobject3
+    configure.python          ${prefix}/bin/python3.11
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.11
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+variant python312 conflicts python38 python39 description {Use python 3.12} {
+    depends_lib-append        port:py312-gobject3
+    configure.python          ${prefix}/bin/python3.12
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.12
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+if {![variant_isset python38] && \
+    ![variant_isset python39] && \
+    ![variant_isset python310] && \
+    ![variant_isset python311] && \
+    ![variant_isset python312] } {
+    default_variants-append +python312
+}
+
+# gobject-introspection uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+}
 
 # blacklist compilers that do not support C11 (redefinition of typedef ‘NautilusLocationEntryClass’ at nautilus-location-entry.h:39)
 compiler.blacklist  *gcc-3.* *gcc-4.* {clang < 300}
 
-configure.args      --disable-tracker \
-                    --disable-desktop \
-                    --disable-packagekit \
-                    --disable-selinux \
-                    --disable-silent-rules \
-                    --disable-update-mimedb \
-                    --disable-schemas-compile
+configure.args  -Dintrospection=true \
+                -Ddocs=true \
+                -Dextensions=true \
+                -Dpackagekit=true
 
-variant desktop description {Enable desktop support} {
-    configure.args-delete --disable-desktop
-}
+#-Dtests=none
 
-variant tracker description {Enable tracker based search engine} {
-    depends_lib-append port:tracker
-    configure.args-delete --disable-tracker
+app.use_launch_script   yes
+app.icon                ${portpath}/${filesdir}/NautilusLogo.png
+
+post-destroot {
+    xinstall -d -m 0755 ${destroot}/var/root/.local/share/applications
+    xinstall -m 0755 ${portpath}/${filesdir}/org.gnome.gedit-root.desktop ${destroot}/var/root/.local/share/applications/org.gnome.gedit-root.desktop
 }
 
 post-activate {

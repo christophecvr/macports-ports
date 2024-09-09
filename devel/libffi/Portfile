@@ -45,9 +45,13 @@ compiler.blacklist-append macports-*
 # "configure.cxx_stdlib=libc++".
 #
 platform darwin {
+# this change is not needed on macos-ver 10.14 or higher about 10.13 I don't so left it.
+# Once never know that future upgrades might need c++ compiler
+# then with clang it will add automatically -std=gnu++11  (or higher if needed for the file)
+    if {${os.major} <= 17} {
     configure.cxx_stdlib
+    }
 }
-
 # The architecture-detection code in the configure script is based on the
 # compiler's default architecture.  We need to force this to match the
 # target architecture to get the correct build.  Merely providing the

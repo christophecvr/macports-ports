@@ -1,0 +1,98 @@
+diff -ur src.orig/cocoa_menu_item.c src/cocoa_menu_item.c
+--- src.orig/cocoa_menu_item.c	2021-06-29 02:49:49.000000000 +0200
++++ src/cocoa_menu_item.c	2024-08-09 09:29:45.000000000 +0200
+@@ -123,11 +123,11 @@
+                 NULL);
+ 
+   if (inconsistent)
+-    [cocoa_item setState: NSMixedState];
++    [cocoa_item setState: NSControlStateValueMixed];
+   else if (active)
+-    [cocoa_item setState: NSOnState];
++    [cocoa_item setState: NSControlStateValueOn];
+   else
+-    [cocoa_item setState: NSOffState];
++    [cocoa_item setState: NSControlStateValueOff];
+ }
+ 
+ static void
+@@ -249,7 +249,7 @@
+ 		  [cocoa_item setKeyEquivalent: @""];
+                   return;
+                 }
+-              modifiers |= NSNumericPadKeyMask;
++              modifiers |= NSEventModifierFlagNumericPad;
+             }
+ 
+           /* if we somehow got here with GDK_A ... GDK_Z rather than GDK_a ... GDK_z, then take note
+@@ -258,7 +258,7 @@
+ 
+           if (keyval_is_uppercase (actual_key))
+             {
+-              modifiers |= NSShiftKeyMask;
++              modifiers |= NSEventModifierFlagShift;
+             }
+ 
+           str = gdk_quartz_keyval_to_string (actual_key);
+@@ -286,24 +286,24 @@
+             {
+               if (key->accel_mods & GDK_SHIFT_MASK)
+                 {
+-                  modifiers |= NSShiftKeyMask;
++                  modifiers |= NSEventModifierFlagShift;
+                 }
+ 
+               if (key->accel_mods & GDK_CONTROL_MASK)
+                 {
+-                  modifiers |= NSControlKeyMask;
++                  modifiers |= NSEventModifierFlagControl;
+                 }
+ 
+               /* gdk/quartz maps Alt/Option to Mod5 */
+               if (key->accel_mods & (GDK_MOD1_MASK))
+                 {
+-                  modifiers |= NSAlternateKeyMask;
++                  modifiers |= NSEventModifierFlagOption;
+                 }
+ 
+               /* gdk/quartz maps Command to MOD1 */
+               if (key->accel_mods & GDK_META_MASK)
+                 {
+-                  modifiers |= NSCommandKeyMask;
++                  modifiers |= NSEventModifierFlagCommand;
+                 }
+ 
+             }
+diff -ur src.orig/gtkosx-image.c src/gtkosx-image.c
+--- src.orig/gtkosx-image.c	2021-06-29 02:49:49.000000000 +0200
++++ src/gtkosx-image.c	2024-08-09 10:33:05.000000000 +0200
+@@ -98,7 +98,7 @@
+ 
+   // Get the Quartz context and draw.
+   imageContext = (CGContextRef)[[NSGraphicsContext currentContext]
+-                                graphicsPort];
++                                CGContext];
+   CGContextDrawImage (imageContext, * (CGRect*)&imageRect, image);
+   [newImage unlockFocus];
+   CGImageRelease (image);
+diff -ur src.orig/gtkosxapplication_quartz.c src/gtkosxapplication_quartz.c
+--- src.orig/gtkosxapplication_quartz.c	2021-06-29 02:49:49.000000000 +0200
++++ src/gtkosxapplication_quartz.c	2024-08-09 10:10:22.000000000 +0200
+@@ -283,7 +283,7 @@
+   /* Translators: This is the "Hide Others" menu item for the "Apple" menu. */
+   menuitem = [[NSMenuItem alloc] initWithTitle: [NSString stringWithUTF8String: _("Hide Others")]
+ 	      action: @selector (hideOtherApplications: ) keyEquivalent: @"h"];
+-  [menuitem setKeyEquivalentModifierMask: NSCommandKeyMask | NSAlternateKeyMask];
++  [menuitem setKeyEquivalentModifierMask: NSEventModifierFlagCommand | NSEventModifierFlagOption];
+   [menuitem setTarget: NSApp];
+   [app_menu addItem: menuitem];
+   [menuitem release];
+@@ -547,7 +547,7 @@
+    * thread; use an idle or timer event to start the handler if
+    * necessary.
+    */
+-  if ([nsevent type] == NSKeyDown &&
++  if ([nsevent type] == NSEventTypeKeyDown &&
+       gtkosx_application_use_quartz_accelerators (app) )
+     {
+       gboolean result;

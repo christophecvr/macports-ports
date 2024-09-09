@@ -1,0 +1,28 @@
+--- gfls/meson.build.orig	2024-04-27 00:29:59.000000000 +0200
++++ gfls/meson.build	2024-08-15 07:41:58.000000000 +0200
+@@ -14,8 +14,8 @@
+   'gfls-unsaved-document-titles.c',
+   'gfls-utf8.c',
+ ]
+-
+-headers_install_dir = get_option('includedir') / '@0@-@1@/gfls/'.format(meson.project_name(), GFLS_API_VERSION)
++# sources are looking into <gfls/...> this is includedir/gfls
++headers_install_dir = get_option('includedir') / 'gfls'
+ install_headers(
+   gfls_public_headers,
+   install_dir: headers_install_dir
+@@ -70,12 +70,12 @@
+   sources: gfls_enum_types[1],
+   dependencies: GFLS_DEPS
+ )
+-
++# subdirs changed to gfls lead to includedir/gfls that is where other package sources are searching the headers
+ PKG_CONFIG.generate(gfls_lib,
+   filebase: '@0@-@1@'.format(meson.project_name(), GFLS_API_VERSION),
+   name: meson.project_name(),
+   description: 'File loading and saving',
+-  subdirs: '@0@-@1@'.format(meson.project_name(), GFLS_API_VERSION),
++  subdirs: 'gfls',
+   libraries: GFLS_DEPS,
+ )
+ 

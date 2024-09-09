@@ -1,0 +1,51 @@
+--- configure.orig	2019-07-18 02:05:22.000000000 +0200
++++ configure	2024-05-29 11:57:24.000000000 +0200
+@@ -575,7 +575,7 @@
+ #
+ # Initializations.
+ #
+-ac_default_prefix=/usr/local
++ac_default_prefix=/opt/local
+ ac_clean_files=
+ ac_config_libobj_dir=.
+ LIBOBJS=
+@@ -10363,7 +10363,7 @@
+   esac
+   sys_lib_search_path_spec=`$ECHO "$lt_search_path_spec" | $lt_NL2SP`
+ else
+-  sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib"
++  sys_lib_search_path_spec="/opt/local/lib /lib /usr/lib"
+ fi
+ library_names_spec=
+ libname_spec='lib$name'
+@@ -10647,8 +10647,8 @@
+   shlibpath_var=DYLD_LIBRARY_PATH
+   shrext_cmds='`test .$module = .yes && echo .so || echo .dylib`'
+ 
+-  sys_lib_search_path_spec="$sys_lib_search_path_spec /usr/local/lib"
+-  sys_lib_dlsearch_path_spec='/usr/local/lib /lib /usr/lib'
++  sys_lib_search_path_spec="$sys_lib_search_path_spec /opt/local/lib"
++  sys_lib_dlsearch_path_spec='/opt/local/lib /lib /usr/lib'
+   ;;
+ 
+ dgux*)
+@@ -12567,7 +12567,7 @@
+ if ${am_cv_python_version+:} false; then :
+   $as_echo_n "(cached) " >&6
+ else
+-  am_cv_python_version=`$PYTHON -c "import sys; sys.stdout.write(sys.version[:3])"`
++  am_cv_python_version=`$PYTHON -c "import sys; sys.stdout.write(sys.version[:4])"`
+ fi
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_version" >&5
+ $as_echo "$am_cv_python_version" >&6; }
+@@ -12784,7 +12784,9 @@
+ if test "x$PYTHON_LIBS" = x; then
+   PYTHON_CONFIG=`which $PYTHON`-config
+   if test -x "$PYTHON_CONFIG"; then
+-    PYTHON_LIBS=`$PYTHON_CONFIG --libs --embed 2>/dev/null` || PYTHON_LIBS=`$PYTHON_CONFIG --libs  2>/dev/null`
++    #PYTHON_LIBS=`$PYTHON_CONFIG --libs --embed 2>/dev/null` || PYTHON_LIBS=`$PYTHON_CONFIG --libs  2>/dev/null`
++    # need macports python libs not the xcode python libs.
++    PYTHON_LIBS="-L${py_prefix}/lib -lpython${PYTHON_VERSION}"
+   else
+     PYTHON_LIBS="-L${py_prefix}/lib -lpython${PYTHON_VERSION}"
+   fi
