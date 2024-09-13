@@ -133,11 +133,12 @@ configure.args-append \
                     -Dvulkan=auto \
                     -Dintrospection=enabled
 
+
 configure.cppflags-append   -L${prefix}/lib -Wno-unused-command-line-argument
 if {${os.platform} eq "darwin" && ${os.major} < 18} {
     configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
     # patched meson 1.5.1 to not include this flag when searching frameworks.
-    configure.cxxflags-append   -std=c++11
+    configure.CXXFLAGS-append   -std=c++11
 }
 if {${os.platform} eq "darwin" && ${os.major} >= 18} {
     configure.cflags-append     -std=c17 -funroll-loops -fstrict-aliasing

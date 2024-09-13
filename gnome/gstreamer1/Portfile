@@ -80,6 +80,24 @@ configure.cflags-append -funroll-loops -fstrict-aliasing -fno-common
 
 # Match blacklist used in gstreamer1-gst-plugins-base
 # error: redefinition of typedef ‘GstHarness’
+
+configure.compiler macports-clang-12
+configure.env-append "AR=${prefix}/libexec/llvm-12/bin/llvm-ar"
+
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    # requires support for C11 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
+    compiler.c_standard         2011
+    # OpenExr requires C++11
+    compiler.cxx_standard       2011
+}
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    # requires support for C17 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
+    compiler.c_standard         2017
+    # OpenExr requires C++17
+    compiler.cxx_standard       2017
+    configure.ldflags-append    -Wl,-U,_main
+}
+
 compiler.blacklist-append \
                     *gcc-3.* *gcc-4.* {clang < 212}
 

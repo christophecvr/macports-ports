@@ -7,14 +7,14 @@ PortGroup           github 1.0
 name                py-meson
 # update version and revision also in the meson port
 
-github.setup        christophecvr meson 53e11488d9ce01b14c2b280d66c3efeda1c60abc
+github.setup        christophecvr meson clikepypatchb
 version             1.5.99
 #github.tarball_from releases
 revision            0
 
-checksums           rmd160  a665ed8e21e995dd4c967f16aa053573a1d98188 \
-                    sha256  a6dd545fce7d2592648033a98cad94d272ec3c0177f1aab104fc86b2e9793ac2 \
-                    size    4817572
+checksums           rmd160  b87e5a36763712502751bbdfb6ab0334b35449cf \
+                    sha256  5d88089704919ae2d65eff49bf7eb4a81e32698afc44e64338f65d564edb063e \
+                    size    4817756
 
 license             Apache-2
 categories-append   devel
@@ -79,7 +79,7 @@ if {${subport} ne ${name}} {
     # replaces patch-meson-gcc-appleframeworks.diff
     # adds extra patch for 'std=c++<ver>','std=gnu++<ver>' are valid for C++/ObjC++ but not for 'C'
     # upstream pull request link will be set the day it is made.
-    patchfiles-append   patch-meson-find-framework-path.diff
+    #patchfiles-append   patch-meson-find-framework-path.diff
 
     platform darwin 8 {
         # this meson is modified for systems without @rpath support
