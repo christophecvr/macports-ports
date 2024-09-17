@@ -68,15 +68,17 @@ configure.args-append \
 # see https://gitlab.freedesktop.org/gstreamer/orc/-/issues/47
 if {${os.platform} eq "darwin" && ${os.major} < 18} {
     compiler.c_standard 2011
-    configure.cflags-append \
-                        -std=c11
+    configure.cflags-append     -std=c11
 }
 
 if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    compiler.c_standard     2017
-    compiler.cxx_standard   2017
-    configure.cflags-append     -std=c17
-    configure.cxxflags-append   -std=c++17
+    configure.compiler macports-clang-11
+    configure.env-append "AR=${prefix}/libexec/llvm-11/bin/llvm-ar"
+    compiler.c_standard         2011
+    compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++11
+    configure.ldflags-append    -Wl,-U,_main
 }
 # orc requires stdatomic.h
 compiler.blacklist-append {clang < 700}

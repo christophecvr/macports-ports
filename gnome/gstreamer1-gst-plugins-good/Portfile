@@ -101,7 +101,19 @@ compiler.blacklist-append \
 # <rdar://problem/9694837> - Fixed in Xcode 4.2 (clang 211.10.1)
 # blacklist compilers that don't support C11 typedef redefinition
 # gstflvmux.h:73: error: redefinition of typedef ‘GstFlvMuxPadClass’
-compiler.c_standard 2011
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    compiler.c_standard 2011
+}
+
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    configure.compiler macports-clang-11
+    configure.env-append "AR=${prefix}/libexec/llvm-11/bin/llvm-ar"
+    compiler.c_standard         2011
+    compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++11
+    configure.ldflags-append    -Wl,-U,_main
+}
 
 platform darwin {
     if {${os.major} < 10} {
@@ -159,10 +171,6 @@ variant qt description {Enable Qt5 MAC windowing elements } {
     if {${os.platform} eq "darwin" && ${os.major} < 18} {
         compiler.cxx_standard   2011
         configure.cxxflags-append -std=c++11
-    }
-    if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-        compiler.cxx_standard   2017
-        configure.cxxflags-append -std=c++17
     }
 }
 

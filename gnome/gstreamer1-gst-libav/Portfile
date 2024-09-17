@@ -50,6 +50,16 @@ post-patch {
         ${worksrcpath}/scripts/gen-changelog.py
 }
 
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    configure.compiler macports-clang-11
+    configure.env-append "AR=${prefix}/libexec/llvm-11/bin/llvm-ar"
+    compiler.c_standard         2011
+    compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++11
+    configure.ldflags-append    -Wl,-U,_main
+}
+
 if {[lsearch [get_canonical_archs] i386] != -1} {
     # https://trac.macports.org/ticket/37802
     # clang-139 hits https://trac.macports.org/ticket/38141

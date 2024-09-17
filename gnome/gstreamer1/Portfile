@@ -55,9 +55,10 @@ depends_lib-append  port:bison \
 
 conflicts_build     check
 
-patchfiles          patch-gstreamer1-darwin-numcpufix-sysctl.diff \
-                    patch-gst-gst-c-tiger-no-procpidpath.diff
-
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    patchfiles          patch-gstreamer1-darwin-numcpufix-sysctl.diff \
+                        patch-gst-gst-c-tiger-no-procpidpath.diff
+}
 # Temporary fix until the upstream addresses the breakage.
 # https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/3437
 if {${os.platform} eq "darwin" && ${os.major} < 16} {
@@ -81,8 +82,6 @@ configure.cflags-append -funroll-loops -fstrict-aliasing -fno-common
 # Match blacklist used in gstreamer1-gst-plugins-base
 # error: redefinition of typedef ‘GstHarness’
 
-configure.compiler macports-clang-12
-configure.env-append "AR=${prefix}/libexec/llvm-12/bin/llvm-ar"
 
 if {${os.platform} eq "darwin" && ${os.major} < 18} {
     # requires support for C11 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
@@ -91,10 +90,12 @@ if {${os.platform} eq "darwin" && ${os.major} < 18} {
     compiler.cxx_standard       2011
 }
 if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    # requires support for C17 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
-    compiler.c_standard         2017
-    # OpenExr requires C++17
-    compiler.cxx_standard       2017
+    configure.compiler macports-clang-11
+    configure.env-append "AR=${prefix}/libexec/llvm-11/bin/llvm-ar"
+    compiler.c_standard         2011
+    compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++11
     configure.ldflags-append    -Wl,-U,_main
 }
 

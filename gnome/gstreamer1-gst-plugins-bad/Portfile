@@ -110,18 +110,27 @@ post-patch {
 
 # fatal error: 'stdatomic.h' file not found
 compiler.blacklist-append {clang < 700}
+
 if {${os.platform} eq "darwin" && ${os.major} < 18} {
     # requires support for C11 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
     compiler.c_standard         2011
     # OpenExr requires C++11
     compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    # patched meson 1.5.1 to not include this flag when searching frameworks.
+    configure.CXXFLAGS-append   -std=c++11
 }
+
 if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    # requires support for C17 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
-    compiler.c_standard         2017
-    # OpenExr requires C++17
-    compiler.cxx_standard       2017
+    configure.compiler macports-clang-11
+    configure.env-append "AR=${prefix}/libexec/llvm-11/bin/llvm-ar"
+    compiler.c_standard         2011
+    compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++11
+    configure.ldflags-append    -Wl,-U,_main
 }
+
 configure.args-append \
                     -Dapplemedia=disabled \
                     -Dexamples=disabled \
@@ -135,16 +144,8 @@ configure.args-append \
 
 
 configure.cppflags-append   -L${prefix}/lib -Wno-unused-command-line-argument
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
-    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
-    # patched meson 1.5.1 to not include this flag when searching frameworks.
-    configure.CXXFLAGS-append   -std=c++11
-}
-if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    configure.cflags-append     -std=c17 -funroll-loops -fstrict-aliasing
-    # patched meson 1.5.1 to not include this flag when searching frameworks.
-    configure.cxxflags-append   -std=c++17
-}
+
+
 configure.env-append        "HAVE_CXX=yes"
 
 variant faac description {Enable faac AAC plugin} {
@@ -207,10 +208,10 @@ platform macosx {
         # Apple_Media requires CGL, which can only be provided on newer platforms and with (x11 and quartz) enabled or x11 disabled.
         require_active_variants port:gstreamer1-gst-plugins-base x11
         require_active_variants port:gstreamer1-gst-plugins-base quartz
-        configure.args-replace  -Dapplemedia=disabled \
-                                -Dapplemedia=enabled
+        #configure.args-replace  -Dapplemedia=disabled \
+                               # -Dapplemedia=enabled
 
-        patchfiles-append   apple-media-vtdec-removed-error.patch
+        #patchfiles-append   apple-media-vtdec-removed-error.patch
     }        
 }
 

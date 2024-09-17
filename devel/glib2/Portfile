@@ -7,7 +7,7 @@ PortGroup                   conflicts_build 1.0
 PortGroup                   debug 1.0
 PortGroup                   legacysupport 1.1
 PortGroup                   meson 1.0
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
+if {${universal_possible} && [variant_isset universal]} {
     PortGroup                   muniversal 1.0
 }
 # Please keep the glib2 and glib2-devel ports as similar as possible.
@@ -57,7 +57,7 @@ patchfiles-append           patch-gmodule-gmodule-dl.c.diff
 patchfiles-append           patch-meson_build-meson_options-appinfo.diff
 patchfiles-append           patch-meson-build-python-path.diff
 patchfiles-append           patch-meson_build-atomic-test-older-clang-versions.diff
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
+if {${universal_possible} && [variant_isset universal]} {
     patchfiles-append           universal.patch
 }
 patchfiles-append           patch-glib2-findfolders-before-SL.diff
@@ -102,7 +102,13 @@ if {${os.platform} eq "darwin" && ${os.major} < 18} {
 }
 
 if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    compiler.cxx_standard       2017
+    configure.compiler macports-clang-11
+    configure.env-append "AR=${prefix}/libexec/llvm-11/bin/llvm-ar"
+    compiler.c_standard         2011
+    compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++11
+    configure.ldflags-append    -Wl,-U,_main
 }
 # Issues for Clang 5.x:
 # - fatal error: error in backend: Cannot select: 0x103357f10: i8,ch = AtomicLoad 0x10334b410,
@@ -174,10 +180,11 @@ post-patch {
 # this edit does not, for some reason, apply against the build-arm64 config.h
 # and should not be needed if we're using the muniversal PortGroup
 # needs testing on 32 bit systems to be certain of this
-#post-configure {
-#    system "ed - ${build.dir}/config.h < ${filespath}/config.h.ed"
+#if {${universal_possible} && [variant_isset universal]} {
+    #post-configure {
+    #    system "ed - ${build.dir}/config.h < ${filespath}/config.h.ed"
+    #}
 #}
-
 build.args-append           --verbose
 
 post-build {
