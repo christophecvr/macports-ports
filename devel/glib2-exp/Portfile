@@ -7,7 +7,12 @@ PortGroup                   conflicts_build 1.0
 PortGroup                   debug 1.0
 PortGroup                   legacysupport 1.1
 PortGroup                   meson 1.0
-PortGroup                   muniversal 1.0
+if {[variant_isset universal]} {
+    PortGroup                   muniversal 1.0
+}
+if {![variant_isset universal]} {
+    universal_variant   no
+}
 
 # Experimental port just to try the build of a combined quartz x11 compatible glib2
 
@@ -15,7 +20,7 @@ name                        glib2-exp
 conflicts                   glib2 glib2-devel
 set my_name                 glib
 version                     2.78.4
-revision                    1
+revision                    3
 epoch                       1
 
 checksums                   rmd160  7941be85af18c428d86f4a00e52f41542b061aa9 \
@@ -53,10 +58,11 @@ patchfiles-append           patch-glib_gunicollate.c.diff
 patchfiles-append           patch-gio_xdgmime_xdgmime.c.diff
 patchfiles-append           patch-get-launchd-dbus-session-address.diff
 patchfiles-append           patch-gmodule-gmodule-dl.c.diff
-patchfiles-append           meson-gio-appinfo.patch
 patchfiles-append           patch-meson-build-python-path.diff
 patchfiles-append           patch-meson_build-atomic-test-older-clang-versions.diff
-patchfiles-append           universal.patch
+if {[variant_isset universal]} {
+    patchfiles-append           universal.patch
+}
 patchfiles-append           patch-glib2-findfolders-before-SL.diff
 patchfiles-append           patch-declarations.diff
 patchfiles-append           no-distutils.patch
@@ -95,7 +101,19 @@ depends_lib-append          port:gettext-runtime \
 depends_skip_archcheck-append \
                             python${py_ver_nodot}
 
-compiler.cxx_standard       2011
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    compiler.cxx_standard       2011
+}
+
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    configure.compiler macports-clang-17
+    configure.env-append "AR=${prefix}/libexec/llvm-17/bin/llvm-ar"
+    compiler.c_standard         2011
+    compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++11
+    configure.ldflags-append    -Wl,-U,_main
+}
 
 # Issues for Clang 5.x:
 # - fatal error: error in backend: Cannot select: 0x103357f10: i8,ch = AtomicLoad 0x10334b410,
@@ -129,7 +147,7 @@ configure.perl              /usr/bin/perl
 configure.python            ${prefix}/bin/python${py_ver}
 configure.env-append        PERL_PATH=${configure.perl}
 
-if {${universal_possible} && [variant_isset universal]} {
+if {[variant_isset universal]} {
     foreach my_arch {ppc ppc64 i386 x86_64 arm64} {
         # strip the automatic setting of host, meson does not accept
         set merger_host(${my_arch}) ""
@@ -167,10 +185,11 @@ post-patch {
 # this edit does not, for some reason, apply against the build-arm64 config.h
 # and should not be needed if we're using the muniversal PortGroup
 # needs testing on 32 bit systems to be certain of this
-#post-configure {
-#    system "ed - ${build.dir}/config.h < ${filespath}/config.h.ed"
+#if {[variant_isset universal]} {
+#  post-configure {
+#      system "ed - ${build.dir}/config.h < ${filespath}/config.h.ed"
+#  }
 #}
-
 build.args-append           --verbose
 
 post-build {
@@ -227,17 +246,23 @@ platform darwin 8 {
 
 variant quartz {
     if {![variant_isset x11]} {
+        patchfiles-append       patch-meson_build-meson_options-appinfo.diff
+
         configure.args-append   -Dappinfo_backend=native
     }
 }
 
 variant x11 {
     if {![variant_isset quartz]} {
+        patchfiles-append       patch-meson_build-meson_options-appinfo.diff
+
         configure.args-append   -Dappinfo_backend=generic
     }
 }
 
 if {[variant_isset quartz] && [variant_isset x11]} {
+    patchfiles-append       mixed-meson-gio-appinfo.patch
+
     configure.args-append   -Dappinfo_backend=mixed
 }
 
@@ -246,41 +271,41 @@ if {![variant_isset quartz] && ![variant_isset x11]} {
 }
 
 
-proc port_conflict_check {p_port_name p_conflict_ver_min p_conflict_ver_max} {
-    ui_debug "port_conflict_check: Checking for conflict against port: ${p_port_name}"
-
-    if { ![catch {set port_conflict_ver_info [lindex [registry_active ${p_port_name}] 0]}] } {
-        set port_conflict_ver [lindex ${port_conflict_ver_info} 1]_[lindex ${port_conflict_ver_info} 2]
-        ui_debug "port_conflict_check: ${p_port_name} active version: ${port_conflict_ver}"
-
-        if { [vercmp ${port_conflict_ver} ${p_conflict_ver_min}] >= 0
-            && [vercmp ${port_conflict_ver} ${p_conflict_ver_max}] <= 0 } {
-
-            ui_debug "port_conflict_check: ${p_port_name} conflicts; declare build conflict"
-            conflicts_build-append \
-                ${p_port_name}
-        } else {
-            ui_debug "port_conflict_check: ${p_port_name} does not conflict"
-        }
-    }
-}
+#proc port_conflict_check {p_port_name p_conflict_ver_min p_conflict_ver_max} {
+#    ui_debug "port_conflict_check: Checking for conflict against port: ${p_port_name}"
+#
+#    if { ![catch {set port_conflict_ver_info [lindex [registry_active ${p_port_name}] 0]}] } {
+#        set port_conflict_ver [lindex ${port_conflict_ver_info} 1]_[lindex ${port_conflict_ver_info} 2]
+#        ui_debug "port_conflict_check: ${p_port_name} active version: ${port_conflict_ver}"
+#
+#        if { [vercmp ${port_conflict_ver} ${p_conflict_ver_min}] >= 0
+#            && [vercmp ${port_conflict_ver} ${p_conflict_ver_max}] <= 0 } {
+#
+#            ui_debug "port_conflict_check: ${p_port_name} conflicts; declare build conflict"
+#            conflicts_build-append \
+#                ${p_port_name}
+#        } else {
+#            ui_debug "port_conflict_check: ${p_port_name} does not conflict"
+#        }
+#    }
+#}
 
 # If the user happens to have `gobject-introspection` 1.80.x installed, force them to
 # deactivate it first. Otherwise, the newer version can cause other unexpected failures
 # if still active on downgrade.
 # Logic added 2024-04-17; keep in place for at least 12 months.
-proc gobj_conflict_check {} {
-    set gobj_port_name "gobject-introspection"
-    set gobj_port_names [list ${gobj_port_name} "${gobj_port_name}-devel"]
-    set gobj_ver_min "1.80.1_0"
-    set gobj_ver_max "1.80.1_0"
+#proc gobj_conflict_check {} {
+#    set gobj_port_name "gobject-introspection"
+#    set gobj_port_names [list ${gobj_port_name} "${gobj_port_name}-devel"]
+#    set gobj_ver_min "1.80.1_0"
+#    set gobj_ver_max "1.80.1_0"
 
-    foreach p ${gobj_port_names} {
-        port_conflict_check ${p} ${gobj_ver_min} ${gobj_ver_max}
-    }
-}
+#    foreach p ${gobj_port_names} {
+#        port_conflict_check ${p} ${gobj_ver_min} ${gobj_ver_max}
+#    }
+#}
 
-gobj_conflict_check
+#gobj_conflict_check
 
 livecheck.type              gnome
 livecheck.name              ${my_name}

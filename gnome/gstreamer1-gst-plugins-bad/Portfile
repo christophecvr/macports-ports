@@ -3,6 +3,7 @@
 PortSystem          1.0
 PortGroup           active_variants 1.1
 PortGroup           compiler_blacklist_versions 1.0
+#PortGroup           xcode 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
@@ -35,6 +36,8 @@ checksums           rmd160  651d08297239455138079236f18a7a4b826dcb86 \
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
 set python.bin      ${prefix}/bin/python${py_ver}
+
+use_xcode           yes
 
 depends_build-append \
                     port:gtk-doc \
@@ -122,12 +125,12 @@ if {${os.platform} eq "darwin" && ${os.major} < 18} {
 }
 
 if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    configure.compiler macports-clang-11
-    configure.env-append "AR=${prefix}/libexec/llvm-11/bin/llvm-ar"
+    configure.compiler macports-clang-14
+    configure.env-append "AR=${prefix}/libexec/llvm-14/bin/llvm-ar"
     compiler.c_standard         2011
     compiler.cxx_standard       2011
     configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
-    configure.cxxflags-append   -std=c++11
+    configure.cxxflags-append   -std=c++11 
     configure.ldflags-append    -Wl,-U,_main
 }
 
@@ -208,10 +211,10 @@ platform macosx {
         # Apple_Media requires CGL, which can only be provided on newer platforms and with (x11 and quartz) enabled or x11 disabled.
         require_active_variants port:gstreamer1-gst-plugins-base x11
         require_active_variants port:gstreamer1-gst-plugins-base quartz
-        #configure.args-replace  -Dapplemedia=disabled \
-                               # -Dapplemedia=enabled
+        configure.args-replace  -Dapplemedia=disabled \
+                                -Dapplemedia=enabled
 
-        #patchfiles-append   apple-media-vtdec-removed-error.patch
+        patchfiles-append   apple-media-vtdec-removed-error.patch
     }        
 }
 
