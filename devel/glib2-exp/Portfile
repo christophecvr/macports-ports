@@ -7,9 +7,12 @@ PortGroup                   conflicts_build 1.0
 PortGroup                   debug 1.0
 PortGroup                   legacysupport 1.1
 PortGroup                   meson 1.0
+
 if {[variant_isset universal]} {
-    PortGroup                   muniversal 1.0
+    PortGroup   muniversal 1.0
+
 }
+
 if {![variant_isset universal]} {
     universal_variant   no
 }
