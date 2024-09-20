@@ -3,12 +3,12 @@
 PortSystem          1.0
 PortGroup           active_variants 1.1
 PortGroup           compiler_blacklist_versions 1.0
-#PortGroup           xcode 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
 if {${os.platform} eq "darwin" && ${os.major} < 18} {
     PortGroup           muniversal 1.0
+
 }
 
 name                gstreamer1-gst-plugins-bad
@@ -125,8 +125,8 @@ if {${os.platform} eq "darwin" && ${os.major} < 18} {
 }
 
 if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    configure.compiler macports-clang-14
-    configure.env-append "AR=${prefix}/libexec/llvm-14/bin/llvm-ar"
+    configure.compiler macports-clang-17
+    configure.env-append "AR=${prefix}/libexec/llvm-17/bin/llvm-ar"
     compiler.c_standard         2011
     compiler.cxx_standard       2011
     configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
@@ -204,6 +204,12 @@ platform macosx {
         configure.args-replace  -Dapplemedia=disabled \
                                 -Dapplemedia=enabled
 
+        # required for applemedia
+        depends_lib-append  port:MoltenVK \
+                            port:vulkan-volk \
+                            port:vulkan-headers \
+                            port:vulkan-validationlayers
+                            
         patchfiles-append   apple-media-vtdec-removed-error.patch
     }
     if {[variant_isset x11] && [variant_isset quartz] && ${os.major} >= 18} {
@@ -213,6 +219,13 @@ platform macosx {
         require_active_variants port:gstreamer1-gst-plugins-base quartz
         configure.args-replace  -Dapplemedia=disabled \
                                 -Dapplemedia=enabled
+
+
+        # required for applemedia
+        depends_lib-append  port:MoltenVK \
+                            port:vulkan-volk \
+                            port:vulkan-headers \
+                            port:vulkan-validationlayers
 
         patchfiles-append   apple-media-vtdec-removed-error.patch
     }        
