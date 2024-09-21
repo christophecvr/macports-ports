@@ -131,11 +131,12 @@ variant python312 conflicts python38 python39 description {Use python 3.12} {
 
 variant x11 conflicts quartz {
     #require_active_variants gtk3 x11
-    patchfiles-append       patch-meson-darwin-dont-assume-quartz.diff
+    patchfiles-append       patch-meson-darwin-dont-assume-quartz-exc.diff
 }
 
 variant quartz conflicts x11 {
     require_active_variants gtk3 quartz
+    patchfiles-append       patch-meson-darwin-assume-quartz-exc.diff
     depends_lib-append      port:gtk-osx-application-gtk3
 }
 

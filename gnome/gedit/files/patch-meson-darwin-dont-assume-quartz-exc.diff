@@ -1,5 +1,5 @@
---- gedit/meson.build.orig	2020-09-11 06:06:08.000000000 -0700
-+++ gedit/meson.build	2020-09-20 18:48:49.000000000 -0700
+--- gedit/meson.build.orig	2021-03-27 18:41:09.000000000 +0100
++++ gedit/meson.build	2024-09-21 09:20:04.000000000 +0200
 @@ -126,7 +126,7 @@
    libgd_dep,
  ]
@@ -18,3 +18,10 @@
    gedit_c_args += '-DOS_OSX=1'
  endif
  
+@@ -266,5 +266,5 @@
+   c_args: gedit_c_args,
+   install: true,
+   install_rpath: get_option('prefix') / get_option('libdir') / 'gedit',
+-  gui_app: true,
++  win_subsystem: 'console',
+ )
