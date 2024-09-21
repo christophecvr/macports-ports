@@ -22,7 +22,6 @@ checksums           rmd160  67891cc09e22383f4a1a6bac50279a35209fc588 \
                     sha256  978c58fc1bcdf5f1e6235105e624ee16c32deb1482f34d4c98e1847092f43db0 \
                     size    958668
 
-configure.compiler macports-clang-14
 
 depends_build-append \
                     port:pkgconfig \
@@ -40,7 +39,8 @@ depends_lib         port:gedit \
                     path:bin/vala:vala
 
 patchfiles          patch-python3-bin.diff \
-                    patch-meson-61.0.diff
+                    patch-meson-61.0.diff \
+                    vala.diff
 
 post-patch {
     reinplace "s|@@PYTHON3_BIN@@|${configure.python}|" \
@@ -74,6 +74,16 @@ post-patch {
 
 # require C11 compiler
 compiler.c_standard   2011
+
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    configure.compiler macports-clang-17
+    configure.env-append "AR=${prefix}/libexec/llvm-17/bin/llvm-ar"
+    compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++11
+    configure.ldflags-append    -Wl,-U,_main
+    universal_variant           no
+}
 
 configure.args      -Dplugin_charmap=false \
                     -Dplugin_git=false \
