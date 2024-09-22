@@ -1,23 +1,5 @@
---- meson.build.orig	2021-03-27 18:41:10.000000000 +0100
-+++ meson.build	2024-09-21 09:50:53.000000000 +0200
-@@ -1,7 +1,7 @@
- project(
-   'gedit', 'c',
-   version: '3.38.2',
--  meson_version: '>= 0.53'
-+  meson_version: '>= 0.59'
- )
- 
- if host_machine.system() == 'darwin'
-@@ -26,7 +26,7 @@
- 
- # Subprojects
- if not get_option('buildtype').contains('plain')
--  run_command('git', '-C', meson.source_root(), 'submodule', 'update', '--init', '--recursive')
-+  run_command('git', '-C', meson.project_source_root(), 'submodule', 'update', '--init', '--recursive')
- endif
- 
- libgd_subproject = subproject(
+--- meson.build.orig	2020-09-11 06:06:08.000000000 -0700
++++ meson.build	2020-09-20 18:10:48.000000000 -0700
 @@ -55,7 +55,7 @@
  ]
  
