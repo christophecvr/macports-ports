@@ -125,6 +125,7 @@ app.icon                ./logo.png
 # works around introspection typelib issue
 post-destroot {
     ln -s ${prefix}/lib/gedit/libgedit-3.38.dylib  ${destroot}${prefix}/lib/libgedit-3.38.dylib
+    file copy ${filespath}/GeditX11 ${destroot}/Applications/MacPorts/GeditX11.app
 }
 
 notes               "For extra functionality install gedit-plugins"
