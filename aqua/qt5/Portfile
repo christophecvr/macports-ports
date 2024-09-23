@@ -43,7 +43,18 @@ set branch          [join [lrange [split ${version} .] 0 1] .]
 set qt_major        [lindex [split ${version} .] 0]
 
 # see https://wiki.qt.io/New_Features_in_Qt_5.7
-compiler.cxx_standard 2011
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    compiler.cxx_standard 2011
+}
+
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    compiler.cxx_standard       2017
+    configure.cflags-append     -std=c17 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++17
+    configure.ldflags-append    -Wl,-U,_main
+    universal_variant           no
+    use_xcode                   yes
+}
 
 master_sites        \
     https://download.qt.io/official_releases/qt/${branch}/${version}/submodules \
