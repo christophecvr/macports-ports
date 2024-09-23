@@ -25,6 +25,17 @@ use_xz              yes
 # redefinition of typedef error
 compiler.c_standard 2011
 
+
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    configure.compiler macports-clang-17
+    configure.env-append "AR=${prefix}/libexec/llvm-17/bin/llvm-ar"
+    compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++11
+    configure.ldflags-append    -Wl,-U,_main
+    universal_variant           no
+}
+
 checksums           rmd160  16148da5e7f20dba54313fc5687d632e147dbef9 \
                     sha256  0e3573508add1777f06c05a66c3fe6fba97694d66cb577b98dbe0166a222c62d \
                     size    6858676
@@ -56,7 +67,8 @@ depends_lib-append  port:desktop-file-utils \
 depends_run         port:adwaita-icon-theme
 
 patchfiles-append   patch-gedit-meson-build-python3.diff \
-                    patch-meson-61.0.diff
+                    patch-meson-151.diff \
+                    deprecated-glib-items.patch
 
 post-patch {
     reinplace "s|@@PYTHON3@@|${configure.python}|g" ${worksrcpath}/meson.build
@@ -98,6 +110,20 @@ variant python310 conflicts python38 python39 description {Use python 3.10} {
     configure.pkg_config_path ${python_framework}/lib/pkgconfig
 }
 
+variant python311 conflicts python38 python39 description {Use python 3.11} {
+    depends_lib-append        port:py311-gobject3
+    configure.python          ${prefix}/bin/python3.11
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.11
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+variant python312 conflicts python38 python39 description {Use python 3.12} {
+    depends_lib-append        port:py312-gobject3
+    configure.python          ${prefix}/bin/python3.12
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.12
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
 variant x11 conflicts quartz {
     require_active_variants gtk3 x11
     patchfiles-append       patch-meson-darwin-dont-assume-quartz.diff
@@ -114,8 +140,10 @@ if {![variant_isset quartz]} {
 
 if {![variant_isset python38] && \
     ![variant_isset python39] && \
-    ![variant_isset python310]} {
-    default_variants-append +python310
+    ![variant_isset python310] && \
+    ![variant_isset python311] && \
+    ![variant_isset python312] } {
+    default_variants-append +python312
 }
 
 app.use_launch_script   yes
@@ -125,7 +153,8 @@ app.icon                ./logo.png
 # works around introspection typelib issue
 post-destroot {
     ln -s ${prefix}/lib/gedit/libgedit-3.38.dylib  ${destroot}${prefix}/lib/libgedit-3.38.dylib
-    file copy ${filespath}/GeditX11 ${destroot}/Applications/MacPorts/GeditX11.app
+    # I have this already installed in /Applications
+    #file copy ${filespath}/GeditX11 ${destroot}/Applications/MacPorts/GeditX11.app
 }
 
 notes               "For extra functionality install gedit-plugins"

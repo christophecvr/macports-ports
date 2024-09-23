@@ -57,7 +57,9 @@ patchfiles-append           libintl.patch
 patchfiles-append           patch-gio-tests-meson.build.diff
 patchfiles-append           patch-glib_gmem.c.diff
 patchfiles-append           patch-glib_gspawn.c.diff
-patchfiles-append           patch-glib_gunicollate.c.diff
+# Patch below disabled yes carbon ui elemnts are only or 32 bits
+# Still a lot of carbon whitout ui elements do work an may be needed.
+# patchfiles-append           patch-glib_gunicollate.c.diff
 patchfiles-append           patch-gio_xdgmime_xdgmime.c.diff
 patchfiles-append           patch-get-launchd-dbus-session-address.diff
 patchfiles-append           patch-gmodule-gmodule-dl.c.diff
@@ -109,6 +111,7 @@ if {${os.platform} eq "darwin" && ${os.major} < 18} {
 }
 
 if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    use_xcode           yes
     configure.compiler macports-clang-17
     configure.env-append "AR=${prefix}/libexec/llvm-17/bin/llvm-ar"
     compiler.c_standard         2011

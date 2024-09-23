@@ -12,9 +12,9 @@ version             1.5.99
 #github.tarball_from releases
 revision            0
 
-checksums           rmd160  af5e0368bc97cbbad6e7bb444c56ab4c3115336e \
-                    sha256  04c11f2a3c1cdda6c11a9a0eeb811c610f1c4486186ce52d9a9afbdcac21f963 \
-                    size    4819222
+checksums           rmd160  6ab67943fac69135a715c55d1c9d42c540c50fc9 \
+                    sha256  623dfea01c8bc4008b6b0f7baf913d006884e7b864f37a957f53f424faf34f76 \
+                    size    4822628
 
 license             Apache-2
 categories-append   devel

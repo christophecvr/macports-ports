@@ -82,6 +82,17 @@ dependencies are built with variants +quartz and try again.
 configure.ccache    no
 
 subport ${name}-gtk3 {
+    if {${os.major} >= 18} {
+        configure.compiler macports-clang-17
+        configure.env-append "AR=${prefix}/libexec/llvm-17/bin/llvm-ar"
+        compiler.c_standard         2011
+        compiler.cxx_standard       2011
+        configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+        configure.cxxflags-append   -std=c++11 
+        configure.ldflags-append    -Wl,-U,_main
+        use_xcode           yes
+        universal_variant   no
+    }
     gtk_version      gtk3
 
     depends_lib-append \
@@ -96,6 +107,17 @@ subport ${name}-gtk3 {
     configure.args-append \
                     --enable-python=no
 
+    # gobject-introspection uses g-ir-scanner, which uses $CC from env
+    if {${universal_possible} && [variant_isset universal]} {
+        foreach arch ${configure.universal_archs} {
+            lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+            lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        }
+    } else {
+        build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+        destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+    }
+
     post-destroot {
         delete ${destroot}${prefix}/include
         delete ${destroot}${prefix}/lib/pkgconfig/gtk-mac-integration.pc
@@ -105,6 +127,17 @@ subport ${name}-gtk3 {
 }
 
 subport ${name}-common-gtk3 {
+    if {${os.major} >= 18} {
+        configure.compiler macports-clang-17
+        configure.env-append "AR=${prefix}/libexec/llvm-17/bin/llvm-ar"
+        compiler.c_standard         2011
+        compiler.cxx_standard       2011
+        configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+        configure.cxxflags-append   -std=c++11 
+        configure.ldflags-append    -Wl,-U,_main
+        use_xcode           yes
+        universal_variant   no
+    }
     gtk_version      gtk3
 
     depends_lib-append \
@@ -117,6 +150,17 @@ subport ${name}-common-gtk3 {
 
     configure.args-append \
                     --enable-python=no
+
+    # gobject-introspection uses g-ir-scanner, which uses $CC from env
+    if {${universal_possible} && [variant_isset universal]} {
+        foreach arch ${configure.universal_archs} {
+            lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+            lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        }
+    } else {
+        build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+        destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+    }
 
     post-destroot {
         delete ${destroot}${prefix}/lib
