@@ -1,0 +1,19 @@
+--- gio/tests/meson.build.orig	2024-08-16 20:37:20.000000000 +0200
++++ gio/tests/meson.build	2024-08-25 08:31:11.000000000 +0200
+@@ -153,10 +153,13 @@
+   'win32-appinfo' : {},
+ }
+ 
++appinfo_backend = get_option('appinfo_backend')
+ if glib_have_cocoa
+-  gio_tests += {
+-    'osx-appinfo' : {}
+-  }
++  if appinfo_backend == 'native'
++    gio_tests += {
++      'osx-appinfo' : {}
++    }
++  endif
+ endif
+ 
+ if have_cxx
