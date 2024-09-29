@@ -7,6 +7,10 @@ PortGroup           meson 1.0
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
 PortGroup           muniversal 1.0
 
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    universal_variant   no
+}
+
 name                gstreamer1-gst-libav
 set my_name         gst-libav
 # please only commit stable updates (even numbered releases)
@@ -48,10 +52,31 @@ post-patch {
         ${worksrcpath}/scripts/gen-changelog.py
 }
 
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    #configure.compiler macports-clang-11
+    #configure.env-append "AR=${prefix}/libexec/llvm-11/bin/llvm-ar"
+    compiler.c_standard         2011
+    compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++11
+    configure.ldflags-append    -Wl,-U,_main
+}
+
 if {[lsearch [get_canonical_archs] i386] != -1} {
     # https://trac.macports.org/ticket/37802
     # clang-139 hits https://trac.macports.org/ticket/38141
     compiler.blacklist-append *gcc-4.2 {clang < 422.1.7}
+}
+
+# gobject-introspection uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
 }
 
 livecheck.type      regex

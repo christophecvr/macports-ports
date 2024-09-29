@@ -8,6 +8,10 @@ PortGroup           meson 1.0
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
 PortGroup           muniversal 1.0
 
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    universal_variant   no
+}
+
 name                gstreamer1-gst-plugins-good
 set my_name         gst-plugins-good
 # please only commit stable updates (even numbered releases)
@@ -99,7 +103,19 @@ compiler.blacklist-append \
 # <rdar://problem/9694837> - Fixed in Xcode 4.2 (clang 211.10.1)
 # blacklist compilers that don't support C11 typedef redefinition
 # gstflvmux.h:73: error: redefinition of typedef ‘GstFlvMuxPadClass’
-compiler.c_standard 2011
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    compiler.c_standard 2011
+}
+
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    #configure.compiler macports-clang-11
+    #configure.env-append "AR=${prefix}/libexec/llvm-11/bin/llvm-ar"
+    compiler.c_standard         2011
+    compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++11
+    configure.ldflags-append    -Wl,-U,_main
+}
 
 platform darwin {
     if {${os.major} < 10} {
@@ -158,7 +174,18 @@ variant qt description {Enable Qt5 MAC windowing elements } {
     configure.cxxflags-append -std=c++11
 }
 
-default_variants            +pulseaudio +x11 +gtk3
+default_variants            +pulseaudio +x11 +gtk3 +jack +qt
+
+# gobject-introspection uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+}
 
 livecheck.type      regex
 livecheck.url       ${master_sites}

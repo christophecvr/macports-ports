@@ -8,6 +8,10 @@ PortGroup           meson 1.0
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
 PortGroup           muniversal 1.0
 
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    universal_variant   no
+}
+
 name                gstreamer1-gst-plugins-bad
 set my_name         gst-plugins-bad
 # please only commit stable updates (even numbered releases)
@@ -102,10 +106,25 @@ post-patch {
 
 # fatal error: 'stdatomic.h' file not found
 compiler.blacklist-append {clang < 700}
-# requires support for C11 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
-compiler.c_standard         2011
-# OpenExr requires C++11
-compiler.cxx_standard       2011
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+    # requires support for C11 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
+    compiler.c_standard         2011
+    # OpenExr requires C++11
+    compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    # patched meson 1.5.1 to not include this flag when searching frameworks.
+    configure.CXXFLAGS-append   -std=c++11
+}
+
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+    #configure.compiler macports-clang-17
+    #configure.env-append "AR=${prefix}/libexec/llvm-17/bin/llvm-ar"
+    compiler.c_standard         2011
+    compiler.cxx_standard       2011
+    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++11 
+    configure.ldflags-append    -Wl,-U,_main
+}
 
 configure.args-append \
                     -Dapplemedia=disabled \
@@ -146,16 +165,70 @@ variant x11 {
     configure.args-append   -Dx11=enabled
 }
 
-default_variants    +x11
+variant quartz {
+    # new cvr gstreamer can be installed with dual gl support cgl and gfx !!
+    # possibility to install gstreamer with only x11 always avbl.
+    require_active_variants port:gstreamer1-gst-plugins-base quartz
+}
+
+default_variants    +fdkaac +gpl +faac
+
+# Prefer +x11 +quartz  implementation.
+if {![variant_isset quartz] && ![variant_isset x11] && ${os.major} >= 13} {
+    default_variants-append +x11 +quartz
+}
+
+# Only gl x11 glx avbl below macos-10.9
+
+if {${os.major} < 13 && ![variant_isset x11]} {
+    default_variants-append +x11
+}
 
 # plugin applemedia (Apple video) now only builds on darwin 18 and later
 platform macosx {
     if {![variant_isset x11] && ${os.major} >= 18} {
+        # possibility to install gstreamer without x11 is still avbl. but not needed.
         # Apple_Media requires CGL, which can only be provided on newer platforms and without X11 enabled.
         require_active_variants port:gstreamer1-gst-plugins-base {} x11
         configure.args-replace  -Dapplemedia=disabled \
                                 -Dapplemedia=enabled
+
+        # required for applemedia
+        depends_lib-append  port:MoltenVK \
+                            port:vulkan-volk \
+                            port:vulkan-headers \
+                            port:vulkan-validationlayers
+                            
+        patchfiles-append   apple-media-vtdec-removed-error.patch
     }
+    if {[variant_isset x11] && [variant_isset quartz] && ${os.major} >= 18} {
+        # new cvr gstreamer can be installed with dual gl support cgl and gfx !!
+        # Apple_Media requires CGL, which can only be provided on newer platforms and with (x11 and quartz) enabled or x11 disabled.
+        require_active_variants port:gstreamer1-gst-plugins-base x11
+        require_active_variants port:gstreamer1-gst-plugins-base quartz
+        configure.args-replace  -Dapplemedia=disabled \
+                                -Dapplemedia=enabled
+
+
+        # required for applemedia
+        depends_lib-append  port:MoltenVK \
+                            port:vulkan-volk \
+                            port:vulkan-headers \
+                            port:vulkan-validationlayers
+
+        patchfiles-append   apple-media-vtdec-removed-error.patch
+    }        
+}
+
+# gobject-introspection uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
 }
 
 livecheck.type      regex
