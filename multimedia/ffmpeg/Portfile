@@ -18,7 +18,7 @@ set my_name         ffmpeg
 
 # Please increase the revision of mpv whenever ffmpeg's version is updated.
 version             4.4.4
-revision            8
+revision            9
 epoch               1
 
 license             LGPL-2.1+
@@ -64,6 +64,8 @@ use_xz              yes
 checksums           rmd160  ac9916e0915cfe3952993644d0a26d9e7c70e1b7 \
                     sha256  e80b380d595c809060f66f96a5d849511ef4a76a26b76eacf5778b94c3570309 \
                     size    9565584
+
+#configure.compiler macports-clang-14
 
 depends_build-append \
                     port:cctools \
@@ -139,7 +141,7 @@ compiler.blacklist-append {clang < 800}
 
 # The old ffmpeg port was GPL-2+ as base and had a no_gpl variant, so this keeps us consistent
 # Also, -gpl2 causes other ports to fail to build due to the missing libpostproc (#35473)
-default_variants-append +gpl2
+default_variants-append +gpl2 +rav1e +nonfree +gpl3 +flite +libdc1394 +jack -universall +rtmp +x11
 
 if {[tbool configure.ccache]} {
     set ccache_path ${prefix}/bin/ccache
