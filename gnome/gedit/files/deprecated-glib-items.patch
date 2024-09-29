@@ -1,0 +1,24 @@
+diff -ur plugins.org/filebrowser/gedit-file-browser-store.c plugins/filebrowser/gedit-file-browser-store.c
+--- plugins.org/filebrowser/gedit-file-browser-store.c	2024-08-11 07:34:53.000000000 +0200
++++ plugins/filebrowser/gedit-file-browser-store.c	2024-08-11 07:36:23.000000000 +0200
+@@ -1032,7 +1032,7 @@
+ 			{
+ 				GPatternSpec *spec = g_ptr_array_index (model->priv->binary_pattern_specs, i);
+ 
+-				if (g_pattern_match (spec, name_length, node->name, name_reversed))
++				if (g_pattern_spec_match (spec, name_length, node->name, name_reversed))
+ 				{
+ 					node->flags |= GEDIT_FILE_BROWSER_STORE_FLAG_IS_FILTERED;
+ 					g_free (name_reversed);
+diff -ur plugins.org/filebrowser/gedit-file-browser-widget.c plugins/filebrowser/gedit-file-browser-widget.c
+--- plugins.org/filebrowser/gedit-file-browser-widget.c	2021-03-27 18:41:10.000000000 +0100
++++ plugins/filebrowser/gedit-file-browser-widget.c	2024-08-11 07:58:04.000000000 +0200
+@@ -1258,7 +1258,7 @@
+ 	if (FILE_IS_DIR (flags) || FILE_IS_DUMMY (flags))
+ 		result = TRUE;
+ 	else
+-		result = g_pattern_match_string (obj->priv->filter_pattern, name);
++		result = g_pattern_spec_match_string (obj->priv->filter_pattern, name);
+ 
+ 	g_free (name);
+ 	return result;

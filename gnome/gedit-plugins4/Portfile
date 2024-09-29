@@ -3,25 +3,27 @@
 PortSystem          1.0
 PortGroup           meson 1.0
 
-name                gedit-plugins
-version             3.38.2
+name                gedit-plugins4
+set my_name         gedit-plugins
+version             47.1
 revision            1
 license             GPL-2+
-set branch          [join [lrange [split ${version} .] 0 1] .]
+set branch          [join [lrange [split ${version} .] 0 0] .]
 description         Plug-ins for GEdit
 long_description    Various additional plug-ins for GEdit
 maintainers         nomaintainer
 categories          gnome editors
 platforms           darwin
 homepage            https://wiki.gnome.org/Apps/Gedit
-master_sites        gnome:sources/${name}/${branch}/
+master_sites        gnome:sources/${my_name}/${branch}/
 
 use_xz              yes
 
-checksums           rmd160  67891cc09e22383f4a1a6bac50279a35209fc588 \
-                    sha256  978c58fc1bcdf5f1e6235105e624ee16c32deb1482f34d4c98e1847092f43db0 \
-                    size    958668
+checksums           rmd160  5c2781f2b6b4d50df6b481e58638c4eda507b178 \
+                    sha256  af9d63e5822ac08c68e3b898bb58e7debc1bfeaaca1077f5a8e795d25a164c8b \
+                    size    892844
 
+#configure.compiler macports-clang-14
 
 depends_build-append \
                     port:pkgconfig \
@@ -29,25 +31,26 @@ depends_build-append \
                     port:gettext \
                     port:itstool
 
-depends_lib         port:gedit \
+depends_lib         port:gedit4 \
+                    port:gettext \
                     port:gettext-runtime \
                     path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
                     path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
-                    port:gtksourceview4 \
+                    port:libgedit-gtksourceview \
                     port:libpeas \
                     path:bin/vala:vala
 
-patchfiles          patch-python3-bin.diff \
-                    patch-meson-61.0.diff \
-                    vala.diff
+#patchfiles          patch-python3-bin.diff \
+#                    patch-meson-61.0.diff
 
-post-patch {
-    reinplace "s|@@PYTHON3_BIN@@|${configure.python}|" \
-        ${worksrcpath}/meson.build
-    reinplace "s|^#!.*|#!${configure.python}|" \
-        ${worksrcpath}/build-aux/meson/post_install.py
-}
+
+#post-patch {
+#    reinplace "s|@@PYTHON3_BIN@@|${configure.python}|" \
+#        ${worksrcpath}/meson.build
+#    reinplace "s|^#!.*|#!${configure.python}|" \
+#        ${worksrcpath}/build-aux/meson/post_install.py
+#}
 
 # Enabled plugins:
 #     bookmarks
@@ -75,19 +78,8 @@ post-patch {
 # require C11 compiler
 compiler.c_standard   2011
 
-if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    configure.compiler macports-clang-17
-    configure.env-append "AR=${prefix}/libexec/llvm-17/bin/llvm-ar"
-    compiler.cxx_standard       2011
-    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
-    configure.cxxflags-append   -std=c++11
-    configure.ldflags-append    -Wl,-U,_main
-    universal_variant           no
-}
-
 configure.args      -Dplugin_charmap=false \
                     -Dplugin_git=false \
-                    -Dplugin_synctex=false \
                     -Dplugin_terminal=false
 
 variant charmap description {Insert special characters just by clicking on them} {
@@ -114,19 +106,7 @@ variant terminal description {Embed a GNOME terminal in the bottom panel of the 
     configure.args-delete -Dplugin_terminal=false
 }
 
-variant python38 conflicts python39 python310 description {Plugins use Python 3.8} {
-    depends_lib-append  port:py38-gobject3 \
-                        port:dbus-python38
 
-    configure.python    ${prefix}/bin/python3.8
-}
-
-variant python39 conflicts python38 python310 description {Plugins use Python 3.9} {
-    depends_lib-append  port:py39-gobject3 \
-                        port:dbus-python39
-
-    configure.python    ${prefix}/bin/python3.9
-}
 
 variant python310 conflicts python38 python39 description {Plugins use Python 3.10} {
     depends_lib-append  port:py310-gobject3 \
@@ -149,9 +129,7 @@ variant python312 conflicts python38 python39 description {Plugins use Python 3.
     configure.python    ${prefix}/bin/python3.12
 }
 
-if {![variant_isset python38] && \
-    ![variant_isset python39] && \
-    ![variant_isset python310] && \
+if {![variant_isset python310] && \
     ![variant_isset python311] && \
     ![variant_isset python312] } {
     default_variants +python312
