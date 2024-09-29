@@ -57,9 +57,7 @@ patchfiles-append           patch-gmodule-gmodule-dl.c.diff
 patchfiles-append           patch-meson_build-meson_options-appinfo.diff
 patchfiles-append           patch-meson-build-python-path.diff
 patchfiles-append           patch-meson_build-atomic-test-older-clang-versions.diff
-if {${universal_possible} && [variant_isset universal]} {
-    patchfiles-append           universal.patch
-}
+patchfiles-append           universal64.patch
 patchfiles-append           patch-glib2-findfolders-before-SL.diff
 patchfiles-append           patch-declarations.diff
 patchfiles-append           no-distutils.patch

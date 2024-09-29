@@ -7,11 +7,7 @@ PortGroup                   conflicts_build 1.0
 PortGroup                   debug 1.0
 PortGroup                   legacysupport 1.1
 PortGroup                   meson 1.0
-
-if {[variant_isset universal]} {
-    PortGroup   muniversal 1.0
-
-}
+PortGroup                   muniversal 1.0
 
 if {![variant_isset universal]} {
     universal_variant   no
@@ -65,10 +61,19 @@ patchfiles-append           patch-get-launchd-dbus-session-address.diff
 patchfiles-append           patch-gmodule-gmodule-dl.c.diff
 patchfiles-append           patch-meson-build-python-path.diff
 patchfiles-append           patch-meson_build-atomic-test-older-clang-versions.diff
+
 if {[variant_isset universal]} {
     patchfiles-append           universal.patch
 }
+
+if {![variant_isset universal]} {
+    patchfiles-append           universal64.patch
+}
+
+if {![variant_isset quartz]} {
 patchfiles-append           patch-glib2-findfolders-before-SL.diff
+}
+
 patchfiles-append           patch-declarations.diff
 patchfiles-append           no-distutils.patch
 

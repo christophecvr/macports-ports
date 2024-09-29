@@ -106,7 +106,7 @@ patchfiles-append   patch-quartz-calayer-contentsformat.diff
 
 # Quartz patch to eliminate hard-coded use of NSEventTypeApplicationDefined
 # Upstream merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/5958
-patchfiles-append   patch-quartz-nseventtype.diff
+#patchfiles-append   patch-quartz-nseventtype.diff
 
 # Quartz patch to make CoreGraphics optional; not available for 10.7 and earlier
 # Upstream merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/5959
