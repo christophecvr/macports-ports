@@ -5,14 +5,13 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
-    PortGroup           muniversal 1.0
-}
+PortGroup           muniversal 1.0
+
 name                gstreamer1-gst-plugins-base
 set my_name         gst-plugins-base
 # please only commit stable updates (even numbered releases)
-version             1.24.7
-revision            1
+version             1.24.8
+revision            0
 description         This is gst-plugins, a set of plug-ins for GStreamer.
 long_description    ${description}
 maintainers         nomaintainer
@@ -23,9 +22,9 @@ master_sites        https://gstreamer.freedesktop.org/src/${my_name}/
 distname            ${my_name}-${version}
 use_xz              yes
 
-checksums           rmd160  dfa742507cf4c9031507b1a29d65ce5958a1100c \
-                    sha256  1528d1746a393299f5ac17ebf13a32a660202f1e29d0a852a2250f6a059a2fda \
-                    size    2438084
+checksums           rmd160  2721c0e2c171c4c559f5b56082708123d096b410 \
+                    sha256  10fb31743750ccd498d3933e8aaecda563ebc65596a6ab875b47ee936e4b9599 \
+                    size    2439740
 
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
@@ -55,9 +54,9 @@ configure.args-append \
                     -Dgl-graphene=enabled \
                     -Dintrospection=enabled \
                     -Dlibvisual=disabled \
-                    -Dnls=auto \
+                    -Dnls=disabled \
                     -Dogg=disabled \
-                    -Dqt5=auto \
+                    -Dqt5=disabled \
                     -Dtheora=disabled \
                     -Dvorbis=disabled \
                     -Dx11=disabled \
@@ -66,20 +65,9 @@ configure.args-append \
 
 # as of orc 0.4.34 compilation with c11 standard is required to prevent slugish behavior
 # see https://gitlab.freedesktop.org/gstreamer/orc/-/issues/47
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
-    compiler.c_standard 2011
-    configure.cflags-append     -std=c11
-}
-
-if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    configure.compiler macports-clang-11
-    configure.env-append "AR=${prefix}/libexec/llvm-11/bin/llvm-ar"
-    compiler.c_standard         2011
-    compiler.cxx_standard       2011
-    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
-    configure.cxxflags-append   -std=c++11
-    configure.ldflags-append    -Wl,-U,_main
-}
+compiler.c_standard 2011
+configure.cflags-append \
+                    -std=c11
 # orc requires stdatomic.h
 compiler.blacklist-append {clang < 700}
 
@@ -90,19 +78,6 @@ post-patch {
         ${worksrcpath}/scripts/meson-pkg-config-file-fixup.py \
         ${worksrcpath}/scripts/update-orc-dist-files.py \
         ${worksrcpath}/gst-libs/gst/gl/gl_mkenum.py
-}
-
-default_variants    +ogg
-
-# Prefer x11 quartz  implementation.
-if {![variant_isset quartz] && ![variant_isset x11] && ${os.major} >= 13} {
-    default_variants-append +x11 +quartz
-}
-
-# Only gl x11 glx avbl below macos-10.9
-
-if {${os.major} < 13 && ![variant_isset x11]} {
-    default_variants-append +x11
 }
 
 variant x11 {
@@ -118,14 +93,8 @@ variant x11 {
                     -Dxshm=enabled \
                     -Dxvideo=disabled \
                     -Dxvideo=enabled
-    if {![variant_isset quartz]} {
-        configure.args-replace \
-                        -Dgl=disabled \
-                        -Dgl=enabled
-        configure.args-append \
-                        -Dgl_winsys=x11 \
-                        -Dgl_platform=glx
-    }
+    configure.args-append \
+                    -Dgl_winsys=x11
 }
 
 variant ogg description {Build with support for libogg, libvorbis, libtheora} {
@@ -150,6 +119,9 @@ variant cdparanoia description {Enable (currently broken) cdparanoia plugin} {
                     -Dcdparanoia=enabled
 }
 
+# Prefer X11 implementation.
+default_variants    +ogg +x11
+
 # Cocoa-GL
 # Only enable on OS X 10.9 or later, if the x11 variant is not enabled.
 # Requires ARC (automatic reference counting, a clang feature enabled
@@ -158,7 +130,7 @@ variant cdparanoia description {Enable (currently broken) cdparanoia plugin} {
 # (https://llvm.org/viewvc/llvm-project?view=revision&revision=250955).
 # If building universal or for i386 then ensure that a sufficiently recent
 # version of clang is used, since the Xcode clang may be too old.
-variant quartz {
+platform macosx {
     if {![variant_isset x11] && ${os.major} >= 13} {
         if {(${universal_possible} && [variant_isset universal]) || ${build_arch} eq "i386"} {
             compiler.blacklist-append *gcc* {macports-clang-3.[0-8]} {clang < 703}
@@ -171,24 +143,8 @@ variant quartz {
                     -Dgl=disabled \
                     -Dgl=enabled
         configure.args-append \
-                    -Dgl_winsys=cocoa \
-                    -Dgl_platform=cgl
+                    -Dgl_winsys=cocoa
     }
-}
-
-# build x11 and quartz together possible on os.major >= 13
-if {[variant_isset quartz] && [variant_isset x11] && ${os.major} >= 13} {
-        depends_build-append \
-                    path:include/GL/glext.h:gl-headers
-        configure.args-replace \
-                    -Dgl=disabled \
-                    -Dgl=enabled
-        # Now we can fully rely on messon concerning avbl gl platforms.
-        # I left what is configuered now by messon but commented.
-        # One never nows that in future we will have more or other gl platforms on macos.
-        #configure.args-append \
-                   # -Dgl_winsys='cocoa, x11' \
-                   # -Dgl_platform='cgl, glx'
 }
 
 test.run            yes

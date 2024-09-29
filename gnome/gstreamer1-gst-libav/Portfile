@@ -5,15 +5,13 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
-    PortGroup           muniversal 1.0
-}
+PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-libav
 set my_name         gst-libav
 # please only commit stable updates (even numbered releases)
-version             1.24.7
-revision            1
+version             1.24.8
+revision            0
 description         This is gst-libav, a set of plug-ins for GStreamer.
 long_description    ${description}
 maintainers         nomaintainer
@@ -24,9 +22,9 @@ master_sites        https://gstreamer.freedesktop.org/src/${my_name}/
 distname            ${my_name}-${version}
 use_xz              yes
 
-checksums           rmd160  ca3cf22e1e8837b5b2af4ea2f2f25588537dd2c9 \
-                    sha256  c3e4179ba183c2d3101edf87ff70dd07e728c766a5fee34e6ecded76ca5802df \
-                    size    212244
+checksums           rmd160  1525b972f820fa1f7df6b357fb52538a8811fcf8 \
+                    sha256  1e4a8fd537621d236442cf90a6e9ad5e00f87bffffdaeb1fd8bfd23719de8c75 \
+                    size    213160
 
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
@@ -48,16 +46,6 @@ post-patch {
     reinplace "s|/usr/bin/env python3|${python.bin}|" \
         ${worksrcpath}/scripts/extract-release-date-from-doap-file.py \
         ${worksrcpath}/scripts/gen-changelog.py
-}
-
-if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    configure.compiler macports-clang-11
-    configure.env-append "AR=${prefix}/libexec/llvm-11/bin/llvm-ar"
-    compiler.c_standard         2011
-    compiler.cxx_standard       2011
-    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
-    configure.cxxflags-append   -std=c++11
-    configure.ldflags-append    -Wl,-U,_main
 }
 
 if {[lsearch [get_canonical_archs] i386] != -1} {

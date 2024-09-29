@@ -6,15 +6,12 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
-    PortGroup           muniversal 1.0
-
-}
+PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-plugins-bad
 set my_name         gst-plugins-bad
 # please only commit stable updates (even numbered releases)
-version             1.24.7
+version             1.24.8
 revision            0
 description         A set of plug-ins for GStreamer that need more quality.
 long_description    GStreamer Bad Plug-ins is a set of plug-ins that aren't up to par compared \
@@ -29,15 +26,13 @@ master_sites        https://gstreamer.freedesktop.org/src/${my_name}/
 distname            ${my_name}-${version}
 use_xz              yes
 
-checksums           rmd160  651d08297239455138079236f18a7a4b826dcb86 \
-                    sha256  75d513fc0ba635fb1f39786d890b73fbac5f4bc88ff39f2a9ff62f4b8f428f22 \
-                    size    7067132
+checksums           rmd160  f45493393cb70e1429f2565a7efae77434078e7e \
+                    sha256  35ad70de3d7cbca3089f33bb77c45750daad2ae93d79827fdbb469fa8aba84eb \
+                    size    7069792
 
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
 set python.bin      ${prefix}/bin/python${py_ver}
-
-use_xcode           yes
 
 depends_build-append \
                     port:gtk-doc \
@@ -84,13 +79,6 @@ patchfiles          modplug.patch \
                     libressl.patch \
                     no_pqueue_size.patch
 
-# added this patch to build gstreamer with mjpegtools en mpeg2enc
-# sets buffer size in gstreamer for ext mpeg2enc to uint64_t instead of guint64
-# on macos guint64 is unsigned long project mepg2enc needs unsigned long long.
-# I leave patch below for now but commented when building glib2 with universal support that is required
-# On macos 10.14 and above builds must all be done whitout universal support !!                 
-#patchfiles-append   mjpegtools-mpeg2enc.patch
-
 post-patch {
     reinplace "s|/usr/bin/env python3|${python.bin}|" \
         ${worksrcpath}/scripts/extract-release-date-from-doap-file.py \
@@ -105,6 +93,7 @@ post-patch {
 # the following ports are available but don't configure
 # and/or build correctly
 #
+# port:mjpegtools (mpeg2enc mplex build fails) need to disable mpeg2enc mplex explicitly in case mjpegtools is installed
 # port:faac has a restrictive license, disable faac plugin by default
 # port:libfdk-aac has a restrictive license, disable fdkaac plugin by default
 # path:lib/opencv3/libopencv_core.dylib:opencv3 (opencv plugin fails to configure with opencv 3.0.0+, can't find opencv2/bgsegm.hpp, now opencv2/video/background_segm.hpp)
@@ -113,26 +102,10 @@ post-patch {
 
 # fatal error: 'stdatomic.h' file not found
 compiler.blacklist-append {clang < 700}
-
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
-    # requires support for C11 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
-    compiler.c_standard         2011
-    # OpenExr requires C++11
-    compiler.cxx_standard       2011
-    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
-    # patched meson 1.5.1 to not include this flag when searching frameworks.
-    configure.CXXFLAGS-append   -std=c++11
-}
-
-if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    configure.compiler macports-clang-17
-    configure.env-append "AR=${prefix}/libexec/llvm-17/bin/llvm-ar"
-    compiler.c_standard         2011
-    compiler.cxx_standard       2011
-    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
-    configure.cxxflags-append   -std=c++11 
-    configure.ldflags-append    -Wl,-U,_main
-}
+# requires support for C11 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
+compiler.c_standard         2011
+# OpenExr requires C++11
+compiler.cxx_standard       2011
 
 configure.args-append \
                     -Dapplemedia=disabled \
@@ -141,14 +114,12 @@ configure.args-append \
                     -Dfdkaac=disabled \
                     -Dopencv=disabled \
                     -Dsctp=disabled \
-                    -Dsrtp=auto \
-                    -Dvulkan=auto \
-                    -Dintrospection=enabled
+                    -Dsrtp=disabled \
+                    -Dvulkan=disabled
 
-
-configure.cppflags-append   -L${prefix}/lib -Wno-unused-command-line-argument
-
-
+configure.cppflags-append   -L${prefix}/lib
+configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
+configure.cxxflags-append   -std=gnu++11
 configure.env-append        "HAVE_CXX=yes"
 
 variant faac description {Enable faac AAC plugin} {
@@ -175,71 +146,16 @@ variant x11 {
     configure.args-append   -Dx11=enabled
 }
 
-variant quartz {
-    # new cvr gstreamer can be installed with dual gl support cgl and gfx !!
-    # possibility to install gstreamer with only x11 always avbl.
-    require_active_variants port:gstreamer1-gst-plugins-base quartz
-}
-
-default_variants    +fdkaac +gpl +faac
-
-# Prefer +x11 +quartz  implementation.
-if {![variant_isset quartz] && ![variant_isset x11] && ${os.major} >= 13} {
-    default_variants-append +x11 +quartz
-}
-
-# Only gl x11 glx avbl below macos-10.9
-
-if {${os.major} < 13 && ![variant_isset x11]} {
-    default_variants-append +x11
-}
-
+default_variants    +x11
 
 # plugin applemedia (Apple video) now only builds on darwin 18 and later
 platform macosx {
     if {![variant_isset x11] && ${os.major} >= 18} {
-        # possibility to install gstreamer without x11 is still avbl. but not needed.
         # Apple_Media requires CGL, which can only be provided on newer platforms and without X11 enabled.
         require_active_variants port:gstreamer1-gst-plugins-base {} x11
         configure.args-replace  -Dapplemedia=disabled \
                                 -Dapplemedia=enabled
-
-        # required for applemedia
-        depends_lib-append  port:MoltenVK \
-                            port:vulkan-volk \
-                            port:vulkan-headers \
-                            port:vulkan-validationlayers
-                            
-        patchfiles-append   apple-media-vtdec-removed-error.patch
     }
-    if {[variant_isset x11] && [variant_isset quartz] && ${os.major} >= 18} {
-        # new cvr gstreamer can be installed with dual gl support cgl and gfx !!
-        # Apple_Media requires CGL, which can only be provided on newer platforms and with (x11 and quartz) enabled or x11 disabled.
-        require_active_variants port:gstreamer1-gst-plugins-base x11
-        require_active_variants port:gstreamer1-gst-plugins-base quartz
-        configure.args-replace  -Dapplemedia=disabled \
-                                -Dapplemedia=enabled
-
-
-        # required for applemedia
-        depends_lib-append  port:MoltenVK \
-                            port:vulkan-volk \
-                            port:vulkan-headers \
-                            port:vulkan-validationlayers
-
-        patchfiles-append   apple-media-vtdec-removed-error.patch
-    }        
-}
-
-# gobject-introspection uses g-ir-scanner, which uses $CC from env
-if {${universal_possible} && [variant_isset universal]} {
-    foreach arch ${configure.universal_archs} {
-        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
-        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
-    }
-} else {
-    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
-    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
 }
 
 livecheck.type      regex

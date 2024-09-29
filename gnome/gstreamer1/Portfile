@@ -6,19 +6,17 @@ PortGroup           conflicts_build 1.0
 PortGroup           legacysupport 1.1
 PortGroup           meson 1.0
 
-# No universal support on macos higher then 10.13 Darwin 17
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
-    PortGroup           muniversal 1.0
-}
+PortGroup           muniversal 1.0
+
 # _strnlen
 legacysupport.newest_darwin_requires_legacy 10
 
 name                gstreamer1
 set my_name         gstreamer
 # please only commit stable updates (even numbered releases)
-version             1.24.7
-revision            1
+version             1.24.8
+revision            0
 description         GStreamer is a library for constructing graphs of media-handling components.
 long_description    The applications it supports range from simple Ogg/Vorbis playback, audio/video \
                     streaming to complex audio (mixing) and video (non-linear editing) processing.
@@ -30,9 +28,9 @@ master_sites        https://gstreamer.freedesktop.org/src/${my_name}/
 distname            ${my_name}-${version}
 use_xz              yes
 
-checksums           rmd160  dd5c10ec1d7aa8286df91eb48c69e7a3c5198d78 \
-                    sha256  c0e75b124c52bb7a0c3dcdb734b2ad260ea7286a8745cf2ea629d4c849e6a958 \
-                    size    1859604
+checksums           rmd160  6ad3a456470c8c69834eb1bd7e42c6a67287f941 \
+                    sha256  b807dbf36c5d2b3ce1c604133ed0c737350f9523ce4d8d644a1177c5f9d6ded3 \
+                    size    1861416
 
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
@@ -55,10 +53,9 @@ depends_lib-append  port:bison \
 
 conflicts_build     check
 
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
-    patchfiles          patch-gstreamer1-darwin-numcpufix-sysctl.diff \
-                        patch-gst-gst-c-tiger-no-procpidpath.diff
-}
+patchfiles          patch-gstreamer1-darwin-numcpufix-sysctl.diff \
+                    patch-gst-gst-c-tiger-no-procpidpath.diff
+
 # Temporary fix until the upstream addresses the breakage.
 # https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/3437
 if {${os.platform} eq "darwin" && ${os.major} < 16} {
@@ -81,24 +78,6 @@ configure.cflags-append -funroll-loops -fstrict-aliasing -fno-common
 
 # Match blacklist used in gstreamer1-gst-plugins-base
 # error: redefinition of typedef ‘GstHarness’
-
-
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
-    # requires support for C11 (redefinition of typedef ‘GstTestHTTPSrc’ at elements/test_http_src.c:101)
-    compiler.c_standard         2011
-    # OpenExr requires C++11
-    compiler.cxx_standard       2011
-}
-if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    configure.compiler macports-clang-11
-    configure.env-append "AR=${prefix}/libexec/llvm-11/bin/llvm-ar"
-    compiler.c_standard         2011
-    compiler.cxx_standard       2011
-    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
-    configure.cxxflags-append   -std=c++11
-    configure.ldflags-append    -Wl,-U,_main
-}
-
 compiler.blacklist-append \
                     *gcc-3.* *gcc-4.* {clang < 212}
 

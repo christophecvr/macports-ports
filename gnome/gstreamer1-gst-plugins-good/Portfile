@@ -6,15 +6,13 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 
 # https://bugzilla.gnome.org/show_bug.cgi?id=636134
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
-    PortGroup           muniversal 1.0
-}
+PortGroup           muniversal 1.0
 
 name                gstreamer1-gst-plugins-good
 set my_name         gst-plugins-good
 # please only commit stable updates (even numbered releases)
-version             1.24.7
-revision            1
+version             1.24.8
+revision            0
 description         A set of good-quality plug-ins for GStreamer under GStreamer's preferred \
                     license, LGPL.
 long_description    GStreamer Good Plug-ins is a set of plug-ins that GStreamer's developers \
@@ -29,9 +27,9 @@ master_sites        https://gstreamer.freedesktop.org/src/${my_name}/
 use_xz              yes
 distname            ${my_name}-${version}
 
-checksums           rmd160  02cbfb32c8ea976bacf749ea5a3f47b705f31aac \
-                    sha256  759acb11e6de8373ff8cbb5e7ab8eb9a38631be81cf24220267b001eb55593c1 \
-                    size    2922348
+checksums           rmd160  8c19066a5c0578092515ec3dc5454b6b0e904e5d \
+                    sha256  613a20f03bd4544b52f10f6ceb4e0fffd25eff15bf338ab8b12b971982eb0153 \
+                    size    2924936
 
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
@@ -101,19 +99,7 @@ compiler.blacklist-append \
 # <rdar://problem/9694837> - Fixed in Xcode 4.2 (clang 211.10.1)
 # blacklist compilers that don't support C11 typedef redefinition
 # gstflvmux.h:73: error: redefinition of typedef ‘GstFlvMuxPadClass’
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
-    compiler.c_standard 2011
-}
-
-if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    configure.compiler macports-clang-11
-    configure.env-append "AR=${prefix}/libexec/llvm-11/bin/llvm-ar"
-    compiler.c_standard         2011
-    compiler.cxx_standard       2011
-    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
-    configure.cxxflags-append   -std=c++11
-    configure.ldflags-append    -Wl,-U,_main
-}
+compiler.c_standard 2011
 
 platform darwin {
     if {${os.major} < 10} {
@@ -168,13 +154,11 @@ variant qt description {Enable Qt5 MAC windowing elements } {
 
     # avoid:
     # ${prefix}/libexec/qt5/include/QtCore/qcompilerdetection.h:562:6: error: Qt requires a C++11 compiler and yours does not seem to be that.
-    if {${os.platform} eq "darwin" && ${os.major} < 18} {
-        compiler.cxx_standard   2011
-        configure.cxxflags-append -std=c++11
-    }
+    compiler.cxx_standard   2011
+    configure.cxxflags-append -std=c++11
 }
 
-default_variants            +pulseaudio +x11 +gtk3 +jack +qt
+default_variants            +pulseaudio +x11 +gtk3
 
 livecheck.type      regex
 livecheck.url       ${master_sites}
