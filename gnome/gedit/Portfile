@@ -5,7 +5,10 @@ PortGroup           active_variants 1.1
 PortGroup           compiler_blacklist_versions 1.0
 #PortGroup           app   1.0
 PortGroup           meson 1.0
-PortGroup           yelp  1.0
+
+if {[variant_isset x11]} {
+    PortGroup           yelp  1.0
+}
 
 name                gedit
 version             3.38.2
@@ -71,7 +74,12 @@ depends_run         port:adwaita-icon-theme
 
 patchfiles-append   patch-gedit-meson-build-python3.diff \
                     patch-meson-151.diff \
-                    deprecated-glib-items.patch
+                    deprecated-glib-items.patch \
+                    add-gedit-recent-osx-c-h.patch
+
+if {${os.platform} eq "darwin" && ${os.major} >= 18} {                    
+    patchfiles-append   gedit-app-osx-m.patch
+}
 
 post-patch {
     reinplace "s|@@PYTHON3@@|${configure.python}|g" ${worksrcpath}/meson.build
@@ -135,6 +143,7 @@ variant x11 conflicts quartz {
 variant quartz conflicts x11 {
     require_active_variants gtk3 quartz
     depends_lib-append      port:gtk-osx-application-gtk3
+    patchfiles-append       patch-meson-darwin-assume-quartz.diff
 }
 
 if {![variant_isset quartz]} {
