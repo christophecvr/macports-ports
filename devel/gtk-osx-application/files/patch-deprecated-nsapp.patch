@@ -1,0 +1,128 @@
+--- src/cocoa_menu_item.c.orig	2021-06-29 02:49:49.000000000 +0200
++++ src/cocoa_menu_item.c	2024-10-02 06:52:44.000000000 +0200
+@@ -123,11 +123,11 @@
+                 NULL);
+ 
+   if (inconsistent)
+-    [cocoa_item setState: NSMixedState];
++    [cocoa_item setState: NSControlStateValueMixed];
+   else if (active)
+-    [cocoa_item setState: NSOnState];
++    [cocoa_item setState: NSControlStateValueOn];
+   else
+-    [cocoa_item setState: NSOffState];
++    [cocoa_item setState: NSControlStateValueOff];
+ }
+ 
+ static void
+@@ -249,7 +249,7 @@
+ 		  [cocoa_item setKeyEquivalent: @""];
+                   return;
+                 }
+-              modifiers |= NSNumericPadKeyMask;
++              modifiers |= NSEventModifierFlagNumericPad;
+             }
+ 
+           /* if we somehow got here with GDK_A ... GDK_Z rather than GDK_a ... GDK_z, then take note
+@@ -258,7 +258,7 @@
+ 
+           if (keyval_is_uppercase (actual_key))
+             {
+-              modifiers |= NSShiftKeyMask;
++              modifiers |= NSEventModifierFlagShift;
+             }
+ 
+           str = gdk_quartz_keyval_to_string (actual_key);
+@@ -286,24 +286,24 @@
+             {
+               if (key->accel_mods & GDK_SHIFT_MASK)
+                 {
+-                  modifiers |= NSShiftKeyMask;
++                  modifiers |= NSEventModifierFlagShift;
+                 }
+ 
+               if (key->accel_mods & GDK_CONTROL_MASK)
+                 {
+-                  modifiers |= NSControlKeyMask;
++                  modifiers |= NSEventModifierFlagControl;
+                 }
+ 
+               /* gdk/quartz maps Alt/Option to Mod5 */
+               if (key->accel_mods & (GDK_MOD1_MASK))
+                 {
+-                  modifiers |= NSAlternateKeyMask;
++                  modifiers |= NSEventModifierFlagOption;
+                 }
+ 
+               /* gdk/quartz maps Command to MOD1 */
+               if (key->accel_mods & GDK_META_MASK)
+                 {
+-                  modifiers |= NSCommandKeyMask;
++                  modifiers |= NSEventModifierFlagCommand;
+                 }
+ 
+             }
+--- src/gtkosxapplication_quartz.c.orig	2021-06-29 02:49:49.000000000 +0200
++++ src/gtkosxapplication_quartz.c	2024-10-02 07:24:52.000000000 +0200
+@@ -283,7 +283,7 @@
+   /* Translators: This is the "Hide Others" menu item for the "Apple" menu. */
+   menuitem = [[NSMenuItem alloc] initWithTitle: [NSString stringWithUTF8String: _("Hide Others")]
+ 	      action: @selector (hideOtherApplications: ) keyEquivalent: @"h"];
+-  [menuitem setKeyEquivalentModifierMask: NSCommandKeyMask | NSAlternateKeyMask];
++  [menuitem setKeyEquivalentModifierMask: NSEventModifierFlagCommand | NSEventModifierFlagOption];
+   [menuitem setTarget: NSApp];
+   [app_menu addItem: menuitem];
+   [menuitem release];
+@@ -547,7 +547,7 @@
+    * thread; use an idle or timer event to start the handler if
+    * necessary.
+    */
+-  if ([nsevent type] == NSKeyDown &&
++  if ([nsevent type] == NSEventTypeKeyDown &&
+       gtkosx_application_use_quartz_accelerators (app) )
+     {
+       gboolean result;
+@@ -593,6 +593,7 @@
+   [NSApp setDelegate: [GtkApplicationDelegate new]];
+   self->priv->delegate = [NSApp delegate];
+   bindtextdomain (PACKAGE_NAME, LOCALEDIR);
++  bind_textdomain_codeset(PACKAGE_NAME, "UTF-8");
+ 
+   /* Check if we're running inside an application bundle and overwrite the
+    * previously bound domain to a location inside the bundle.
+--- src/gtkosxapplication.h.orig	2021-06-29 22:19:45.000000000 +0200
++++ src/gtkosxapplication.h	2024-10-02 07:04:50.000000000 +0200
+@@ -93,14 +93,14 @@
+ 				       GtkMenuItem *menu_item);
+ 
+ /*Dock Functions*/
+-/**
+- * GtkosxApplicationAttentionType:
+- * @GTKOSX_APPLICATION_ATTENTION_TYPE_CRITICAL_REQUEST: Bounce the icon until the app is activated.
+- * @GTKOSX_APPLICATION_ATTENTION_TYPE_INFO_REQUEST: Bounce the icon for one second.
+- * @CRITICAL_REQUEST: (Deprecated) Bounce the icon until the app is activated.
+- * @INFO_REQUEST: (Deprecated) Bounce the icon for one second.
+- *
+- * The possible values for dock attention requests.
++/*
++ - GtkosxApplicationAttentionType:
++ - @GTKOSX_APPLICATION_ATTENTION_TYPE_CRITICAL_REQUEST: Bounce the icon until the app is activated.
++ - @GTKOSX_APPLICATION_ATTENTION_TYPE_INFO_REQUEST: Bounce the icon for one second.
++ - @CRITICAL_REQUEST: (Deprecated) Bounce the icon until the app is activated.
++ - @INFO_REQUEST: (Deprecated) Bounce the icon for one second.
++ -
++ - The possible values for dock attention requests.
+  */
+ typedef enum {
+ #ifndef GTKOSX_DISABLE_DEPRECATED
+--- src/gtkosx-image.c.orig	2021-06-29 02:49:49.000000000 +0200
++++ src/gtkosx-image.c	2024-10-02 07:46:39.000000000 +0200
+@@ -98,7 +98,7 @@
+ 
+   // Get the Quartz context and draw.
+   imageContext = (CGContextRef)[[NSGraphicsContext currentContext]
+-                                graphicsPort];
++                                CGContext];
+   CGContextDrawImage (imageContext, * (CGRect*)&imageRect, image);
+   [newImage unlockFocus];
+   CGImageRelease (image);
