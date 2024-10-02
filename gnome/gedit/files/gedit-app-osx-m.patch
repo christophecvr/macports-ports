@@ -1,16 +1,6 @@
 --- gedit/gedit-app-osx.m.orig	2021-03-27 18:41:09.000000000 +0100
-+++ gedit/gedit-app-osx.m	2024-09-30 04:13:30.000000000 +0200
-@@ -31,7 +31,8 @@
- #include "gedit-debug.h"
- #include "gedit-commands.h"
- #include "gedit-commands-private.h"
--#include "gedit-recent.h"
-+#include "gedit-document-private.h"
-+#include "gedit-recent-osx.h"
- #import <AppKit/AppKit.h>
- 
- NSWindow *gdk_quartz_window_get_nswindow(GdkWindow *window);
-@@ -225,12 +226,12 @@
++++ gedit/gedit-app-osx.m	2024-10-01 10:24:20.000000000 +0200
+@@ -225,12 +225,12 @@
  
  		if (link_id)
  		{
@@ -25,15 +15,7 @@
  		}
  
  		ret = gedit_app_osx_show_url (GEDIT_APP_OSX (app), link);
-@@ -287,6 +288,7 @@
- 		}
- 
- 		ismodified = !gedit_document_is_untouched (document);
-+/*		ismodified = !tepl_buffer_is_untouched (TEPL_BUFFER (document)); */
- 		[native setDocumentEdited:ismodified];
- 	}
- 	else
-@@ -506,7 +508,7 @@
+@@ -506,7 +506,7 @@
  
  	window = GEDIT_APP_CLASS (gedit_app_osx_parent_class)->create_window (app);
  
@@ -42,3 +24,12 @@
  
  	if (gtk_widget_get_realized (GTK_WIDGET (window)))
  	{
+@@ -595,7 +595,7 @@
+ 	   command line arguments by itself and generate OpenFile events.
+ 	   We already parse the command line ourselves, so this is needed
+ 	   to prevent opening files twice, etc. */
+-	[[NSUserDefaults standardUserDefaults] setObject:@"NO"
++	[[NSUserDefaults standardUserDefaults] setObject:@"YES"
+ 	                                       forKey:@"NSTreatUnknownArgumentsAsOpen"];
+ }
+ 

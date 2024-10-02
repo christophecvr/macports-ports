@@ -74,8 +74,7 @@ depends_run         port:adwaita-icon-theme
 
 patchfiles-append   patch-gedit-meson-build-python3.diff \
                     patch-meson-151.diff \
-                    deprecated-glib-items.patch \
-                    add-gedit-recent-osx-c-h.patch
+                    deprecated-glib-items.patch
 
 if {${os.platform} eq "darwin" && ${os.major} >= 18} {                    
     patchfiles-append   gedit-app-osx-m.patch
@@ -144,6 +143,7 @@ variant quartz conflicts x11 {
     require_active_variants gtk3 quartz
     depends_lib-append      port:gtk-osx-application-gtk3
     patchfiles-append       patch-meson-darwin-assume-quartz.diff
+    patchfiles-append       patch-menu-common-ui.patch
 }
 
 if {![variant_isset quartz]} {
