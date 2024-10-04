@@ -51,7 +51,15 @@ patchfiles-append   patch-docs-rst2man.diff
 
 # Don't allow build to promote warnings to errors. Full details in patchfile.
 # See: https://trac.macports.org/ticket/67985
-patchfiles-append   patch-meson-build-debug.diff
+if {![variant_isset quartz]} {
+    # extra change for build when vulkan installed
+    # to do : make port for glslc utility.
+    patchfiles-append   patch-meson-build-debug.diff
+}
+
+if {[variant_isset quartz]} {
+    patchfiles-append   patch-meson-build-debug-quartz.diff
+}
 
 post-patch {
     reinplace "s|@@PYTHON_VERSION@@|${python_branch}|g" \
@@ -85,7 +93,8 @@ depends_build-append \
                     path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
                     port:pkgconfig \
                     port:py${python_version}-docutils \
-                    port:sassc
+                    port:sassc \
+                    bin:glslang:glslang
 
 depends_lib-append \
                     path:lib/pkgconfig/cairo.pc:cairo \
@@ -142,7 +151,11 @@ variant quartz conflicts x11 {
     require_active_variants path:lib/pkgconfig/pango.pc:pango quartz
 
     configure.args-append   -Dx11-backend=false -Dmacos-backend=true
-
+    # adapted meson to build gtk4 +quartz when vulkan is installed.
+    # fix for missing glslc
+    # To do : adding port for glslc utility.
+    patchfiles-append   gsk-gpu-vulkan-shaders.patch
+    
     if {${os.platform} eq "darwin" && ${os.major} < 16} {
         # Add AppKit wrapper header to compiler library paths
         configure.cflags-prepend        -isystem ${filespath}/old_appkit_compat
