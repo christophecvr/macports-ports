@@ -1,0 +1,59 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           cmake 1.1
+PortGroup           legacysupport 1.1
+
+github.setup        google shaderc v2024.3
+revision            0
+
+categories          graphics devel
+license             {BSD Permissive}
+maintainers         {christophecvr @christophecvr}
+
+description         A collection of tools, libraries and tests for shader compilation.
+long_description    At the moment it includes: \
+                    glslc, a command line compiler for GLSL/HLSL to SPIR-V, and \
+                    libshaderc, a library API for accessing glslc functionality.
+homepage            https://github.com/google/shaderc
+
+checksums           sha256  e8fe28d01b7f9100118bc99f7421a1022d5bed3280c8ce50644d8462da649581 \
+                    rmd160  28cc1e3a47f74c37897ea49e632273dccc722617 \
+                    size    227486
+
+set py_ver          3.12
+set py_ver_nodot    [string map {. {}} ${py_ver}]
+
+compiler.cxx_standard 2017
+
+# Need to use MacPorts libc++ on macOS 10.14 Mojave and older, because
+# Apple Clang only added support for the C++17 <filesystem> library
+# starting in Xcode 11 (clang-1100) for macOS 10.15+.
+# 
+# References:
+# * https://stackoverflow.com/a/55353263
+# * https://developer.apple.com/documentation/xcode-release-notes/xcode-11-release-notes
+legacysupport.newest_darwin_requires_legacy 18
+legacysupport.use_mp_libcxx yes
+
+post-extract {
+    system ${worksrcpath}/utils/git-sync-deps
+}
+
+# Generate a pkg-config file, so that software projects that use
+# pkg-config to locate external dependencies (e.g., Godot 4.x) are able
+# to find and link against glslang.
+#
+# This patch has also been submitted upstream, and when it gets added
+# to the glslang codebase, our patchfile can be deleted:
+# https://github.com/KhronosGroup/glslang/pull/3371
+#patchfiles-append       create-pkgconfig-file.diff
+
+depends_build-append    port:python${py_ver_nodot}
+configure.python        ${prefix}/bin/python${py_ver}
+configure.args-append   -DPYTHON_EXECUTABLE:FILEPATH=${configure.python}
+
+
+
+configure.args-append   -DBUILD_SHARED_LIBS=ON
