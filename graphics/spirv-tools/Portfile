@@ -5,9 +5,11 @@ PortGroup           github 1.0
 PortGroup           cmake 1.1
 PortGroup           legacysupport 1.1
 
-github.setup        KhronosGroup SPIRV-Tools 1.3.280.0 vulkan-sdk-
 name                spirv-tools
-revision            0
+set project_name    SPIRV-Tools
+version             1.3.280.0
+revision            1
+github.setup        KhronosGroup ${project_name} ${version} vulkan-sdk-
 
 categories          graphics
 license             Apache-2
@@ -18,9 +20,13 @@ long_description    SPIR-V assembler, binary module parser, \
                     disassembler, validator, and optimizer
 homepage            https://vulkan.lunarg.com
 
-# FIXME: Failed to extract spirv-tools: no files matched glob pattern...
+# move extracted main module to worksrcpath
+# Move submodules to cmakes expected location in worksrcpath
 post-extract {
-    move ${workpath}/KhronosGroup-SPIRV-Tools-04896c4 ${workpath}/SPIRV-Tools-04896c4
+    move ${workpath}/KhronosGroup-SPIRV-Tools-04896c4 ${worksrcpath}
+    foreach {sub_author sub_project sub_commit sub_dest} ${submodules} {
+        move ${workpath}/${sub_project}-${sub_commit} ${worksrcpath}/${sub_dest}
+    }
 }
 
 checksums           SPIRV-Tools-1.3.280.0.tar.gz \
@@ -63,7 +69,7 @@ compiler.cxx_standard 2017
 legacysupport.newest_darwin_requires_legacy 18
 legacysupport.use_mp_libcxx yes
 
-set py_ver          3.11
+set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
 foreach stage {configure build destroot test} {
     ${stage}.env-append PATH=${frameworks_dir}/Python.framework/Versions/${py_ver}/bin:$env(PATH)
@@ -85,14 +91,8 @@ foreach {sub_author sub_project sub_commit sub_dest} ${submodules} {
     distfiles-append    ${sub_project}-${sub_commit}.tar.gz:${sub_project}
 }
 
-post-extract {
-    ln -s {*}[glob -directory ${workpath} -tails ${github.project}-*] ${worksrcpath}
-    foreach {sub_author sub_project sub_commit sub_dest} ${submodules} {
-        ln -s {*}[glob ${workpath}/${sub_project}-*] ${worksrcpath}/${sub_dest}
-    }
-}
-
 configure.args-append \
                     -DSPIRV_WERROR=OFF \
                     -DBUILD_SHARED_LIBS=ON \
-                    -DSPIRV_TOOLS_BUILD_STATIC=OFF
+                    -DSPIRV_TOOLS_BUILD_STATIC=OFF \
+                    -DCMAKE_INSTALL_PREFIX=${prefix}

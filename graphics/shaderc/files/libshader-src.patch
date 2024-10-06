@@ -1,0 +1,12 @@
+diff -Naur libshaderc_util/src.orig/compiler.cc libshaderc_util/src/compiler.cc
+--- libshaderc_util/src.orig/compiler.cc	2024-10-05 07:47:26.000000000 +0200
++++ libshaderc_util/src/compiler.cc	2024-10-05 16:00:52.000000000 +0200
+@@ -20,7 +20,7 @@
+ #include <thread>
+ #include <tuple>
+ 
+-#include "SPIRV/GlslangToSpv.h"
++#include <SPIRV/GlslangToSpv.h>
+ #include "libshaderc_util/format.h"
+ #include "libshaderc_util/io_shaderc.h"
+ #include "libshaderc_util/message.h"

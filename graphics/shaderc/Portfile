@@ -5,7 +5,7 @@ PortGroup           github 1.0
 PortGroup           cmake 1.1
 PortGroup           legacysupport 1.1
 
-github.setup        google shaderc v2024.3
+github.setup        google shaderc 9a658e242ad4d1a4b3491383c1c58c780e3c01ff
 revision            0
 
 categories          graphics devel
@@ -18,9 +18,15 @@ long_description    At the moment it includes: \
                     libshaderc, a library API for accessing glslc functionality.
 homepage            https://github.com/google/shaderc
 
-checksums           sha256  e8fe28d01b7f9100118bc99f7421a1022d5bed3280c8ce50644d8462da649581 \
-                    rmd160  28cc1e3a47f74c37897ea49e632273dccc722617 \
-                    size    227486
+# FIXME: Failed to extract spirv-tools: no files matched glob pattern...
+#post-extract {
+#    move ${workpath}/google-shaderc-9a658e2 ${workpath}/shaderc-9a658e2
+#}
+
+checksums           shaderc-9a658e242ad4d1a4b3491383c1c58c780e3c01ff.tar.gz \
+                    rmd160  b3923bafa6e306d2f11a6f803daf437fd8136493 \
+                    sha256  1a1af9a4aabcb7bb6064ad1ee5699e17b461b1105db487fb1d79675fb180faa2 \
+                    size    227147 \
 
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
@@ -37,9 +43,9 @@ compiler.cxx_standard 2017
 legacysupport.newest_darwin_requires_legacy 18
 legacysupport.use_mp_libcxx yes
 
-post-extract {
-    system ${worksrcpath}/utils/git-sync-deps
-}
+#post-extract {
+#    system ${worksrcpath}/utils/git-sync-deps
+#}
 
 # Generate a pkg-config file, so that software projects that use
 # pkg-config to locate external dependencies (e.g., Godot 4.x) are able
@@ -50,10 +56,50 @@ post-extract {
 # https://github.com/KhronosGroup/glslang/pull/3371
 #patchfiles-append       create-pkgconfig-file.diff
 
+#patchfiles-append       third-party-cmakelists.patch
+#patchfiles-append       libshader-src.patch
+
 depends_build-append    port:python${py_ver_nodot}
 configure.python        ${prefix}/bin/python${py_ver}
 configure.args-append   -DPYTHON_EXECUTABLE:FILEPATH=${configure.python}
 
+# See DEPS file in repo
+set submodules {
+    abseil abseil-cpp 79ca5d7aad63973c83a4962a66ab07cd623131ea third_party/abseil_cpp
+    google effcee 19b4aa87af25cb4ee779a071409732f34bfc305c third_party/effcee
+    google googletest 5df0241ea4880e5a846775d3efc8b873f7b36c31 third_party/googletest
+    google re2 c9cba76063cf4235c1a15dd14a24a4ef8d623761 third_party/re2
+}
+
+#    protocolbuffers protobuf f0dc78d7e6e331b8c6bb2d5283e06aa26883ca7c external/protobuf
+#    google re2 ed9fc269e2fdb299afe59e912928d31ad3fdcf7d external/re2
+#    KhronosGroup SPIRV-Headers 8b246ff75c6615ba4532fe4fde20f1be090c3764 external/spirv-headers
+
+#  'abseil_revision': '5be22f98733c674d532598454ae729253bc53e82',
+#  'effcee_revision' : '19b4aa87af25cb4ee779a071409732f34bfc305c',
+#  'glslang_revision': 'd73712b8f6c9047b09e99614e20d456d5ada2390',
+#  'googletest_revision': 'e47544ad31cb3ceecd04cc13e8fe556f8df9fe0b',
+#  're2_revision': 'c9cba76063cf4235c1a15dd14a24a4ef8d623761',
+#  'spirv_headers_revision': '8b246ff75c6615ba4532fe4fde20f1be090c3764',
+#  'spirv_tools_revision': '04896c462d9f3f504c99a4698605b6524af813c1',
 
 
-configure.args-append   -DBUILD_SHARED_LIBS=ON
+
+foreach {sub_author sub_project sub_commit sub_dest} ${submodules} {
+    master_sites-append https://github.com/${sub_author}/${sub_project}/archive/${sub_commit}.tar.gz?dummy=:${sub_project}
+    distfiles-append    ${sub_project}-${sub_commit}.tar.gz:${sub_project}
+}
+
+post-extract {
+    ln -s {*}[glob -directory ${workpath} -tails ${github.project}-*] ${worksrcpath}
+    foreach {sub_author sub_project sub_commit sub_dest} ${submodules} {
+        ln -s {*}[glob ${workpath}/${sub_project}-*] ${worksrcpath}/${sub_dest}
+    }
+}
+
+
+configure.args-append   -DBUILD_SHARED_LIBS=ON \
+                        -DBUILD_STATIC_LIBS=OFF \
+                        -DSHADERC_SKIP_TESTS=ON \
+                        -DSHADERC_SKIP_INSTALL=ON \
+                        -DALLOW_EXTERNAL_GLSLANG_TOOLS=ON

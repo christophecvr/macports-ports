@@ -1,0 +1,35 @@
+--- third_party/CMakeLists.txt.orig	2024-03-08 19:52:40.000000000 +0100
++++ third_party/CMakeLists.txt	2024-10-05 17:30:38.000000000 +0200
+@@ -77,7 +77,15 @@
+     endif()
+   endif()
+   if (NOT TARGET SPIRV-Tools)
+-    message(FATAL_ERROR "SPIRV-Tools was not found - required for compilation")
++    #message(FATAL_ERROR "SPIRV-Tools was not found - required for compilation")
++    find_package(PkgConfig REQUIRED)
++    pkg_check_modules(SPIRV_TOOLS REQUIRED SPIRV-Tools)
++    #target_link_libraries(SHADERC ${SPIRV_TOOLS_LIBRARIES})
++    #target_include_directories(SHADERC PUBLIC ${SPIRV_TOOLS_INCLUDE_DIRS})
++    #target_compile_options(SHADERC PUBLIC ${SPIRV_TOOLS_CFLAGS_OTHER})
++    if (NOT ${SPIRV_TOOLS})
++        message(FATAL_ERROR "SPIRV-Tools was not found - required for compilation")
++    endif()
+   endif()
+ endif()
+ 
+@@ -86,7 +94,14 @@
+     add_subdirectory(${SHADERC_GLSLANG_DIR} glslang)
+   endif()
+   if (NOT TARGET glslang)
+-    message(FATAL_ERROR "glslang was not found - required for compilation")
++    #message(FATAL_ERROR "glslang was not found - required for compilation")
++    find_package(PkgConfig REQUIRED)
++    pkg_check_modules(GLSLANG REQUIRED IMPORTED_TARGET glslang)
++    target_include_directories(${shaderc} ${IMPORTED_TARGET})
++    #target_compile_options(${GLSLANG})
++    if (NOT ${GLSLANG})
++        message(FATAL_ERROR "glslang was not found - required for compilation")
++    endif()
+   endif()
+   if(WIN32)
+       # This is unfortunate but glslang forces our
