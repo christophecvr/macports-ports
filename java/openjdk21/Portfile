@@ -12,6 +12,11 @@ categories          java devel
 supported_archs     x86_64 arm64
 license             GPL-2+
 maintainers         {breun.nl:nils @breun} openmaintainer
+
+# Builds successfully on macOS 11+
+# Mapping to Darwin version: https://trac.macports.org/wiki/PortfileRecipes#compare-osx-darwin-version
+platforms           { darwin >= 20 }
+
 description         OpenJDK ${feature} (Long Term Support)
 long_description    JDK ${feature} builds of OpenJDK, the Open-Source implementation \
                     of the Java Platform, Standard Edition, and related projects.
