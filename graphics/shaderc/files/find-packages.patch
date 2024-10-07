@@ -1,0 +1,14 @@
+--- third_party/CMakeLists.txt.orig	2024-04-30 20:23:34.000000000 +0200
++++ third_party/CMakeLists.txt	2024-10-07 00:00:18.000000000 +0200
+@@ -91,7 +91,10 @@
+     add_subdirectory(${SHADERC_GLSLANG_DIR} glslang)
+   endif()
+   if (NOT TARGET glslang)
+-    message(FATAL_ERROR "glslang was not found - required for compilation")
++    find_package(glslang CONFIG REQUIRED)
++    #if (NOT glslang)
++        #message(FATAL_ERROR "glslang was not found - required for compilation")
++    #endif()
+   endif()
+   if(WIN32)
+       # This is unfortunate but glslang forces our
