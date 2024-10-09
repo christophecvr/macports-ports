@@ -141,7 +141,7 @@ compiler.blacklist-append {clang < 800}
 
 # The old ffmpeg port was GPL-2+ as base and had a no_gpl variant, so this keeps us consistent
 # Also, -gpl2 causes other ports to fail to build due to the missing libpostproc (#35473)
-default_variants-append +gpl2
+default_variants-append +gpl2 +rav1e +nonfree +gpl3 +flite +libdc1394 +jack -universall +rtmp +x11
 
 if {[tbool configure.ccache]} {
     set ccache_path ${prefix}/bin/ccache
