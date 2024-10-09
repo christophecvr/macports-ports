@@ -2,7 +2,7 @@
 
 PortSystem          1.0
 PortGroup           xcodeversion 1.0
-#PortGroup           muniversal 1.0
+PortGroup           muniversal 1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           active_variants 1.1
 
@@ -17,7 +17,7 @@ name                ffmpeg6
 set my_name         ffmpeg
 
 version             6.1.1
-revision            5
+revision            4
 epoch               0
 
 license             LGPL-2.1+
@@ -60,8 +60,6 @@ distname            ${my_name}-${version}
 dist_subdir         ${my_name}
 use_xz              yes
 
-#configure.compiler macports-clang-14
-
 checksums           rmd160  75589206a87bb9fc9153119396d1f0a434561ea4 \
                     sha256  8684f4b00f94b85461884c3719382f1261f0d9eb3d59640a1f4ac0873616f968 \
                     size    10458600
@@ -70,7 +68,6 @@ depends_build-append \
                     port:cctools \
                     port:gmake \
                     port:pkgconfig \
-                    port:clang-14 \
                     port:texinfo
 
 depends_lib-append \
@@ -134,7 +131,7 @@ compiler.blacklist-append {clang < 800}
 
 # The old ffmpeg port was GPL-2+ as base and had a no_gpl variant, so this keeps us consistent
 # Also, -gpl2 causes other ports to fail to build due to the missing libpostproc (#35473)
-default_variants-append +gpl2 +x11 +librtmp +gpl3 +jack +rav1e +nonfree +flite +libdc1394 -universall
+default_variants-append +gpl2
 
 if {[tbool configure.ccache]} {
     set ccache_path ${prefix}/bin/ccache
