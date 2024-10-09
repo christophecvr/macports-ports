@@ -5,8 +5,9 @@ PortGroup           github 1.0
 PortGroup           cmake 1.1
 PortGroup           legacysupport 1.1
 
-github.setup        google shaderc 9a658e242ad4d1a4b3491383c1c58c780e3c01ff
+version             v2024.1
 revision            0
+github.setup        google shaderc ${version}
 
 categories          graphics devel
 license             {BSD Permissive}
@@ -18,10 +19,10 @@ long_description    At the moment it includes: \
                     libshaderc, a library API for accessing glslc functionality.
 homepage            https://github.com/google/shaderc
 
-checksums           shaderc-9a658e242ad4d1a4b3491383c1c58c780e3c01ff.tar.gz \
-                    rmd160  b3923bafa6e306d2f11a6f803daf437fd8136493 \
-                    sha256  1a1af9a4aabcb7bb6064ad1ee5699e17b461b1105db487fb1d79675fb180faa2 \
-                    size    227147 \
+checksums           shaderc-v2024.1.tar.gz \
+                    rmd160  1cbc470bfd782287854e08a53a77929224b1a9c5 \
+                    sha256  217afd670bc804bc87f2534c86c1474cf6890c730a4f8de68bbe1457b531f04f \
+                    size    227221 \
                     abseil-cpp-79ca5d7aad63973c83a4962a66ab07cd623131ea.tar.gz \
                     rmd160  0f233213825e23c55820390a3d4e52c97e9e8c10 \
                     sha256  fb1dc4bf076892aca18d7fd0c228967a451f880df65da53c3af33776ca31f465 \
@@ -67,7 +68,7 @@ legacysupport.newest_darwin_requires_legacy 18
 legacysupport.use_mp_libcxx yes
 
 
-#patchfiles              packages-install-location.patch
+patchfiles              skip-third-party-install.patch
 
 depends_build           port:spirv-headers
 
@@ -79,8 +80,8 @@ depends_build-append    port:python${py_ver_nodot}
 configure.python        ${prefix}/bin/python${py_ver}
 configure.args-append   -DPYTHON_EXECUTABLE:FILEPATH=${configure.python}
 
-# a rebuild to build shaderc and glslc of spirv-tools,spirv-headers and glslang is required.
-# However we do not install them.
+# To build shaderc and glslc inside build of spirv-tools,spirv-headers and glslang is required.
+# We do not install them since at run time we can use the already installed one.
 # For this reason commits are set to the ones of vulkan-sdk tag 1.3.280.0
 # See DEPS in port:spirv-tools version vulkan tag 1.3.280.0 to obtain commit versions.
 # See glslang port commit version for vulkan tag 1.3.280.0
@@ -99,12 +100,11 @@ foreach {sub_author sub_project sub_commit sub_dest} ${submodules} {
     distfiles-append    ${sub_project}-${sub_commit}.tar.gz:${sub_project}
 }
 
-# Set worksrcpath to shorter path
+# FIXME : main module not extracted in worksrcpath with multiple download sources.
 # Move extracted main module to worksrcpath
 # Move submodules to cmakes expected location in worksrcpath
 post-extract {
-    set worksrcpath     ${workpath}/shaderc
-    move ${workpath}/google-shaderc-9a658e2 ${worksrcpath}
+    move ${workpath}/google-shaderc-5d7736d ${worksrcpath}
     foreach {sub_author sub_project sub_commit sub_dest} ${submodules} {
         move ${workpath}/${sub_project}-${sub_commit} ${worksrcpath}/${sub_dest}
     }
@@ -118,6 +118,6 @@ post-extract {
 #}
 
 
-configure.args-append   -DSHADERC_SKIP_EXAMPLES=ON \
+configure.args-append   -DSKIP_THIRD_PARTY_INSTALL=ON \
                         -DSHADERC_ENABLE_WERROR_COMPILE=OFF \
                         -DCMAKE_INSTALL_PREFIX=${prefix}

@@ -1,0 +1,48 @@
+--- CMakeLists.txt.orig	2024-04-30 20:23:34.000000000 +0200
++++ CMakeLists.txt	2024-10-08 19:52:11.000000000 +0200
+@@ -31,6 +31,11 @@
+   set(SHADERC_ENABLE_INSTALL ON)
+ endif()
+ 
++option(SKIP_THIRD_PARTY_INSTALL "Skip Third Party Installation of build depends" OFF)
++if(${SKIP_THIRD_PARTY_INSTALL})
++  message(STATUS "Skipping Third Party Installation of build depends")
++endif()
++
+ option(SHADERC_SKIP_TESTS "Skip building tests" ${SHADERC_SKIP_TESTS})
+ if(NOT ${SHADERC_SKIP_TESTS})
+   set(SHADERC_ENABLE_TESTS ON)
+--- third_party/CMakeLists.txt.orig	2024-04-30 20:23:34.000000000 +0200
++++ third_party/CMakeLists.txt	2024-10-08 19:41:39.000000000 +0200
+@@ -24,6 +24,13 @@
+ set( SKIP_SPIRV_TOOLS_INSTALL ${SHADERC_SKIP_INSTALL} )
+ set( SKIP_GOOGLETEST_INSTALL ${SHADERC_SKIP_INSTALL} )
+ 
++set( SKIP_GLSLANG_INSTALL ${SKIP_THIRD_PARTY_INSTALL} )
++set( SKIP_SPIRV_TOOLS_INSTALL ${SKIP_THIRD_PARTY_INSTALL} )
++set( SKIP_GOOGLETEST_INSTALL ${SKIP_THIRD_PARTY_INSTALL} )
++if (${SKIP_THIRD_PARTY_INSTALL})
++    set( INSTALL_GTEST OFF)
++endif()
++
+ # Configure third party projects.
+ if(${SHADERC_ENABLE_TESTS})
+   if (IS_DIRECTORY ${SHADERC_GOOGLE_TEST_DIR})
+@@ -83,11 +90,13 @@
+ 
+ if (NOT TARGET glslang)
+   if (IS_DIRECTORY ${SHADERC_GLSLANG_DIR})
+-    if (SHADERC_ENABLE_TESTS)
+-      # Glslang tests are off by default. Turn them on if testing Shaderc.
+-      set(GLSLANG_TESTS ON)
++    if(NOT ${SKIP_THIRD_PARTY_INSTALL})
++        if (SHADERC_ENABLE_TESTS)
++        # Glslang tests are off by default. Turn them on if testing Shaderc.
++        set(GLSLANG_TESTS ON)
++        endif()
++        set(GLSLANG_ENABLE_INSTALL $<NOT:${SKIP_GLSLANG_INSTALL}>)
+     endif()
+-    set(GLSLANG_ENABLE_INSTALL $<NOT:${SKIP_GLSLANG_INSTALL}>)
+     add_subdirectory(${SHADERC_GLSLANG_DIR} glslang)
+   endif()
+   if (NOT TARGET glslang)
