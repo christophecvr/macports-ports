@@ -1,6 +1,6 @@
---- CMakeLists.txt.orig	2024-03-09 00:05:56.000000000 +0100
-+++ CMakeLists.txt	2024-10-06 06:52:17.000000000 +0200
-@@ -389,4 +389,34 @@
+--- CMakeLists.txt.orig	2024-09-26 01:10:44.000000000 +0200
++++ CMakeLists.txt	2024-10-09 14:24:58.000000000 +0200
+@@ -397,4 +397,34 @@
          DESTINATION
              "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
      )
