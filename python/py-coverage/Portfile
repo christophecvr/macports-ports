@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-coverage
-version             7.6.1
+version             7.6.3
 revision            0
 
 categories-append   devel
@@ -20,9 +20,9 @@ long_description    Coverage measures code coverage, typically during test \
 
 homepage            https://github.com/nedbat/coveragepy
 
-checksums           rmd160  3bfaa4cddc57ac0696abf71000217ebb550c39af \
-                    sha256  953510dfb7b12ab69d20135a0662397f077c59b1e6379a768e97c59d852ee51d \
-                    size    798791
+checksums           rmd160  af8652c4f71c03888720902f4524c32e46b16594 \
+                    sha256  bb7d5fe92bd0dc235f63ebe9f8c6e0884f7360f88f3411bfed1350c872ef2054 \
+                    size    798337
 
 python.versions     38 39 310 311 312
 
