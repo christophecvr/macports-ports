@@ -58,6 +58,5 @@ configure.python        ${prefix}/bin/python${py_ver}
 configure.args-append   -DBUILD_SHARED_LIBS=ON \
                         -DALLOW_EXTERNAL_SPIRV_TOOLS=ON \
                         -DENABLE_OPT=ON \
-                        -DENABLE_HLSL=ON \
                         -DENABLE_GLSLANG_BINARIES=ON
 

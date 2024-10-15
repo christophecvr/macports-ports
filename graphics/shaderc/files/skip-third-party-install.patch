@@ -1,5 +1,5 @@
---- CMakeLists.txt.orig	2024-04-30 20:23:34.000000000 +0200
-+++ CMakeLists.txt	2024-10-08 19:52:11.000000000 +0200
+--- CMakeLists.txt.orig	2024-09-23 23:32:56.000000000 +0200
++++ CMakeLists.txt	2024-10-14 08:40:35.000000000 +0200
 @@ -31,6 +31,11 @@
    set(SHADERC_ENABLE_INSTALL ON)
  endif()
@@ -12,8 +12,8 @@
  option(SHADERC_SKIP_TESTS "Skip building tests" ${SHADERC_SKIP_TESTS})
  if(NOT ${SHADERC_SKIP_TESTS})
    set(SHADERC_ENABLE_TESTS ON)
---- third_party/CMakeLists.txt.orig	2024-04-30 20:23:34.000000000 +0200
-+++ third_party/CMakeLists.txt	2024-10-08 19:41:39.000000000 +0200
+--- third_party/CMakeLists.txt.orig	2024-09-23 23:32:56.000000000 +0200
++++ third_party/CMakeLists.txt	2024-10-14 08:40:35.000000000 +0200
 @@ -24,6 +24,13 @@
  set( SKIP_SPIRV_TOOLS_INSTALL ${SHADERC_SKIP_INSTALL} )
  set( SKIP_GOOGLETEST_INSTALL ${SHADERC_SKIP_INSTALL} )

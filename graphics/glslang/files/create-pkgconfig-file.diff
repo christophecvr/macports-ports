@@ -1,6 +1,24 @@
 --- CMakeLists.txt.orig	2024-09-26 01:10:44.000000000 +0200
-+++ CMakeLists.txt	2024-10-09 14:24:58.000000000 +0200
-@@ -397,4 +397,34 @@
++++ CMakeLists.txt	2024-10-14 07:04:25.000000000 +0200
+@@ -300,6 +300,9 @@
+                 message(WARNING "ENABLE_OPT set but SPIR-V tools not found! Disabling SPIR-V optimization.")
+             endif()
+             set(ENABLE_OPT OFF)
++        else()
++            message(STATUS "CVR XDEBUG Using external SPIRV-Tools")
++            message(STATUS "CVR XDEBUG \n    ENABLE_OPT=${ENABLE_OPT} \n    ENABLE_HLSL=${ENABLE_HLSL} \n    ENABLE_SPIRV=${ENABLE_SPIRV} \n    GLSLANG_TESTS=${GLSLANG_TESTS} \    PROJECT_IS_TOP_LEVEL=${PROJECT_IS_TOP_LEVEL}")
+         endif()
+     else()
+         if(ENABLE_OPT)
+@@ -321,6 +324,7 @@
+ 
+ if(ENABLE_SPIRV)
+     add_subdirectory(SPIRV)
++    message(STATUS "CVR XDEBUG ENABLE_SPIRV = ON")
+ endif()
+ add_subdirectory(glslang)
+ if(ENABLE_GLSLANG_BINARIES)
+@@ -397,4 +401,34 @@
          DESTINATION
              "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
      )
@@ -35,3 +53,13 @@
 +            "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
 +    )
  endif(GLSLANG_ENABLE_INSTALL)
+--- glslang/CMakeLists.txt.orig	2024-10-14 07:42:03.000000000 +0200
++++ glslang/CMakeLists.txt	2024-10-14 07:43:00.000000000 +0200
+@@ -193,6 +193,7 @@
+         target_include_directories(glslang PUBLIC
+             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../External>)
+         target_link_libraries(glslang SPIRV-Tools-opt)
++        message(STATUS "CVR XDEBUG CURR_SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}")
+     endif()
+ endif()
+ 

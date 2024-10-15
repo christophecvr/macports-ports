@@ -5,7 +5,7 @@ PortGroup           github 1.0
 PortGroup           cmake 1.1
 PortGroup           legacysupport 1.1
 
-version             v2024.1
+version             v2024.3
 revision            0
 github.setup        google shaderc ${version}
 
@@ -19,38 +19,38 @@ long_description    At the moment it includes: \
                     libshaderc, a library API for accessing glslc functionality.
 homepage            https://github.com/google/shaderc
 
-checksums           shaderc-v2024.1.tar.gz \
-                    rmd160  1cbc470bfd782287854e08a53a77929224b1a9c5 \
-                    sha256  217afd670bc804bc87f2534c86c1474cf6890c730a4f8de68bbe1457b531f04f \
-                    size    227221 \
-                    abseil-cpp-79ca5d7aad63973c83a4962a66ab07cd623131ea.tar.gz \
-                    rmd160  0f233213825e23c55820390a3d4e52c97e9e8c10 \
-                    sha256  fb1dc4bf076892aca18d7fd0c228967a451f880df65da53c3af33776ca31f465 \
-                    size    2145278 \
-                    effcee-19b4aa87af25cb4ee779a071409732f34bfc305c.tar.gz \
-                    rmd160  e8c0de0bc279f84317cab175c6d7090fa4095b8c \
-                    sha256  02f98be1426ad1cd7479a1fc4ebfc8495f4fd291cbe6cf1cdb99cb0f401d92b0 \
-                    size    40734 \
-                    googletest-5df0241ea4880e5a846775d3efc8b873f7b36c31.tar.gz \
-                    rmd160  a2b08693a9b4e7a285d301b4a7025e45057c3f7e \
-                    sha256  dd65d71f0e4a17b4ae6fbd2125721eb3d34345ae02381fb1b1a56ddf7f28b4d3 \
-                    size    871797 \
-                    re2-ed9fc269e2fdb299afe59e912928d31ad3fdcf7d.tar.gz \
-                    rmd160  02059a99af981ee62ba54533cd9a5a59b6adfbad \
-                    sha256  200f661b5c435cd2657248a713481e0297a0ce0f12b6f4e6cb25b9fe9f9d8a1f \
-                    size    388683 \
-                    SPIRV-Headers-8b246ff75c6615ba4532fe4fde20f1be090c3764.tar.gz \
-                    rmd160  37ee011bebc433d2193a07406de8884a680d885b \
-                    sha256  cfeed5f9a97d12a9761a26e7f5bd10fedb1a8ce92033075151ae3bc7206fc229 \
-                    size    472513 \
-                    SPIRV-Tools-04896c462d9f3f504c99a4698605b6524af813c1.tar.gz \
-                    rmd160  a7e24d1148ce0b4df60257fd966cf6770b514419 \
-                    sha256  c0d01e758a543b3a358cb97af02c6817ebd3f5ff13a2edf9fb220646a3d67999 \
-                    size    3176608 \
-                    glslang-ee2f5d09eaf8f4e8d0d598bd2172fce290d4ca60.tar.gz \
-                    rmd160  548299e273bdd589a23652dd761e48dfdb6a194a \
-                    sha256  285336d16d81101015fd5549d43dd55b6f994d58f1cf6f8086c0d252a8183e5e \
-                    size    3842118
+checksums           shaderc-v2024.3.tar.gz \
+                    rmd160  28cc1e3a47f74c37897ea49e632273dccc722617 \
+                    sha256  e8fe28d01b7f9100118bc99f7421a1022d5bed3280c8ce50644d8462da649581 \
+                    size    227486 \
+                    abseil-cpp-1315c900e1ddbb08a23e06eeb9a06450052ccb5e.tar.gz \
+                    rmd160  71e5b8890b144929c6d83bb10804ee676b8cfaee \
+                    sha256  4ae9fc64860d5204f0ca6bd6c7a5f8e59ced118494db7e14537d8ed55dce5715 \
+                    size    2222719 \
+                    effcee-d74d33d93043952a99ae7cd7458baf6bc8df1da0.tar.gz \
+                    rmd160  b17b18df022cab65d0dc9f3e11fda3e1e0a5c530 \
+                    sha256  0708c376a0a0ee61c0f966ff4dea87a670988676bd16dd2928d4ea19921a6987 \
+                    size    40054 \
+                    googletest-1d17ea141d2c11b8917d2c7d029f1c4e2b9769b2.tar.gz \
+                    rmd160  1edbe92ebafc58f5bd5ee9403fb20f178307a966 \
+                    sha256  7aca173cc96c0feaa01035184e34b020daaa93ddc132c5a829b7ea34006f701b \
+                    size    873606 \
+                    re2-4a8cee3dd3c3d81b6fe8b867811e193d5819df07.tar.gz \
+                    rmd160  e53e8805d1fdbeb656b1c583ceee0d0182268307 \
+                    sha256  f0a65168e64a10ab556b265f2f411678e6b9555f21e04202f84f250b659954ba \
+                    size    390803 \
+                    SPIRV-Headers-2a9b6f951c7d6b04b6c21fe1bf3f475b68b84801.tar.gz \
+                    rmd160  42dc68dd7bcd347bb42260a2fb6a38119ee21862 \
+                    sha256  1698e1373bd6e59a263acef821c4d955c561b991feb6db8199833ef19ffe8a37 \
+                    size    524052 \
+                    SPIRV-Tools-01c8438ee4ac52c248119b7e03e0b021f853b51a.tar.gz \
+                    rmd160  c9fcf458c852967740aec0a37b4178e89c083052 \
+                    sha256  cda78525518987c262cca8cb04ca6479c0361c16db3c5a7042924063e101b847 \
+                    size    3199699 \
+                    glslang-467ce01c71e38cf01814c48987a5c0dadd914df4.tar.gz \
+                    rmd160  7e5baff3f43db294a222d1c57f85ed10c99e8bcb \
+                    sha256  390764c4df4e17c7831af747e58ceac80945f1750238b623ffaaa73538ccac4c \
+                    size    3871722
 
 set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
@@ -86,13 +86,13 @@ configure.args-append   -DPYTHON_EXECUTABLE:FILEPATH=${configure.python}
 # See DEPS in port:spirv-tools version vulkan tag 1.3.280.0 to obtain commit versions.
 # See glslang port commit version for vulkan tag 1.3.280.0
 set submodules {
-    abseil abseil-cpp 79ca5d7aad63973c83a4962a66ab07cd623131ea third_party/abseil_cpp
-    google effcee 19b4aa87af25cb4ee779a071409732f34bfc305c third_party/effcee
-    google googletest 5df0241ea4880e5a846775d3efc8b873f7b36c31 third_party/googletest
-    google re2 ed9fc269e2fdb299afe59e912928d31ad3fdcf7d third_party/re2
-    KhronosGroup SPIRV-Headers 8b246ff75c6615ba4532fe4fde20f1be090c3764 third_party/spirv-headers
-    KhronosGroup SPIRV-Tools 04896c462d9f3f504c99a4698605b6524af813c1 third_party/spirv-tools
-    KhronosGroup glslang ee2f5d09eaf8f4e8d0d598bd2172fce290d4ca60 third_party/glslang
+    abseil abseil-cpp 1315c900e1ddbb08a23e06eeb9a06450052ccb5e third_party/abseil_cpp
+    google effcee d74d33d93043952a99ae7cd7458baf6bc8df1da0 third_party/effcee
+    google googletest 1d17ea141d2c11b8917d2c7d029f1c4e2b9769b2 third_party/googletest
+    google re2 4a8cee3dd3c3d81b6fe8b867811e193d5819df07 third_party/re2
+    KhronosGroup SPIRV-Headers 2a9b6f951c7d6b04b6c21fe1bf3f475b68b84801 third_party/spirv-headers
+    KhronosGroup SPIRV-Tools 01c8438ee4ac52c248119b7e03e0b021f853b51a third_party/spirv-tools
+    KhronosGroup glslang 467ce01c71e38cf01814c48987a5c0dadd914df4 third_party/glslang
 }
 
 foreach {sub_author sub_project sub_commit sub_dest} ${submodules} {
@@ -104,7 +104,7 @@ foreach {sub_author sub_project sub_commit sub_dest} ${submodules} {
 # Move extracted main module to worksrcpath
 # Move submodules to cmakes expected location in worksrcpath
 post-extract {
-    move ${workpath}/google-shaderc-5d7736d ${worksrcpath}
+    move ${workpath}/google-shaderc-7223dc3 ${worksrcpath}
     foreach {sub_author sub_project sub_commit sub_dest} ${submodules} {
         move ${workpath}/${sub_project}-${sub_commit} ${worksrcpath}/${sub_dest}
     }
@@ -120,4 +120,6 @@ post-extract {
 
 configure.args-append   -DSKIP_THIRD_PARTY_INSTALL=ON \
                         -DSHADERC_ENABLE_WERROR_COMPILE=OFF \
+                        -DSHADERC_SKIP_TESTS=ON \
+                        -DUSE_EXTERNAL_SPIRV_GLSLANG=ON \
                         -DCMAKE_INSTALL_PREFIX=${prefix}
