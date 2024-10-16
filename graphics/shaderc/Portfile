@@ -67,8 +67,8 @@ compiler.cxx_standard 2017
 legacysupport.newest_darwin_requires_legacy 18
 legacysupport.use_mp_libcxx yes
 
-
-patchfiles              skip-third-party-install.patch
+# Patching source to use Already installed SPIRV-Tools.
+patchfiles              use-installed-spirv-tools.patch
 
 depends_build           port:spirv-headers
 
@@ -80,18 +80,9 @@ depends_build-append    port:python${py_ver_nodot}
 configure.python        ${prefix}/bin/python${py_ver}
 configure.args-append   -DPYTHON_EXECUTABLE:FILEPATH=${configure.python}
 
-# To build shaderc and glslc inside build of spirv-tools,spirv-headers and glslang is required.
-# We do not install them since at run time we can use the already installed one.
-# For this reason commits are set to the ones of vulkan-sdk tag 1.3.280.0
-# See DEPS in port:spirv-tools version vulkan tag 1.3.280.0 to obtain commit versions.
-# See glslang port commit version for vulkan tag 1.3.280.0
+# Only glslang is build to build shaderc glslang is not installed.
+# Using installed SPIRV-Tools.
 set submodules {
-    abseil abseil-cpp 1315c900e1ddbb08a23e06eeb9a06450052ccb5e third_party/abseil_cpp
-    google effcee d74d33d93043952a99ae7cd7458baf6bc8df1da0 third_party/effcee
-    google googletest 1d17ea141d2c11b8917d2c7d029f1c4e2b9769b2 third_party/googletest
-    google re2 4a8cee3dd3c3d81b6fe8b867811e193d5819df07 third_party/re2
-    KhronosGroup SPIRV-Headers 2a9b6f951c7d6b04b6c21fe1bf3f475b68b84801 third_party/spirv-headers
-    KhronosGroup SPIRV-Tools 01c8438ee4ac52c248119b7e03e0b021f853b51a third_party/spirv-tools
     KhronosGroup glslang 467ce01c71e38cf01814c48987a5c0dadd914df4 third_party/glslang
 }
 
@@ -110,16 +101,7 @@ post-extract {
     }
 }
 
-# this could be an alternatif to extract submodules but then:
-# - Not possible to reasign the used commits required to use for vulkan integration
-# - There is no checksum of downloaded submodule sources.
-#post-extract {
-#    system ${worksrcpath}/utils/git-sync-deps
-#}
-
-
-configure.args-append   -DSKIP_THIRD_PARTY_INSTALL=ON \
-                        -DSHADERC_ENABLE_WERROR_COMPILE=OFF \
+configure.args-append   -DSHADERC_ENABLE_WERROR_COMPILE=OFF \
                         -DSHADERC_SKIP_TESTS=ON \
-                        -DUSE_EXTERNAL_SPIRV_GLSLANG=ON \
+                        -DUSE_EXTERNAL_SPIRV_TOOLS=ON \
                         -DCMAKE_INSTALL_PREFIX=${prefix}
