@@ -32,10 +32,10 @@ checksums           SPIRV-Tools-1.3.296.0.tar.gz \
                     rmd160  092efc2dbc94aa4472a9b370a3881ff16f6c8c77 \
                     sha256  a4d0bbb08b8f90d0ec8c8c39b4abc5d67b1b262eff9e2194cb2b885ce000396f \
                     size    3194709 \
-                    abseil-cpp-0df56740031c3882c3b3f93bef15698a30f3a1f6.tar.gz \
-                    rmd160  be812aabc43874cf20becda720577def703eea83 \
-                    sha256  bdd50d802b0e14cd02d40440f26a2cc27e5975aceff50b3c5c8f91abae7faef7 \
-                    size    2254686 \
+                    abseil-cpp-lts_2024_07_22.tar.gz \
+                    rmd160  fdf8b9c435036a1d4b9fffed27a44b50709deae7 \
+                    sha256  bc57139b5c08401b2c7b54a7e44e1a771f165db80fd6b88076cc39622d87375f \
+                    size    2242933 \
                     effcee-2c97e5689ed8d7ab6ae5820f884f03a601ae124b.tar.gz \
                     rmd160  1f82d7f7369f9b9aeefb93e10679d6223a7cc92f \
                     sha256  a59e5ac09d4d6f64dd2bb1623512fdc6f737ee2bce14196d1a47ad59a80b7d56 \
@@ -76,8 +76,9 @@ foreach stage {configure build destroot test} {
 depends_build-append port:python${py_ver_nodot}
 
 # See DEPS file in repo
+# Exept abseil changed to lts version.
 set submodules {
-    abseil abseil-cpp 0df56740031c3882c3b3f93bef15698a30f3a1f6 external/abseil_cpp
+    abseil abseil-cpp lts_2024_07_22 external/abseil_cpp
     google effcee 2c97e5689ed8d7ab6ae5820f884f03a601ae124b external/effcee
     google googletest 6dae7eb4a5c3a169f3e298392bff4680224aa94a external/googletest
     protocolbuffers protobuf f0dc78d7e6e331b8c6bb2d5283e06aa26883ca7c external/protobuf
