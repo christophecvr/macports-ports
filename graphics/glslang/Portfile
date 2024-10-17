@@ -56,4 +56,5 @@ configure.python        ${prefix}/bin/python${py_ver}
 #configure.args-append   -DPYTHON_EXECUTABLE:FILEPATH=${configure.python}
 
 configure.args-append   -DBUILD_SHARED_LIBS=ON \
+                        -DGLSLANG_ENABLE_INSTALL=ON \
                         -DALLOW_EXTERNAL_SPIRV_TOOLS=ON

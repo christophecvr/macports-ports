@@ -1,5 +1,5 @@
 --- CMakeLists.txt.orig	2024-09-26 01:10:44.000000000 +0200
-+++ CMakeLists.txt	2024-10-17 06:15:56.000000000 +0200
++++ CMakeLists.txt	2024-10-17 09:21:40.000000000 +0200
 @@ -300,6 +300,10 @@
                  message(WARNING "ENABLE_OPT set but SPIR-V tools not found! Disabling SPIR-V optimization.")
              endif()
@@ -27,12 +27,12 @@
 +prefix="@CMAKE_INSTALL_PREFIX@"
 +exec_prefix="${prefix}"
 +libdir="${prefix}/lib"
-+includedir="${prefix}/include"
++includedir="${prefix}/@CMAKE_INSTALL_INCLUDEDIR@"
 +
 +Name: @PROJECT_NAME@
 +Description: official reference compiler front end for the OpenGL ES and OpenGL shading languages
 +Version: @PROJECT_VERSION@
-+Cflags: -I"${includedir}" -I"${includedir}/glslang}"
++Cflags: -I"${includedir}"
 +Libs: -L"${libdir}" -l@PROJECT_NAME@
 +    ]=])
 +    configure_file(
