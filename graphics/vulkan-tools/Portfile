@@ -17,7 +17,11 @@ description         Vulkan tools
 long_description    Provides vulkaninfo command for checking Vulkan installation configuration status
 homepage            https://vulkan.lunarg.com
 
-depends_build-append port:vulkan-headers port:vulkan-volk
+depends_build-append    port:vulkan-headers \
+                        port:vulkan-volk \
+                        bin:glslang:glslang \
+                        bin:glslc:shaderc
+
 depends_lib-append  port:vulkan-loader
 
 checksums           sha256  6f90bff4a908688cb6baf076933613a8ee8589e21c7dc3c3ba843afbd7dd84e3 \

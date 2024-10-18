@@ -33,7 +33,10 @@ set py_ver_nodot    [string map {. {}} ${py_ver}]
 foreach stage {configure build destroot test} {
     ${stage}.env-append PATH=${frameworks_dir}/Python.framework/Versions/${py_ver}/bin:$env(PATH)
 }
-depends_build-append port:python${py_ver_nodot} port:vulkan-headers
+depends_build-append    port:python${py_ver_nodot} \
+                        port:vulkan-headers \
+                        bin:glslang:glslang \
+                        bin:glslc:shaderc
 
 configure.args-append \
                     -DVOLK_INSTALL=ON \

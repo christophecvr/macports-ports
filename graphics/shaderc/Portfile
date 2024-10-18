@@ -69,7 +69,9 @@ legacysupport.use_mp_libcxx yes
 # Patching source to use Already installed SPIRV-Tools.
 patchfiles              use-installed-spirv-tools.patch
 
-depends_build-append    port:spirv-headers
+depends_build-append    port:spirv-headers \
+                        port:asciidoctor \
+                        path:bin/pkg-config:pkgconfig
 
 depends_lib-append      port:glslang \
                         port:spirv-tools
@@ -102,5 +104,4 @@ post-extract {
 
 configure.args-append   -DSHADERC_ENABLE_WERROR_COMPILE=OFF \
                         -DSHADERC_SKIP_TESTS=ON \
-                        -DUSE_EXTERNAL_SPIRV_TOOLS=ON \
-                        -DCMAKE_INSTALL_PREFIX=${prefix}
+                        -DUSE_EXTERNAL_SPIRV_TOOLS=ON
