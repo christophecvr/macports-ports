@@ -23,30 +23,6 @@ checksums           shaderc-v2024.3.tar.gz \
                     rmd160  28cc1e3a47f74c37897ea49e632273dccc722617 \
                     sha256  e8fe28d01b7f9100118bc99f7421a1022d5bed3280c8ce50644d8462da649581 \
                     size    227486 \
-                    abseil-cpp-1315c900e1ddbb08a23e06eeb9a06450052ccb5e.tar.gz \
-                    rmd160  71e5b8890b144929c6d83bb10804ee676b8cfaee \
-                    sha256  4ae9fc64860d5204f0ca6bd6c7a5f8e59ced118494db7e14537d8ed55dce5715 \
-                    size    2222719 \
-                    effcee-d74d33d93043952a99ae7cd7458baf6bc8df1da0.tar.gz \
-                    rmd160  b17b18df022cab65d0dc9f3e11fda3e1e0a5c530 \
-                    sha256  0708c376a0a0ee61c0f966ff4dea87a670988676bd16dd2928d4ea19921a6987 \
-                    size    40054 \
-                    googletest-1d17ea141d2c11b8917d2c7d029f1c4e2b9769b2.tar.gz \
-                    rmd160  1edbe92ebafc58f5bd5ee9403fb20f178307a966 \
-                    sha256  7aca173cc96c0feaa01035184e34b020daaa93ddc132c5a829b7ea34006f701b \
-                    size    873606 \
-                    re2-4a8cee3dd3c3d81b6fe8b867811e193d5819df07.tar.gz \
-                    rmd160  e53e8805d1fdbeb656b1c583ceee0d0182268307 \
-                    sha256  f0a65168e64a10ab556b265f2f411678e6b9555f21e04202f84f250b659954ba \
-                    size    390803 \
-                    SPIRV-Headers-2a9b6f951c7d6b04b6c21fe1bf3f475b68b84801.tar.gz \
-                    rmd160  42dc68dd7bcd347bb42260a2fb6a38119ee21862 \
-                    sha256  1698e1373bd6e59a263acef821c4d955c561b991feb6db8199833ef19ffe8a37 \
-                    size    524052 \
-                    SPIRV-Tools-01c8438ee4ac52c248119b7e03e0b021f853b51a.tar.gz \
-                    rmd160  c9fcf458c852967740aec0a37b4178e89c083052 \
-                    sha256  cda78525518987c262cca8cb04ca6479c0361c16db3c5a7042924063e101b847 \
-                    size    3199699 \
                     glslang-467ce01c71e38cf01814c48987a5c0dadd914df4.tar.gz \
                     rmd160  7e5baff3f43db294a222d1c57f85ed10c99e8bcb \
                     sha256  390764c4df4e17c7831af747e58ceac80945f1750238b623ffaaa73538ccac4c \
