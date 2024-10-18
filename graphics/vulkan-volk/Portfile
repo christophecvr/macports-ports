@@ -35,8 +35,8 @@ foreach stage {configure build destroot test} {
 }
 depends_build-append    port:python${py_ver_nodot} \
                         port:vulkan-headers \
-                        bin:glslang:glslang \
-                        bin:glslc:shaderc
+                        path:bin/glslang:glslang \
+                        path:bin/glslc:shaderc
 
 configure.args-append \
                     -DVOLK_INSTALL=ON \

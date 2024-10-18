@@ -19,8 +19,8 @@ homepage            https://vulkan.lunarg.com
 
 depends_build-append    port:vulkan-headers \
                         port:vulkan-volk \
-                        bin:glslang:glslang \
-                        bin:glslc:shaderc
+                        path:bin/glslang:glslang \
+                        path:bin/glslc:shaderc
 
 depends_lib-append  port:vulkan-loader
 
