@@ -10,7 +10,7 @@ revision            0
 github.setup        google shaderc ${version}
 
 categories          graphics devel
-license             Apache License Version 2.0
+license             Apache Version-2.0
 maintainers         {christophecvr @christophecvr} openmaintainer
 
 description         A collection of tools, libraries and tests for shader compilation.
@@ -60,7 +60,6 @@ compiler.cxx_standard 2017
 # Need to use MacPorts libc++ on macOS 10.14 Mojave and older, because
 # Apple Clang only added support for the C++17 <filesystem> library
 # starting in Xcode 11 (clang-1100) for macOS 10.15+.
-#
 # References:
 # * https://stackoverflow.com/a/55353263
 # * https://developer.apple.com/documentation/xcode-release-notes/xcode-11-release-notes
@@ -70,10 +69,9 @@ legacysupport.use_mp_libcxx yes
 # Patching source to use Already installed SPIRV-Tools.
 patchfiles              use-installed-spirv-tools.patch
 
-depends_build           port:spirv-headers \
-                        port:cmake
+depends_build-append    port:spirv-headers
 
-depends_lib             port:glslang \
+depends_lib-append      port:glslang \
                         port:spirv-tools
 
 
