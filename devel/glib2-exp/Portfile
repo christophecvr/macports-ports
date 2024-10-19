@@ -53,22 +53,30 @@ patchfiles-append           libintl.patch
 patchfiles-append           patch-gio-tests-meson.build.diff
 patchfiles-append           patch-glib_gmem.c.diff
 patchfiles-append           patch-glib_gspawn.c.diff
+# CVR NOK PATCH
 # Patch below disabled yes carbon ui elemnts are only or 32 bits
 # Still a lot of carbon whitout ui elements do work an may be needed.
+# CoreServices/CoreServices.h is a required include
 # patchfiles-append           patch-glib_gunicollate.c.diff
+# Patchfile below ok and needed but think we also should remove /usr/share out of datapath?
 patchfiles-append           patch-gio_xdgmime_xdgmime.c.diff
 patchfiles-append           patch-get-launchd-dbus-session-address.diff
-patchfiles-append           patch-gmodule-gmodule-dl.c.diff
+# NOt so shure if this patch is still needed with some applications we do now have
+# Segfault 11 crash up on closing which could ? be caused by a dereferencing while a child is not
+# derefferenced and should have been. try to run whitout.
+#patchfiles-append           patch-gmodule-gmodule-dl.c.diff
 patchfiles-append           patch-meson-build-python-path.diff
-patchfiles-append           patch-meson_build-atomic-test-older-clang-versions.diff
-
+# only for older MACOS CVR
+if {${os.major} < 19} {
+    patchfiles-append           patch-meson_build-atomic-test-older-clang-versions.diff
+}
 if {[variant_isset universal]} {
     patchfiles-append           universal.patch
 }
 
-if {![variant_isset universal]} {
-    patchfiles-append           universal64.patch
-}
+#if {![variant_isset universal]} {
+#    patchfiles-append           universal64.patch
+#}
 
 if {![variant_isset quartz]} {
 patchfiles-append           patch-glib2-findfolders-before-SL.diff
@@ -111,19 +119,23 @@ depends_lib-append          port:gettext-runtime \
 depends_skip_archcheck-append \
                             python${py_ver_nodot}
 
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
+if {${os.platform} eq "darwin" && ${os.major} < 19} {
     compiler.cxx_standard       2011
 }
 
-if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+if {${os.platform} eq "darwin" && ${os.major} >= 19} {
     use_xcode           yes
-    configure.compiler macports-clang-17
-    configure.env-append "AR=${prefix}/libexec/llvm-17/bin/llvm-ar"
-    compiler.c_standard         2011
-    compiler.cxx_standard       2011
-    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
-    configure.cxxflags-append   -std=c++11
+    configure.compiler macports-clang-12
+    configure.env-append "AR=${prefix}/libexec/llvm-12/bin/llvm-ar"
+    compiler.c_standard         2017
+    compiler.cxx_standard       2017
+    configure.cflags-append     -std=c17 -funroll-loops -fstrict-aliasing
+    configure.cxxflags-append   -std=c++17
     configure.ldflags-append    -Wl,-U,_main
+    foreach my_arch {ppc ppc64 i386 x86_64 arm64} {
+        # strip the automatic setting of host, meson does not accept
+        set merger_host(${my_arch}) ""
+    }
 }
 
 # Issues for Clang 5.x:
