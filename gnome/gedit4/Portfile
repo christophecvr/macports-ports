@@ -9,7 +9,7 @@ PortGroup           yelp  1.0
 
 name                gedit4
 #conflicts           gedit
-version             47.0
+version             48.0
 revision            0
 license             GPL-2+
 set branch          [join [lrange [split ${version} .] 0 0 ] .]
@@ -31,13 +31,11 @@ compiler.c_standard 2011
 
 #configure.compiler macports-clang-18
 
-checksums           rmd160  e8f1602e3353ea938adb2f1ef38346f42745c57b \
-                    sha256  fa4a597e34c76d4ac91431b5ae6e191c96c6b0af1702e0899ab35199edfa1bfa \
-                    size    2834664
+checksums           rmd160  02231a01f8ea6840848f7553f1e9acf9cdf62950 \
+                    sha256  fe0fef9b7b0799120db86ae893a060036a13445352ded9169bab28d38acf0e80 \
+                    size    2889116
 
-patchfiles          meson-public-dep.patch \
-                    tepl-theme-variant.patch \
-                    apposx-nsdelegate.patch
+#patchfiles          meson-public-dep.patch
 
 depends_build-append \
                     port:desktop-file-utils \
@@ -53,7 +51,7 @@ depends_build-append \
 
 depends_lib-append \
                     port:adwaita-icon-theme \
-                    port:cairo-devel \
+                    port:cairo \
                     port:libsvg \
                     port:libsvg-cairo \
                     port:iso-codes \
@@ -67,13 +65,16 @@ depends_lib-append \
                     port:libgedit-amtk \
                     port:libgedit-gtksourceview \
                     port:libgedit-tepl \
+                    port:libgedit-gfls \
                     port:libpeas \
                     port:libxml2 \
-                    port:pango-devel \
+                    port:pango \
                     port:gtk-osx-application-common-gtk3
 
 configure.cflags-append \
                     -Wno-int-conversion
+
+configure.args      -Dheaderbar=yes
 
 # gobject-introspection uses g-ir-scanner, which uses $CC from env
 if {${universal_possible} && [variant_isset universal]} {
@@ -134,7 +135,7 @@ app.executable          ${my_name}
 # add symlink to lib/gedit/libgedit-3.38.dylib in standard libdir
 # works around introspection typelib issue
 post-destroot {
-    ln -s ${prefix}/lib/gedit/libgedit-47.dylib  ${destroot}${prefix}/lib/libgedit-47.dylib
+    ln -s ${prefix}/lib/gedit/libgedit-48.dylib  ${destroot}${prefix}/lib/libgedit-48.dylib
 }
 
 notes               "For extra functionality install gedit-plugins"

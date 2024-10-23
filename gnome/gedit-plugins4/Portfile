@@ -5,7 +5,7 @@ PortGroup           meson 1.0
 
 name                gedit-plugins4
 set my_name         gedit-plugins
-version             47.1
+version             48.0
 revision            1
 license             GPL-2+
 set branch          [join [lrange [split ${version} .] 0 0] .]
@@ -15,13 +15,14 @@ maintainers         nomaintainer
 categories          gnome editors
 platforms           darwin
 homepage            https://wiki.gnome.org/Apps/Gedit
+distname            ${my_name}-${version}
 master_sites        gnome:sources/${my_name}/${branch}/
 
 use_xz              yes
 
-checksums           rmd160  5c2781f2b6b4d50df6b481e58638c4eda507b178 \
-                    sha256  af9d63e5822ac08c68e3b898bb58e7debc1bfeaaca1077f5a8e795d25a164c8b \
-                    size    892844
+checksums           rmd160  00068c1a6d2564ed74c5d32c7068862cabb727bb \
+                    sha256  75fb90e219d46c332b071262ca6fa1cb597b31de97db80c1879d851cf645eb98 \
+                    size    883240
 
 #configure.compiler macports-clang-14
 
@@ -79,7 +80,7 @@ depends_lib         port:gedit4 \
 compiler.c_standard   2011
 
 configure.args      -Dplugin_charmap=false \
-                    -Dplugin_git=false \
+                    -Dplugin_synctex=false \
                     -Dplugin_terminal=false
 
 variant charmap description {Insert special characters just by clicking on them} {
@@ -91,7 +92,7 @@ variant charmap description {Insert special characters just by clicking on them}
 variant git description {Highlight lines that have been changed since the last commit} {
     depends_run-append  port:libgit2-glib
 
-    configure.args-delete -Dplugin_git=false
+    #configure.args-delete -Dplugin_git=false
 }
 
 variant synctex description {Quickly switch from an opened TeX source file in gedit to a PDF document opened in evince and vice versa} {
