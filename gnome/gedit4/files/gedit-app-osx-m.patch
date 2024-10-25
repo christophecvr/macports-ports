@@ -1,0 +1,71 @@
+--- gedit/gedit-app-osx.m.orig	2024-09-14 07:18:34.000000000 +0200
++++ gedit/gedit-app-osx.m	2024-10-24 11:28:19.000000000 +0200
+@@ -46,6 +46,8 @@
+ 	GeditWindow *ret = NULL;
+ 
+ 	windows = gtk_application_get_windows (GTK_APPLICATION (app));
++	
++	gedit_debug_message(DEBUG_APP, "CVR-TEST-XDEBUG-1");
+ 
+ 	while (windows)
+ 	{
+@@ -88,6 +90,7 @@
+ 	}
+ 
+ 	gtk_window_present (GTK_WINDOW (ret));
++	gedit_debug_message(DEBUG_APP, "CVR-TEST-XDEBUG-2");
+ 	return ret;
+ }
+ 
+@@ -159,7 +162,6 @@
+ struct _GeditAppOSX
+ {
+ 	GeditApp parent_instance;
+-
+ 	GeditMenuExtension *recent_files_menu;
+ 	gulong recent_manager_changed_id;
+ 
+@@ -174,6 +176,7 @@
+ static void
+ remove_recent_actions (GeditAppOSX *app)
+ {
++	gedit_debug_message(DEBUG_APP, "CVR-TEST-XDEBUG-4");
+ 	while (app->recent_actions)
+ 	{
+ 		gchar *action_name = app->recent_actions->data;
+@@ -190,7 +193,7 @@
+ gedit_app_osx_finalize (GObject *object)
+ {
+ 	GeditAppOSX *app = GEDIT_APP_OSX (object);
+-
++	gedit_debug_message(DEBUG_APP, "CVR-TEST-XDEBUG-5");
+ 	g_object_unref (app->recent_files_menu);
+ 
+ 	remove_recent_actions (app);
+@@ -249,7 +252,7 @@
+ 	NSWindow *native;
+ 	GeditDocument *document;
+ 	GdkWindow *wnd;
+-
++	gedit_debug_message(DEBUG_APP, "CVR-TEST-XDEBUG-6");
+ 	g_return_if_fail (GEDIT_IS_WINDOW (window));
+ 
+ 	wnd = gtk_widget_get_window (GTK_WIDGET (window));
+@@ -340,7 +343,7 @@
+ {
+ 	GList *items;
+ 	gint i = 0;
+-
++	gedit_debug_message(DEBUG_APP, "CVR-TEST-XDEBUG-7");
+ 	gedit_menu_extension_remove_items (app->recent_files_menu);
+ 	remove_recent_actions (app);
+ 
+@@ -594,7 +597,7 @@
+ 	   command line arguments by itself and generate OpenFile events.
+ 	   We already parse the command line ourselves, so this is needed
+ 	   to prevent opening files twice, etc. */
+-	[[NSUserDefaults standardUserDefaults] setObject:@"NO"
++	[[NSUserDefaults standardUserDefaults] setObject:@"YES"
+ 	                                       forKey:@"NSTreatUnknownArgumentsAsOpen"];
+ }
+ 

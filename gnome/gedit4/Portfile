@@ -35,7 +35,7 @@ checksums           rmd160  02231a01f8ea6840848f7553f1e9acf9cdf62950 \
                     sha256  fe0fef9b7b0799120db86ae893a060036a13445352ded9169bab28d38acf0e80 \
                     size    2889116
 
-#patchfiles          meson-public-dep.patch
+patchfiles          gedit-app-osx-m.patch
 
 depends_build-append \
                     port:desktop-file-utils \
