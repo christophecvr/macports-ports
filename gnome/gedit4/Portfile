@@ -5,7 +5,7 @@ PortGroup           active_variants 1.1
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           app   1.0
 PortGroup           meson 1.0
-PortGroup           yelp  1.0
+#PortGroup           yelp  1.0
 
 name                gedit4
 #conflicts           gedit
@@ -27,15 +27,15 @@ distname            ${my_name}-${version}
 use_xz              yes
 
 #redefinition of typedef error
-compiler.c_standard 2011
-
+compiler.c_standard 2017
+compiler.cxx_standard 2017
 #configure.compiler macports-clang-18
 
 checksums           rmd160  02231a01f8ea6840848f7553f1e9acf9cdf62950 \
                     sha256  fe0fef9b7b0799120db86ae893a060036a13445352ded9169bab28d38acf0e80 \
                     size    2889116
 
-patchfiles          gedit-app-osx-m.patch
+patchfiles          patch-meson-build-python3.diff
 
 depends_build-append \
                     port:desktop-file-utils \
@@ -69,10 +69,15 @@ depends_lib-append \
                     port:libpeas \
                     port:libxml2 \
                     port:pango \
+                    port:yelp \
                     port:gtk-osx-application-common-gtk3
 
-configure.cflags-append \
-                    -Wno-int-conversion
+post-patch {
+    reinplace "s|@@PYTHON3@@|${configure.python}|g" ${worksrcpath}/meson.build
+    reinplace "s|#!.*|#!${configure.python}|" ${worksrcpath}/build-aux/meson/post_install.py
+}
+
+configure.cflags-append     -Wno-int-conversion
 
 configure.args      -Dheaderbar=yes
 
@@ -108,19 +113,7 @@ variant python312 conflicts python38 python39 description {Use python 3.12} {
     configure.pkg_config_path ${python_framework}/lib/pkgconfig
 }
 
-variant x11 conflicts quartz {
-    #require_active_variants gtk3 x11
-    #patchfiles-append       patch-meson-darwin-dont-assume-quartz.diff
-}
 
-variant quartz conflicts x11 {
-    require_active_variants gtk3 quartz
-    depends_lib-append      port:gtk-osx-application-gtk3
-}
-
-if {![variant_isset x11]} {
-    default_variants-append +quartz
-}
 
 if {![variant_isset python310] && \
     ![variant_isset python311] && \
@@ -132,17 +125,21 @@ app.use_launch_script   yes
 app.icon                ./logo.png
 app.executable          ${my_name}
 
-# add symlink to lib/gedit/libgedit-3.38.dylib in standard libdir
+# add symlink to lib/gedit/libgedit-48.dylib in standard libdir
 # works around introspection typelib issue
 post-destroot {
     ln -s ${prefix}/lib/gedit/libgedit-48.dylib  ${destroot}${prefix}/lib/libgedit-48.dylib
 }
 
-notes               "For extra functionality install gedit-plugins"
+notes               "For extra functionality install gedit-plugins4"
 
 post-activate    {
     system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
     system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+    # on macos the icon cache update function of meson fails.
+    # this last add will create and or update icons theme caches.
+    # gtk-update-icon-cache-3.0 is a part of gtk3 package.
+    system "/usr/bin/find ${prefix}/share/icons -type d -depth 1 -execdir ${prefix}/bin/gtk-update-icon-cache-3.0 {} '\;'"
 }
 
 livecheck.type      gnome
