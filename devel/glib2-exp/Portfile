@@ -125,8 +125,6 @@ if {${os.platform} eq "darwin" && ${os.major} < 19} {
 
 if {${os.platform} eq "darwin" && ${os.major} >= 19} {
     use_xcode           yes
-    configure.compiler macports-clang-12
-    configure.env-append "AR=${prefix}/libexec/llvm-12/bin/llvm-ar"
     compiler.c_standard         2017
     compiler.cxx_standard       2017
     configure.cflags-append     -std=c17 -funroll-loops -fstrict-aliasing
