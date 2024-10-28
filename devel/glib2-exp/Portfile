@@ -7,11 +7,14 @@ PortGroup                   conflicts_build 1.0
 PortGroup                   debug 1.0
 PortGroup                   legacysupport 1.1
 PortGroup                   meson 1.0
-PortGroup                   muniversal 1.0
+# Avoid universal build as from Macos 10.14
+if { ${os.platform} eq "darwin" && ${os.major} >= 18 && ${build_arch} eq "x86_64"} {
+    universal_variant no
+} else {
+    PortGroup       muniversal 1.0
 
-if {![variant_isset universal]} {
-    universal_variant   no
 }
+
 
 # Experimental port just to try the build of a combined quartz x11 compatible glib2
 
@@ -74,9 +77,6 @@ if {[variant_isset universal]} {
     patchfiles-append           universal.patch
 }
 
-#if {![variant_isset universal]} {
-#    patchfiles-append           universal64.patch
-#}
 
 if {![variant_isset quartz]} {
 patchfiles-append           patch-glib2-findfolders-before-SL.diff
@@ -290,7 +290,7 @@ if {[variant_isset quartz] && [variant_isset x11]} {
 }
 
 if {![variant_isset quartz] && ![variant_isset x11]} {
-    default_variants +x11
+    default_variants +quartz
 }
 
 
