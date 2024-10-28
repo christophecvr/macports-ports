@@ -3,7 +3,8 @@
 PortSystem          1.0
 
 # cmake does not build universal on BigSur Intel
-if { ${os.platform} eq "darwin" && ${os.major} >= 20 && ${build_arch} eq "x86_64"} {
+# Avoid universal build as from Macos 10.14
+if { ${os.platform} eq "darwin" && ${os.major} >= 18 && ${build_arch} eq "x86_64"} {
     universal_variant no
 } else {
     PortGroup       muniversal 1.0
@@ -40,7 +41,7 @@ gitlab.setup        cmake   cmake 3.29.5 v
 checksums           rmd160  1b00eb2691fff51f513df9cbc27395a3ba5d2b74 \
                     sha256  18817b7bfb80ec5bfc92adeb01bbf806a52e1bb9fe811989055a48169f8ad78a \
                     size    8584045
-revision            0
+revision            1
 
 dist_subdir         ${my_name}
 
