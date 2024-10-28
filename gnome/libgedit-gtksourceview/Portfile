@@ -1,0 +1,92 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           active_variants 1.1
+PortGroup           meson 1.0
+
+name                libgedit-gtksourceview
+version             299.3.0
+revision            0
+
+categories          gnome
+license             LGPL-2.1+
+maintainers         {christophecvr @christophecvr} openmaintainer
+
+description         GtkSourceView-5.0 is a source highlighting text widget for GTK+ 4
+long_description    GtkSourceView is a text widget that extends GtkTextView \
+                    by implementing syntax highlighting and other features \
+                    typical of a source editor.
+homepage            https://wiki.gnome.org/Projects/GtkSourceView
+
+set branch          [lindex [split ${version} .] 0]
+master_sites        gnome:sources/${name}/${branch}/
+
+use_xz              yes
+
+checksums           rmd160  537a15280c1ad5fec5257204ff7a5e3297cf49c3 \
+                    sha256  5ab049520010501e78ca4a19df96e2041412756ce90a3dde0a8a1ae6d88af052 \
+                    size    648488
+
+# Disable unexpected download of subprojects
+meson.wrap_mode     nodownload
+
+
+depends_build-append \
+                    port:gettext \
+                    port:pkgconfig
+
+depends_lib-append \
+                    port:fribidi \
+                    port:gettext-runtime \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
+                    path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
+                    port:libxml2 \
+                    port:pcre2 \
+                    path:bin/vala:vala
+
+compiler.c_standard 2017
+
+# gobject-introspection uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+}
+
+#variant quartz conflicts x11 {}
+#variant x11 conflicts quartz {}
+
+#if {![variant_isset quartz]} {
+#    default_variants +x11
+#}
+
+#if {[variant_isset quartz]} {
+#    require_active_variants gtk4 quartz
+#} else {
+#    require_active_variants gtk4 x11
+#}
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} \
+        HACKING COPYING NEWS README.md \
+        ${destroot}${docdir}
+}
+
+variant tests description "enable tests" {
+    configure.args-append -Dinstall_tests=true
+}
+
+test.run            yes
+test.cmd            meson
+test.target         test
+
+livecheck.type      gnome
+livecheck.name      ${name}
+livecheck.regex     "LATEST-IS-(${branch}\\.\\d*\[02468\](?:\\.\\d+)*)"
