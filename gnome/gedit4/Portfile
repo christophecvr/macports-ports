@@ -1,0 +1,147 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           active_variants 1.1
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           app   1.0
+PortGroup           meson 1.0
+#PortGroup           yelp  1.0
+
+name                gedit4
+#conflicts           gedit
+version             48.0
+revision            0
+license             GPL-2+
+set branch          [join [lrange [split ${version} .] 0 0 ] .]
+set my_name         gedit
+description         GNOME Text editor.
+long_description    gedit is an easy-to-use and general-purpose text editor. Its development started \
+                    in 1998, at the beginnings of the GNOME project .
+categories          gnome x11 quartz editors
+maintainers         {christophecvr @christophecvr}
+platforms           darwin
+homepage            https://gedit-technology.github.io/apps/gedit/
+master_sites        gnome:sources/${my_name}/${branch}/
+distname            ${my_name}-${version}
+
+use_xz              yes
+
+#redefinition of typedef error
+compiler.c_standard 2017
+compiler.cxx_standard 2017
+#configure.compiler macports-clang-18
+
+checksums           rmd160  02231a01f8ea6840848f7553f1e9acf9cdf62950 \
+                    sha256  fe0fef9b7b0799120db86ae893a060036a13445352ded9169bab28d38acf0e80 \
+                    size    2889116
+
+patchfiles          patch-meson-build-python3.diff
+
+depends_build-append \
+                    port:desktop-file-utils \
+                    port:docbook-xsl-nons \
+                    port:gettext \
+                    port:gtk-doc \
+                    port:itstool \
+                    port:meson \
+                    port:ninja \
+                    port:pkgconfig \
+                    port:appstream-glib \
+                    bin:git:git
+
+depends_lib-append \
+                    port:adwaita-icon-theme \
+                    port:cairo \
+                    port:libsvg \
+                    port:libsvg-cairo \
+                    port:iso-codes \
+                    port:gettext \
+                    port:gdk-pixbuf2 \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2-exp \
+                    path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
+                    port:gsettings-desktop-schemas \
+                    port:gspell \
+                    path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
+                    port:libgedit-amtk \
+                    port:libgedit-gtksourceview \
+                    port:libgedit-tepl \
+                    port:libgedit-gfls \
+                    port:libpeas \
+                    port:libxml2 \
+                    port:pango \
+                    port:yelp \
+                    port:gtk-osx-application-common-gtk3
+
+post-patch {
+    reinplace "s|@@PYTHON3@@|${configure.python}|g" ${worksrcpath}/meson.build
+    reinplace "s|#!.*|#!${configure.python}|" ${worksrcpath}/build-aux/meson/post_install.py
+}
+
+configure.cflags-append     -Wno-int-conversion
+
+configure.args      -Dheaderbar=yes
+
+# gobject-introspection uses g-ir-scanner, which uses $CC from env
+if {${universal_possible} && [variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+}
+
+variant python310 conflicts python38 python39 description {Use python 3.10} {
+    depends_lib-append        port:py310-gobject3
+    configure.python          ${prefix}/bin/python3.10
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.10
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+variant python311 conflicts python38 python39 description {Use python 3.11} {
+    depends_lib-append        port:py311-gobject3
+    configure.python          ${prefix}/bin/python3.11
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.11
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+variant python312 conflicts python38 python39 description {Use python 3.12} {
+    depends_lib-append        port:py312-gobject3
+    configure.python          ${prefix}/bin/python3.12
+    set python_framework      ${frameworks_dir}/Python.framework/Versions/3.12
+    configure.pkg_config_path ${python_framework}/lib/pkgconfig
+}
+
+
+
+if {![variant_isset python310] && \
+    ![variant_isset python311] && \
+    ![variant_isset python312] } {
+    default_variants-append +python312
+}
+
+app.use_launch_script   yes
+app.icon                ./logo.png
+app.executable          ${my_name}
+
+# add symlink to lib/gedit/libgedit-48.dylib in standard libdir
+# works around introspection typelib issue
+post-destroot {
+    ln -s ${prefix}/lib/gedit/libgedit-48.dylib  ${destroot}${prefix}/lib/libgedit-48.dylib
+}
+
+notes               "For extra functionality install gedit-plugins4"
+
+post-activate    {
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+    # on macos the icon cache update function of meson fails.
+    # this last add will create and or update icons theme caches.
+    # gtk-update-icon-cache-3.0 is a part of gtk3 package.
+    system "/usr/bin/find ${prefix}/share/icons -type d -depth 1 -execdir ${prefix}/bin/gtk-update-icon-cache-3.0 {} '\;'"
+}
+
+livecheck.type      gnome
+
+

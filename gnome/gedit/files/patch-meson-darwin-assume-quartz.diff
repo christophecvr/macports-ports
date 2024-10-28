@@ -1,0 +1,9 @@
+--- gedit/meson.build.orig	2021-03-27 18:41:09.000000000 +0100
++++ gedit/meson.build	2024-10-01 10:38:03.000000000 +0200
+@@ -266,5 +266,5 @@
+   c_args: gedit_c_args,
+   install: true,
+   install_rpath: get_option('prefix') / get_option('libdir') / 'gedit',
+-  gui_app: true,
++  win_subsystem: 'windows',
+ )

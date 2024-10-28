@@ -1,6 +1,22 @@
---- gedit/meson.build.orig	2020-09-11 06:06:08.000000000 -0700
-+++ gedit/meson.build	2020-09-20 18:48:49.000000000 -0700
-@@ -126,7 +126,7 @@
+--- gedit/meson.build.orig	2021-03-27 18:41:09.000000000 +0100
++++ gedit/meson.build	2024-09-29 13:38:37.000000000 +0200
+@@ -69,6 +69,7 @@
+   'gedit-print-job.h',
+   'gedit-print-preview.h',
+   'gedit-recent.h',
++  'gedit-resent-osx.h,
+   'gedit-replace-dialog.h',
+   'gedit-settings.h',
+   'gedit-status-menu-button.h',
+@@ -111,6 +112,7 @@
+   'gedit-print-job.c',
+   'gedit-print-preview.c',
+   'gedit-recent.c',
++  'gedit-recent-osx.c',
+   'gedit-replace-dialog.c',
+   'gedit-settings.c',
+   'gedit-status-menu-button.c',
+@@ -126,7 +128,7 @@
    libgd_dep,
  ]
  
@@ -9,7 +25,7 @@
    libgedit_private_sources += [
      'gedit-app-osx.m',
    ]
-@@ -255,7 +255,7 @@
+@@ -255,7 +257,7 @@
  )
  
  gedit_c_args = []
@@ -18,3 +34,10 @@
    gedit_c_args += '-DOS_OSX=1'
  endif
  
+@@ -266,5 +268,5 @@
+   c_args: gedit_c_args,
+   install: true,
+   install_rpath: get_option('prefix') / get_option('libdir') / 'gedit',
+-  gui_app: true,
++  win_subsystem: 'windows',
+ )
