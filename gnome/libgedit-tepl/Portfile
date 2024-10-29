@@ -27,11 +27,15 @@ depends_build-append \
                     port:gettext \
                     port:gtk-doc
 
-depends_lib         port:libgedit-amtk \
+depends_lib-append \
+                    port:libgedit-amtk \
                     port:gettext-runtime \
+                    port:libhandy \
                     path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
                     path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
+                    port:gsettings-desktop-schemas \
+                    port:libgedit-gfls \
                     port:libgedit-gtksourceview \
                     path:lib/pkgconfig/icu-uc.pc:icu
 

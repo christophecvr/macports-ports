@@ -330,11 +330,16 @@ if {![variant_isset quartz]} {
     default_variants +x11
 }
 
+post-destroot {
+    system "if ! test -f '$prefix/bin/gtk-update-icon-cache'; then ln -s '$prefix/bin/gtk-update-icon-cache-3.0' '${destroot}${prefix}/bin/gtk-update-icon-cache';fi"
+}
+
 post-activate {
     ui_debug "Updating gdk-pixbuf.loaders..."
     system "${prefix}/bin/gdk-pixbuf-query-loaders >${prefix}/etc/gtk-3.0/gdk-pixbuf.loaders"
     ui_debug "Updating GLib schemas..."
     system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+    system "if ! test -f '$prefix/bin/gtk-update-icon-cache'; then ln -s '$prefix/bin/gtk-update-icon-cache-3.0' '${prefix}/bin/gtk-update-icon-cache';fi"
 }
 
 livecheck.type      gnome
