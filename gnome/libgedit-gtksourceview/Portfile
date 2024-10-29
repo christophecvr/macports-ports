@@ -33,6 +33,9 @@ meson.wrap_mode     nodownload
 
 depends_build-append \
                     port:gettext \
+                    port:gtk-doc \
+                    port:xmlcatmgr \
+                    port:libxml2 \
                     port:pkgconfig
 
 depends_lib-append \
@@ -41,7 +44,6 @@ depends_lib-append \
                     path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
                     path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
-                    port:libxml2 \
                     port:pcre2 \
                     path:bin/vala:vala
 

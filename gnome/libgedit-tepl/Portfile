@@ -12,7 +12,6 @@ description         GNOME text editor support
 long_description    ${description}
 maintainers         {christophecvr @christophecvr} openmaintainer
 categories          gnome
-platforms           darwin
 homepage            https://gedit-technology.github.io/
 master_sites        gnome:sources/${name}/${branch}/
 
@@ -25,7 +24,11 @@ checksums           rmd160  c753d49065ef80dfc8cd6400520f2ac90f2bffc5 \
 depends_build-append \
                     port:pkgconfig \
                     port:gettext \
-                    port:gtk-doc
+                    port:gtk-doc \
+                    port:xmlcatmgr \
+                    port:libxml2 \
+                    port:cctools \
+                    port:git
 
 depends_lib-append \
                     port:libgedit-amtk \
@@ -37,16 +40,8 @@ depends_lib-append \
                     port:gsettings-desktop-schemas \
                     port:libgedit-gfls \
                     port:libgedit-gtksourceview \
+                    port:libxml2 \
                     path:lib/pkgconfig/icu-uc.pc:icu
-
-platform darwin {
-    # build requires a newer version of ar/ranlib than available on 10.6 and earlier
-    if {${os.major} < 11} {
-        depends_build-append port:cctools
-    }
-}
-
-#patchfiles          dont-use-version-script.patch
 
 # ld: unknown option: -export-symbols
 compiler.blacklist-append \

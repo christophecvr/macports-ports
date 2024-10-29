@@ -16,7 +16,6 @@ long_description    ${description} Amtk is an acronym for Actions, Menus \
 
 maintainers         {christophecvr @christophecvr} openmaintainer
 categories          gnome
-platforms           darwin
 homepage            https://gitlab.gnome.org/World/gedit/${name}
 master_sites        gnome:sources/${name}/${branch}/
 
