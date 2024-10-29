@@ -7,6 +7,10 @@ PortGroup           app   1.0
 PortGroup           meson 1.0
 #PortGroup           yelp  1.0
 
+if { ${os.platform} eq "darwin" && ${os.major} >= 18 && ${build_arch} eq "x86_64"} {
+    universal_variant no
+}
+
 name                gedit4
 #conflicts           gedit
 version             48.0
@@ -26,10 +30,8 @@ distname            ${my_name}-${version}
 
 use_xz              yes
 
-#redefinition of typedef error
 compiler.c_standard 2017
 compiler.cxx_standard 2017
-#configure.compiler macports-clang-18
 
 checksums           rmd160  02231a01f8ea6840848f7553f1e9acf9cdf62950 \
                     sha256  fe0fef9b7b0799120db86ae893a060036a13445352ded9169bab28d38acf0e80 \
@@ -51,6 +53,9 @@ depends_build-append \
 
 depends_lib-append \
                     port:adwaita-icon-theme \
+                    port:tango-icon-theme \
+                    port:hicolor-icon-theme \
+                    port:tango-icon-theme-extras \
                     port:cairo \
                     port:libsvg \
                     port:libsvg-cairo \
@@ -69,7 +74,6 @@ depends_lib-append \
                     port:libpeas \
                     port:libxml2 \
                     port:pango \
-                    port:yelp \
                     port:gtk-osx-application-common-gtk3
 
 post-patch {
@@ -139,7 +143,7 @@ post-activate    {
     # on macos the icon cache update function of meson fails.
     # this last add will create and or update icons theme caches.
     # gtk-update-icon-cache-3.0 is a part of gtk3 package.
-    system "/usr/bin/find ${prefix}/share/icons -type d -depth 1 -execdir ${prefix}/bin/gtk-update-icon-cache-3.0 {} '\;'"
+    system "/usr/bin/find ${prefix}/share/icons -type d -depth 1 -execdir ${prefix}/bin/gtk-update-icon-cache-3.0 -f -t {} '\;'"
 }
 
 livecheck.type      gnome
