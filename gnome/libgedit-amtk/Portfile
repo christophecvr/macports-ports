@@ -25,13 +25,15 @@ checksums           rmd160  64f830b47ba0f9e2b7c0aaa74afcfb96228e7443 \
                     sha256  7fc3348bef242e08967bdbb9a6698cf39f7810f95051fd8132910f36ed2d6d15 \
                     size    59428
 
-depends_build       port:pkgconfig \
+depends_build       path:bin/pkg-config:pkgconfig \
                     port:gettext \
+                    port:cctools \
                     port:gtk-doc
 
 depends_lib         port:gettext-runtime \
                     path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
+                    port:xmlcatmgr \
                     path:lib/pkgconfig/gtk+-3.0.pc:gtk3
 
 # gobject-introspection uses g-ir-scanner, which uses $CC from env

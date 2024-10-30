@@ -22,13 +22,10 @@ checksums           rmd160  c753d49065ef80dfc8cd6400520f2ac90f2bffc5 \
                     size    173836
 
 depends_build-append \
-                    port:pkgconfig \
-                    port:gettext \
-                    port:gtk-doc \
-                    port:xmlcatmgr \
-                    port:libxml2 \
+                    path:bin/pkg-config:pkgconfig \
                     port:cctools \
-                    port:git
+                    port:gettext \
+                    port:gtk-doc
 
 depends_lib-append \
                     port:libgedit-amtk \
@@ -40,8 +37,6 @@ depends_lib-append \
                     port:gsettings-desktop-schemas \
                     port:libgedit-gfls \
                     port:libgedit-gtksourceview \
-                    port:libxml2 \
-                    path:lib/pkgconfig/icu-uc.pc:icu
 
 # ld: unknown option: -export-symbols
 compiler.blacklist-append \

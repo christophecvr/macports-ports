@@ -13,7 +13,6 @@ description         Plug-ins for GEdit
 long_description    Various additional plug-ins for GEdit
 maintainers         nomaintainer
 categories          gnome editors
-platforms           darwin
 homepage            https://wiki.gnome.org/Apps/Gedit
 distname            ${my_name}-${version}
 master_sites        gnome:sources/${my_name}/${branch}/
@@ -24,81 +23,59 @@ checksums           rmd160  00068c1a6d2564ed74c5d32c7068862cabb727bb \
                     sha256  75fb90e219d46c332b071262ca6fa1cb597b31de97db80c1879d851cf645eb98 \
                     size    883240
 
-#configure.compiler macports-clang-14
-
 depends_build-append \
                     port:pkgconfig \
                     port:appstream-glib \
                     port:gettext \
+                    port:cctools \
                     port:itstool
 
 depends_lib         port:gedit4 \
                     port:gettext \
                     port:gettext-runtime \
-                    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2-exp \
                     path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
                     path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
                     port:libgedit-gtksourceview \
                     port:libpeas \
                     path:bin/vala:vala
 
-#patchfiles          patch-python3-bin.diff \
-#                    patch-meson-61.0.diff
+patchfiles          patch-python3-bin.diff
 
 
-#post-patch {
-#    reinplace "s|@@PYTHON3_BIN@@|${configure.python}|" \
-#        ${worksrcpath}/meson.build
-#    reinplace "s|^#!.*|#!${configure.python}|" \
-#        ${worksrcpath}/build-aux/meson/post_install.py
-#}
+post-patch {
+    reinplace "s|@@PYTHON3_BIN@@|${configure.python}|" \
+        ${worksrcpath}/meson.build
+    reinplace "s|^#!.*|#!${configure.python}|" \
+        ${worksrcpath}/build-aux/meson/post_install.py
+}
 
-# Enabled plugins:
-#     bookmarks
-#     bracketcompletion
-#     codecomment
-#     colorpicker
-#     colorschemer
-#     commander
-#     drawspaces
-#     findinfiles
-#     joinlines
-#     multiedit
-#     sessionsaver
-#     smartspaces
-#     textsize
-#     translate
-#     wordcompletion
+# Default Enabled plugins:
+#   plugin_bookmarks
+#   plugin_bracketcompletion
+#   plugin_codecomment
+#   plugin_colorpicker
+#   plugin_drawspaces
+#   plugin_joinlines
+#   plugin_multiedit
+#   plugin_sessionsaver
+#   plugin_smartspaces
+#   plugin_wordcompletion
 #
 # disabled plugins, enabled via variant:
-#     charmap
-#     git
-#     synctex
-#     terminal
+#   charmap
+#   terminal
 
 # require C11 compiler
 compiler.c_standard   2011
 
 configure.args      -Dplugin_charmap=false \
-                    -Dplugin_synctex=false \
                     -Dplugin_terminal=false
 
 variant charmap description {Insert special characters just by clicking on them} {
     depends_run-append  port:gucharmap
 
     configure.args-delete -Dplugin_charmap=false
-}
-
-variant git description {Highlight lines that have been changed since the last commit} {
-    depends_run-append  port:libgit2-glib
-
-    #configure.args-delete -Dplugin_git=false
-}
-
-variant synctex description {Quickly switch from an opened TeX source file in gedit to a PDF document opened in evince and vice versa} {
-    depends_run-append  port:evince
-
-    configure.args-delete -Dplugin_synctex=false
 }
 
 variant terminal description {Embed a GNOME terminal in the bottom panel of the gedit window} {
@@ -109,21 +86,21 @@ variant terminal description {Embed a GNOME terminal in the bottom panel of the 
 
 
 
-variant python310 conflicts python38 python39 description {Plugins use Python 3.10} {
+variant python310 conflicts python311 python312 description {Plugins use Python 3.10} {
     depends_lib-append  port:py310-gobject3 \
                         port:dbus-python310
 
     configure.python    ${prefix}/bin/python3.10
 }
 
-variant python311 conflicts python38 python39 description {Plugins use Python 3.11} {
+variant python311 conflicts python310 python312 description {Plugins use Python 3.11} {
     depends_lib-append  port:py311-gobject3 \
                         port:dbus-python311
 
     configure.python    ${prefix}/bin/python3.11
 }
 
-variant python312 conflicts python38 python39 description {Plugins use Python 3.12} {
+variant python312 conflicts python310 python311 description {Plugins use Python 3.12} {
     depends_lib-append  port:py312-gobject3 \
                         port:dbus-python312
 
@@ -136,7 +113,9 @@ if {![variant_isset python310] && \
     default_variants +python312
 }
 
-default_variants-append +charmap +synctex
+# charmap only ok for x11 build since at the time we only build for quartz
+# The line is commented.
+#default_variants-append +charmap
 # libpeas expects plugin modules with .so extensions
 # make .so symlink for each plugin module built as .dylib
 post-destroot {

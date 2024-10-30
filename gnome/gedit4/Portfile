@@ -6,6 +6,8 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           app   1.0
 PortGroup           meson 1.0
 
+# Currently this port gedit4 is for gtk3 +quartz only.
+# Yelp PortGroup and yelp do not work for gtk3 +quartz.
 #PortGroup           yelp  1.0
 
 if { ${os.platform} eq "darwin" && ${os.major} >= 18 && ${build_arch} eq "x86_64"} {
@@ -13,7 +15,7 @@ if { ${os.platform} eq "darwin" && ${os.major} >= 18 && ${build_arch} eq "x86_64
 }
 
 name                gedit4
-#conflicts           gedit
+conflicts           gedit
 version             48.0
 revision            0
 license             GPL-2+
@@ -49,13 +51,16 @@ depends_build-append \
                     port:ninja \
                     port:pkgconfig \
                     port:appstream-glib \
-                    bin:git:git
+                    port:cctools
 
+# adding all usable icon-theme's
 depends_lib-append \
                     port:adwaita-icon-theme \
                     port:tango-icon-theme \
                     port:hicolor-icon-theme \
                     port:tango-icon-theme-extras \
+                    port:oxygen-icons \
+                    port:OSXdg-icons \
                     port:cairo \
                     port:libsvg \
                     port:libsvg-cairo \
@@ -74,7 +79,8 @@ depends_lib-append \
                     port:libpeas \
                     port:libxml2 \
                     port:pango \
-                    port:gtk-osx-application-common-gtk3
+                    port:gtk-osx-application-common-gtk3 \
+                    port:gtk-osx-application-gtk3
 
 post-patch {
     reinplace "s|@@PYTHON3@@|${configure.python}|g" ${worksrcpath}/meson.build
@@ -83,6 +89,8 @@ post-patch {
 
 configure.cflags-append     -Wno-int-conversion
 
+# The header bar also works for quartz build
+# I find it nice and enabled it.
 configure.args      -Dheaderbar=yes
 
 # gobject-introspection uses g-ir-scanner, which uses $CC from env

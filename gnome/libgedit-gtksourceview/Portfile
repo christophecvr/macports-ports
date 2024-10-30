@@ -36,6 +36,7 @@ depends_build-append \
                     port:gtk-doc \
                     port:xmlcatmgr \
                     port:libxml2 \
+                    port:cctools \
                     port:pkgconfig
 
 depends_lib-append \
