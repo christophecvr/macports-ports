@@ -14,7 +14,6 @@ long_description    It is a module dedicated to file loading and saving for the 
 
 maintainers         {christophecvr @christophecvr} openmaintainer
 categories          gnome
-platforms           darwin
 homepage            https://gitlab.gnome.org/World/gedit/${name}
 master_sites        gnome:sources/${name}/${branch}/
 
@@ -26,6 +25,8 @@ checksums           rmd160  7c7676c6530b8116cb77878c71baadab8ede9d76 \
 
 depends_build       port:pkgconfig \
                     port:gettext \
+                    port:xmlcatmgr \
+                    port:cctools \
                     port:gtk-doc
 
 depends_lib         port:gettext-runtime \
