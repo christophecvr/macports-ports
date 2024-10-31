@@ -149,9 +149,12 @@ post-activate    {
     system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
     system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
     # on macos the icon cache update function of meson fails.
-    # this last add will create and or update icons theme caches.
+    # this last add will create and or replace icons theme caches.
     # gtk-update-icon-cache-3.0 is a part of gtk3 package.
-    system "/usr/bin/find ${prefix}/share/icons -type d -depth 1 -execdir ${prefix}/bin/gtk-update-icon-cache-3.0 -f -t {} '\;'"
+    set icondirs [ glob -nocomplain -directory ${prefix}/share/icons -type d * ]
+    foreach icondir ${icondirs} {
+        system "${prefix}/bin/gtk-update-icon-cache-3.0 -f -t ${icondir}"
+    }
 }
 
 livecheck.type      gnome
