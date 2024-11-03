@@ -147,6 +147,11 @@ post-destroot {
 notes               "For extra functionality install gedit-plugins4"
 
 post-activate    {
+    # I have this file already.
+    #if {[variant_isset x11]} {
+    # use this launcher also for quartz until the mac integration is fully fixed.
+    system "cp -a ${filespath}/Gedit4X11 ${applications_dir}/Gedit4X11.app"
+    #}
     system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
     system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
     # on macos the icon cache update function of meson fails.
