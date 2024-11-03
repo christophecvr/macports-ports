@@ -1,0 +1,11 @@
+--- gedit/gedit-app-osx.m.orig	2024-09-14 07:18:34.000000000 +0200
++++ gedit/gedit-app-osx.m	2024-11-01 09:13:54.000000000 +0100
+@@ -475,7 +475,7 @@
+ 
+ 	recent_files_menu_populate (app);
+ 
+-	g_application_hold (application);
++	/*g_application_hold (application);*/
+ 	update_open_sensitivity (app);
+ }
+ 

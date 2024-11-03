@@ -63,7 +63,7 @@
  
              }
 --- src/gtkosxapplication_quartz.c.orig	2021-06-29 02:49:49.000000000 +0200
-+++ src/gtkosxapplication_quartz.c	2024-10-02 07:24:52.000000000 +0200
++++ src/gtkosxapplication_quartz.c	2024-11-02 09:20:38.000000000 +0100
 @@ -283,7 +283,7 @@
    /* Translators: This is the "Hide Others" menu item for the "Apple" menu. */
    menuitem = [[NSMenuItem alloc] initWithTitle: [NSString stringWithUTF8String: _("Hide Others")]
