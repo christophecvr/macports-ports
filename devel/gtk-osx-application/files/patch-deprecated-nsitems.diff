@@ -63,8 +63,75 @@
  
              }
 --- src/gtkosxapplication_quartz.c.orig	2021-06-29 02:49:49.000000000 +0200
-+++ src/gtkosxapplication_quartz.c	2024-11-02 09:20:38.000000000 +0100
-@@ -283,7 +283,7 @@
++++ src/gtkosxapplication_quartz.c	2024-11-06 15:29:47.000000000 +0100
+@@ -39,6 +39,7 @@
+ #include "getlabel.h"
+ #include "gtkosx-image.h"
+ 
++#include <glib.h>
+ #include <glib/gi18n-lib.h>
+ 
+ #if GTK_CHECK_VERSION (2, 90, 7)
+@@ -47,17 +48,19 @@
+ #include <gdk/gdkkeysyms.h>
+ #endif
+ 
+-#ifdef G_LOG_DOMAIN
+-#undef G_LOG_DOMAIN
++//#ifdef G_LOG_DOMAIN
++//#undef G_LOG_DOMAIN
++//#endif
++#ifndef G_LOG_DOMAIN
++#define G_LOG_DOMAIN "gedit"
+ #endif
+-#define G_LOG_DOMAIN "gtkosxapplication"
+ 
+ /* This is a private function in libgdk; we need to have is so that we
+    can force new windows onto the Window menu */
+ extern NSWindow* gdk_quartz_window_get_nswindow (GdkWindow*);
+ 
+ //#define DEBUG(format, ...) g_printerr ("%s: " format, G_STRFUNC, ## __VA_ARGS__)
+-#define DEBUG(format, ...)
++//#define DEBUG(format, ...)
+ 
+ /* TODO
+  *
+@@ -67,7 +70,10 @@
+  * - Figure out what to do per app/window...
+  *
+  */
+-G_DEFINE_TYPE (GtkosxApplication, gtkosx_application, G_TYPE_OBJECT)
++// Changed to G_ADD_PRIVATE
++//G_DEFINE_TYPE (GtkosxApplication, gtkosx_application, G_TYPE_OBJECT)
++G_DEFINE_TYPE_WITH_CODE (GtkosxApplication, gtkosx_application, G_TYPE_OBJECT,
++    G_ADD_PRIVATE(GtkosxApplication));
+ 
+ static GQuark emission_hook_quark = 0;
+ 
+@@ -181,7 +187,7 @@
+   NSBundle *bundle = [NSBundle mainBundle];
+   if ([bundle bundleIdentifier])
+     {
+-
++      g_warning ("CVR TEST LOG FOUND BUNDLEIDENTIFIER %s", "CVR TEST LOG FOUND BUNDLEIDENTIFIER");
+       appname = [[bundle infoDictionary]
+ 		 objectForKey: (NSString*)kCFBundleNameKey];
+       if (appname == nil)
+@@ -192,11 +198,12 @@
+ 	  NSString *bundlep = [bundle bundlePath];
+ 	  appname =  [[NSFileManager defaultManager]
+ 		      displayNameAtPath: bundlep];
+-	  g_message ("[get_application_name]: no bundle name key in Info.plist\n");
++	  g_warning ("[get_application_name]: no bundle name key in Info.plist\n");
+ 	}
+     }
+   else
+     {
++      g_warning ("CVR TEST LOG DID NOT FOUND BUNDLEIDENTIFIER %s", "CVR TEST LOG DID NOT FOUND BUNDLEIDENTIFIER");
+       NSString *exepath = [bundle executablePath];
+       appname =  [[NSFileManager defaultManager] displayNameAtPath: exepath];
+     }
+@@ -283,7 +290,7 @@
    /* Translators: This is the "Hide Others" menu item for the "Apple" menu. */
    menuitem = [[NSMenuItem alloc] initWithTitle: [NSString stringWithUTF8String: _("Hide Others")]
  	      action: @selector (hideOtherApplications: ) keyEquivalent: @"h"];
@@ -73,7 +140,7 @@
    [menuitem setTarget: NSApp];
    [app_menu addItem: menuitem];
    [menuitem release];
-@@ -547,7 +547,7 @@
+@@ -547,7 +554,7 @@
     * thread; use an idle or timer event to start the handler if
     * necessary.
     */
@@ -82,7 +149,19 @@
        gtkosx_application_use_quartz_accelerators (app) )
      {
        gboolean result;
-@@ -593,6 +593,7 @@
+@@ -585,7 +592,10 @@
+ gtkosx_application_init (GtkosxApplication *self)
+ {
+   [NSApplication sharedApplication];
+-  self->priv = GTKOSX_APPLICATION_GET_PRIVATE (self);
++  g_warning ("CVR XDEBUG %s", "CVR XDEBUG gtkosx_application_init\n");
++  // Using new macro G_ADD_PRIVATE
++  //self->priv = GTKOSX_APPLICATION_GET_PRIVATE (self);
++  self->priv = (GtkosxApplicationPrivate *) gtkosx_application_get_instance_private (self);
+   self->priv->use_quartz_accelerators = TRUE;
+   self->priv->dock_menu = NULL;
+   gdk_window_add_filter (NULL, global_event_filter_func, (gpointer)self);
+@@ -593,6 +603,7 @@
    [NSApp setDelegate: [GtkApplicationDelegate new]];
    self->priv->delegate = [NSApp delegate];
    bindtextdomain (PACKAGE_NAME, LOCALEDIR);
@@ -90,6 +169,29 @@
  
    /* Check if we're running inside an application bundle and overwrite the
     * previously bound domain to a location inside the bundle.
+@@ -600,10 +611,12 @@
+   gchar *bundle_id = gtkosx_application_get_bundle_id();
+   if (bundle_id)
+     {
++      g_warning ("CVR XDEBUG BUNDLE_ID = %s", bundle_id);
+       gchar *resource_path = gtkosx_application_get_resource_path();
+       if (resource_path)
+         {
+           gchar *locale_dir = g_strdup_printf("%s/share/locale", resource_path);
++          g_warning ("CVR XDEBUG locale_dir = %s", locale_dir);
+           g_free(resource_path);
+           bindtextdomain (PACKAGE_NAME, locale_dir);
+           g_free(locale_dir);
+@@ -632,7 +645,8 @@
+ gtkosx_application_class_init (GtkosxApplicationClass *klass)
+ {
+   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+-  g_type_class_add_private (klass, sizeof (GtkosxApplicationPrivate));
++  //add_private_class deprecated using macro G_ADD_PRIVATE instead.
++  //g_type_class_add_private (klass, sizeof (GtkosxApplicationPrivate));
+   gobject_class->constructor = gtkosx_application_constructor;
+   /**
+    * GtkosxApplication::NSApplicationDidBecomeActive:
 --- src/gtkosxapplication.h.orig	2021-06-29 22:19:45.000000000 +0200
 +++ src/gtkosxapplication.h	2024-10-02 07:04:50.000000000 +0200
 @@ -93,14 +93,14 @@
@@ -126,3 +228,15 @@
    CGContextDrawImage (imageContext, * (CGRect*)&imageRect, image);
    [newImage unlockFocus];
    CGImageRelease (image);
+--- src/gtkosxapplicationprivate.h.orig	2021-06-29 02:49:49.000000000 +0200
++++ src/gtkosxapplicationprivate.h	2024-11-06 10:49:38.000000000 +0100
+@@ -29,7 +29,8 @@
+ #import "GtkApplicationNotify.h"
+ #import "GtkApplicationDelegate.h"
+ 
+-#define  GTKOSX_APPLICATION_GET_PRIVATE(obj)	(G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTKOSX_TYPE_APPLICATION, GtkosxApplicationPrivate))
++// Line below not required anymore using new macro G_ADD_PRIVATE
++//#define  GTKOSX_APPLICATION_GET_PRIVATE(obj)	(G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTKOSX_TYPE_APPLICATION, GtkosxApplicationPrivate))
+ 
+ struct _GtkosxApplicationPrivate
+ {

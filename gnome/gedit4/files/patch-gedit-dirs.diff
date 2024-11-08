@@ -1,0 +1,39 @@
+--- gedit/gedit-dirs.c.orig	2024-09-14 07:18:34.000000000 +0200
++++ gedit/gedit-dirs.c	2024-11-06 20:32:30.000000000 +0100
+@@ -24,6 +24,12 @@
+ 
+ #if OS_MACOS
+ #include <gtkosxapplication.h>
++#include <glib.h>
++#ifdef G_LOG_DOMAIN
++#undef G_LOG_DOMAIN
++#endif
++#define G_LOG_DOMAIN "gedit"
++#define DEBUG(format, ...)
+ #endif
+ 
+ static gchar *user_config_dir        = NULL;
+@@ -37,6 +43,7 @@
+ void
+ gedit_dirs_init (void)
+ {
++	g_message ("CVR DEBUG INIT GEDIT DIRS");
+ #ifdef G_OS_WIN32
+ 	gchar *win32_dir;
+ 
+@@ -60,8 +67,15 @@
+ #endif /* G_OS_WIN32 */
+ 
+ #if OS_MACOS
++	g_message ("CVR DEBUG USING if OS_MACOS");
++	gchar *resource_path = gtkosx_application_get_resource_path();
++	if (resource_path)
++	{
++		g_message ("CVR DEBUG resource path found = %s", resource_path);
++	}	
+ 	if (gtkosx_application_get_bundle_id () != NULL)
+ 	{
++		g_warning ("CVR DEBUG USING app_bundle");
+ 		const gchar *bundle_resource_dir = gtkosx_application_get_resource_path ();
+ 
+ 		gedit_locale_dir = g_build_filename (bundle_resource_dir,

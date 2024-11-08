@@ -1,6 +1,6 @@
 --- meson.build.orig	2024-09-14 07:18:34.000000000 +0200
-+++ meson.build	2024-10-27 11:40:37.000000000 +0100
-@@ -2,7 +2,6 @@
++++ meson.build	2024-11-07 09:53:51.000000000 +0100
+@@ -2,11 +2,10 @@
    'gedit', 'c',
    version: '48.0',
    meson_version: '>= 0.59',
@@ -8,12 +8,17 @@
  )
  
  if host_machine.system() == 'darwin'
+-  add_languages('objc')
++  add_languages('objc', native: false)
+ endif
+ 
+ gnome = import('gnome')
 @@ -115,7 +114,7 @@
  ]
  
  gspell_dep = dependency('gspell-1', version: '>= 1.0')
 -python3 = python.find_installation('python3')
-+python3 = python.find_installation('@@PYTHON3@@')
++python3 = python.find_installation('/opt/local/bin/python3.12')
  
  # Configurations
  config_h = configuration_data()

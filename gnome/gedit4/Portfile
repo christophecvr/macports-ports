@@ -7,7 +7,7 @@ PortGroup           app   1.0
 PortGroup           meson 1.0
 
 # Currently this port gedit4 is for gtk3 +quartz only.
-# Yelp PortGroup and yelp do not work for gtk3 +quartz.
+# Yelp PortGroup and yelp does not work for gtk3 +quartz.
 #PortGroup           yelp  1.0
 
 if { ${os.platform} eq "darwin" && ${os.major} >= 18 && ${build_arch} eq "x86_64"} {
@@ -34,13 +34,16 @@ use_xz              yes
 
 compiler.c_standard 2017
 compiler.cxx_standard 2017
+# disable error when searching framework linker paths
+configure.ldflags-append    -Wl,-U,_main
 
 checksums           rmd160  02231a01f8ea6840848f7553f1e9acf9cdf62950 \
                     sha256  fe0fef9b7b0799120db86ae893a060036a13445352ded9169bab28d38acf0e80 \
                     size    2889116
 
 patchfiles          patch-meson-build-python3.diff \
-                    patch-gedit-app-osx.diff
+                    patch-gedit-app-osx.diff \
+                    patch-gedit-dirs.diff
 
 depends_build-append \
                     port:desktop-file-utils \
