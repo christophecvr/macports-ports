@@ -1,9 +1,11 @@
 --- gedit/gedit-dirs.c.orig	2024-09-14 07:18:34.000000000 +0200
-+++ gedit/gedit-dirs.c	2024-11-06 20:32:30.000000000 +0100
-@@ -24,6 +24,12 @@
++++ gedit/gedit-dirs.c	2024-11-09 13:45:28.000000000 +0100
+@@ -23,7 +23,13 @@
+ #include "gedit-dirs.h"
  
  #if OS_MACOS
- #include <gtkosxapplication.h>
+-#include <gtkosxapplication.h>
++#include <gedit-app-osx.h>
 +#include <glib.h>
 +#ifdef G_LOG_DOMAIN
 +#undef G_LOG_DOMAIN

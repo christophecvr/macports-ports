@@ -82,9 +82,7 @@ depends_lib-append \
                     port:libgedit-gfls \
                     port:libpeas \
                     port:libxml2 \
-                    port:pango \
-                    port:gtk-osx-application-common-gtk3 \
-                    port:gtk-osx-application-gtk3
+                    port:pango
 
 post-patch {
     reinplace "s|@@PYTHON3@@|${configure.python}|g" ${worksrcpath}/meson.build

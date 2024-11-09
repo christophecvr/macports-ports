@@ -1,11 +1,65 @@
 --- gedit/gedit-app-osx.m.orig	2024-09-14 07:18:34.000000000 +0200
-+++ gedit/gedit-app-osx.m	2024-11-01 09:13:54.000000000 +0100
-@@ -475,7 +475,7 @@
- 
- 	recent_files_menu_populate (app);
- 
--	g_application_hold (application);
-+	/*g_application_hold (application);*/
- 	update_open_sensitivity (app);
++++ gedit/gedit-app-osx.m	2024-11-09 13:38:59.000000000 +0100
+@@ -598,4 +598,50 @@
+ 	                                       forKey:@"NSTreatUnknownArgumentsAsOpen"];
  }
  
++/**
++ * gtkosx_application_get_bundle_id:
++ *
++ *Return the value of the CFBundleIdentifier key from the bundle's Info.plist
++ *
++ * This will return NULL if it's not really a bundle, there's no
++ * Info.plist, or if Info.plist doesn't have a CFBundleIdentifier key
++ * (So if you need to detect being in a bundle, make sure that your
++ * bundle has that key!)
++ *
++ * Returns: The string value of CFBundleIdentifier, or %NULL if there is none. g_free() it when done.
++ */
++gchar*
++gtkosx_application_get_bundle_id (void)
++{
++	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
++	gchar *str = NULL;
++	NSString *path = [[NSBundle mainBundle] bundleIdentifier];
++	if (!path)
++		return NULL;
++	str = strdup ([path UTF8String]);
++	[pool release];
++	return str;
++}
++
++/**
++ * gtkosx_application_get_resource_path:
++ *
++ * Return the Resource path for the bundle or the directory containing the
++ *  executable if it isn't actually a bundle. Use gtkosx_application_get_bundle_id() to check (it will return %NULL if it's not a bundle).
++ *
++ * Returns: path The absolute resource path. or %NULL on error. g_free() it when done.
++ */
++gchar*
++gtkosx_application_get_resource_path (void)
++{
++	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
++	gchar *str = NULL;
++	NSString *path = [[NSBundle mainBundle] resourcePath];
++	if (!path)
++		return NULL;
++	str = strdup ([path UTF8String]);
++	[pool release];
++	return str;
++}
++
+ /* ex:set ts=8 noet: */
+--- gedit/gedit-app-osx.h.orig	2024-09-14 07:18:34.000000000 +0200
++++ gedit/gedit-app-osx.h	2024-11-09 13:42:21.000000000 +0100
+@@ -34,6 +34,9 @@
+ gboolean	 gedit_app_osx_show_url			(GeditAppOSX *app,
+ 							 const gchar *url);
+ 
++gchar *gtkosx_application_get_bundle_id(void);
++gchar *gtkosx_application_get_resource_path(void);
++
+ G_END_DECLS
+ 
+ #endif /* GEDIT_APP_OSX_H */
