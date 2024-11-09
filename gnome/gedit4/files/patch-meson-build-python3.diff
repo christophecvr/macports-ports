@@ -1,5 +1,5 @@
 --- meson.build.orig	2024-09-14 07:18:34.000000000 +0200
-+++ meson.build	2024-11-07 09:53:51.000000000 +0100
++++ meson.build	2024-11-09 12:12:00.000000000 +0100
 @@ -2,11 +2,10 @@
    'gedit', 'c',
    version: '48.0',
@@ -18,7 +18,7 @@
  
  gspell_dep = dependency('gspell-1', version: '>= 1.0')
 -python3 = python.find_installation('python3')
-+python3 = python.find_installation('/opt/local/bin/python3.12')
++python3 = python.find_installation('@@PYTHON3@@')
  
  # Configurations
  config_h = configuration_data()

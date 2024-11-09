@@ -154,7 +154,7 @@ post-activate    {
     #if {[variant_isset x11]} {
     # use this Gedit4x11 launcher also for quartz until the mac integration is fully fixed.
     system "cp -a ${filespath}/Gedit4X11 ${applications_dir}/Gedit4X11.app"
-    system "cp -a ${filepath}/Gedit4Quartz ${applications_dir}/Gedit4Quartz.app"
+    system "cp -a ${filespath}/Gedit4Quartz ${applications_dir}/Gedit4Quartz.app"
     #}
     system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
     system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
@@ -164,6 +164,15 @@ post-activate    {
     set icondirs [ glob -nocomplain -directory ${prefix}/share/icons -type d * ]
     foreach icondir ${icondirs} {
         system "${prefix}/bin/gtk-update-icon-cache-3.0 -f -t ${icondir}"
+    }
+}
+
+post-deactivate {
+    if {[file isdirectory ${applications_dir}/Gedit4X11.app]} {
+        system "rm -rf ${applications_dir}/Gedit4X11.app"
+    }
+    if {[file isdirectory ${applications_dir}/Gedit4Quartz.app]} {
+        system "rm -rf ${applications_dir}/Gedit4Quartz.app"
     }
 }
 
