@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           active_variants 1.1
 PortGroup           compiler_blacklist_versions 1.0
-PortGroup           app   1.0
+#PortGroup           app   1.0
 PortGroup           meson 1.0
 
 # Currently this port gedit4 is for gtk3 +quartz only.
@@ -137,9 +137,9 @@ if {![variant_isset python310] && \
     default_variants-append +python312
 }
 
-app.use_launch_script   yes
-app.icon                ./logo.png
-app.executable          ${my_name}
+#app.use_launch_script   yes
+#app.icon                ./logo.png
+#app.executable          ${my_name}
 
 # add symlink to lib/gedit/libgedit-48.dylib in standard libdir
 # works around introspection typelib issue
@@ -152,8 +152,9 @@ notes               "For extra functionality install gedit-plugins4"
 post-activate    {
     # I have this file already.
     #if {[variant_isset x11]} {
-    # use this launcher also for quartz until the mac integration is fully fixed.
+    # use this Gedit4x11 launcher also for quartz until the mac integration is fully fixed.
     system "cp -a ${filespath}/Gedit4X11 ${applications_dir}/Gedit4X11.app"
+    system "cp -a ${filepath}/Gedit4Quartz ${applications_dir}/Gedit4Quartz.app"
     #}
     system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
     system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"

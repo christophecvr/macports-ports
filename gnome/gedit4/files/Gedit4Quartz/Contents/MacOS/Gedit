@@ -1,0 +1,45 @@
+#!/bin/sh
+#  ex:set filetype=sh
+name=$(basename "$0")
+dirn=$(dirname "$0")
+
+pushd "$dirn/../../" > /dev/null
+bundle=$(pwd -P)
+
+bundle_contents="$bundle"/Contents
+bundle_res="$bundle_contents"/Resources
+bundle_lib="$bundle_res"/lib
+bundle_bin="$bundle_res"/bin
+bundle_sbin="$bundle_res"/sbin
+bundle_data="$bundle_res"/share
+bundle_etc="$bundle_res"/etc
+
+prefix="$bundle_res"
+if [ -e $prefix/bin/gdate ]; then
+    logtime="`$prefix/bin/gdate "+%Y-%m-%d %H:%M:%S.%3N"`"
+else
+    logtime="`date "+%Y-%m-%d %H:%M:%S"`"
+fi
+if [ -z $HOME/aGEDITRUN.log ]; then
+    echo "$logtime new session" > $HOME/aGEDITRUN.log
+    echo "the bundle = $bundle" >> $HOME/aGEDITRUN.log
+    echo "the bundle bin path = $bundle_bin" >> $HOME/aGEDITRUN.log
+else
+    echo "$logtime new session" > $HOME/aGEDITRUN.log
+    echo "the bundle = $bundle" >> $HOME/aGEDITRUN.log
+    echo "the bundle bin path = $bundle_bin" >> $HOME/aGEDITRUN.log
+fi
+
+
+
+export PATH="$bundle_bin:$PATH"
+#export GEDIT_DEBUG=1
+#export PATH="$prefix/bin:$prefix/sbin:$PATH"
+#export XDG_CONFIG_DIRS="$prefix/etc/xdg"
+#export XDG_DATA_DIRS="$prefix/share"
+#$prefix/bin/xdg-user-dirs-update >> $HOME/aGEDITRUN.log 2>&1
+#exec /opt/local/bin/gedit >> $HOME/aGEDITRUN.log 2>&1
+exec "$bundle_contents/MacOS/gedit-bin" >> $HOME/aGEDITRUN.log 2>&1
+echo "$logtime Do we continu ?" >> $HOME/aGEDITRUN.log
+echo "$logtime PATH=$PATH " >> $HOME/aGEDITRUN.log
+exit

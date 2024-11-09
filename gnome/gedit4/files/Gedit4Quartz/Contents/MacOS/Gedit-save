@@ -1,0 +1,56 @@
+#!/bin/sh
+echo "new log" > ~/aGEDIT.log
+echo "new log" > ~/aGEDITRUN.log
+echo "new log" > ~/ageditcvr.log
+pgrep -a gedit >> ~/aGEDIT.log
+echo "above the value of pgrep" >> ~/aGEDIT.log
+value="`pgrep -a gedit | tr -d '\n'`"
+if [ -z "$value" ] ; then
+    echo "the value is empty double check $value shoul be empty" >> ~/aGEDIT.log
+    export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+    exec /opt/local/bin/gedit &> ~/aGEDITRUN.log
+    exit 0
+else
+    echo "the value is not empty double check $value schould issue an number" >> ~/aGEDIT.log
+    OLDIFS="$IFS"
+    # scripts started in an apple app container to not use the user PATH or system wide path.
+    export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+    apppath="`dirname $0`"
+    # the filelist of mac is a file list 
+    # convert this to a array of strings separated by a space which is the default on bash scripting.
+    IFS="
+    "
+    filelist=(`osascript $apppath/../Resources/FilesSelector.applescript`)
+    echo "after command still ok ?" >> ~/ageditcvr.log
+    IFS="$OLDIFS"
+    if [ ! -z "${filelist[@]}" ] ; then
+	    for I in "${filelist[@]}"
+	    do
+    #We open each selected file in finder with gedit.
+    # Opening more script or text files at once is possible
+    # A selected directory will be ignored.
+		    if [ -f "$I" ] ; then
+			    /opt/local/bin/gedit "$I" &> ~/aGEDITRUN.log
+			    exit 0 
+		    else
+    # Yes Gedit.app is a directory but on mac the program launcher.
+    # It will open gedit with a new unsaved document
+    			echo "inhoud  van si rechtsreeks opening $I" >> ~/ageditcvr.log
+    			if [ "Geditquartz.app" == "`echo $I | grep -o "Geditquartz.app"`" ] || [ -z "$I" ] ; then
+    				/opt/local/bin/gedit &> ~/aGEDITRUN.log
+    				exit 0
+    			fi
+    		fi
+    	done
+    else
+    	echo "Filelist array is empty " >> ~/ageditcvr.log
+    	/opt/local/bin/gedit &> ~/aGEDITRUN.log
+    	exit 0
+    fi
+fi
+
+
+#export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+#echo "Running PATH env $PATH" >> ~/aGEDIT.log
+#exec /opt/local/bin/gedit &> ~/aGEDITRUN.log
+exit 0
