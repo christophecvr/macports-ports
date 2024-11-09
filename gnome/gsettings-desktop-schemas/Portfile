@@ -4,9 +4,9 @@ PortSystem          1.0
 PortGroup           meson 1.0
 
 name                gsettings-desktop-schemas
-version             3.38.0
+version             47.1
 license             LGPL-2.1
-set branch          [join [lrange [split ${version} .] 0 1] .]
+set branch          [join [lrange [split ${version} .] 0 0] .]
 
 description         gsettings-desktop-schemas contains a collection of GSettings schemas \
                     for settings shared by various components of a desktop.
@@ -31,7 +31,7 @@ depends_build-append \
                     port:pkgconfig \
                     port:python312
 
-depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2-exp \
                     path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection
 
 # make sure post-install.py uses python3.12 not generic python3
