@@ -40,11 +40,11 @@ post-patch {
     reinplace "s|@PYTHON3@|${prefix}/bin/python${python_vers}|g" ${worksrcpath}/src/gen_dispatch.py
 }
 
-variant quartz conflicts x11 {
-    configure.args-append   -Dx11=false
+variant quartz {
+    #configure.args-append   -Dx11=false
 }
 
-variant x11 conflicts quartz {
+variant x11 {
     depends_lib-append      port:mesa
     # enable GLX support
     # without this any gtk3 +x11 app will fail on load as follows
@@ -55,14 +55,14 @@ variant x11 conflicts quartz {
     configure.args-append   -Dglx=yes
 }
 
-if {![variant_isset quartz]} {
-    default_variants +x11
-}
-if {![variant_isset x11]} {
-    default_variants +quartz
-}
-if {![variant_isset quartz] && ![variant_isset x11]} {
-    pre-configure {
-        return -code error "Either +x11 or +quartz is required"
-    }
-}
+#if {![variant_isset quartz]} {
+#    default_variants +x11
+#}
+#if {![variant_isset x11]} {
+#    default_variants +quartz
+#}
+#if {![variant_isset quartz] && ![variant_isset x11]} {
+#    pre-configure {
+#        return -code error "Either +x11 or +quartz is required"
+#    }
+#}
