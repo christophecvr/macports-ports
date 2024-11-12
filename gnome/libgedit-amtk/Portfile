@@ -5,9 +5,10 @@ PortGroup           meson 1.0
 
 name                libgedit-amtk
 version             5.9.0
-revision            0
+revision            1
+fetch.type          git
 license             LGPL-2.1+
-set branch          [join [lrange [split ${version} .] 0 1] .]
+#set branch          [join [lrange [split ${version} .] 0 1] .]
 description         ${name} is a companion library to GLib and Gtk+.
 long_description    ${description} Amtk is an acronym for Actions, Menus \
                     and Toolbars Kit. It is a basic GtkUIManager replacement \
@@ -17,9 +18,11 @@ long_description    ${description} Amtk is an acronym for Actions, Menus \
 maintainers         {christophecvr @christophecvr} openmaintainer
 categories          gnome
 homepage            https://gitlab.gnome.org/World/gedit/${name}
-master_sites        gnome:sources/${name}/${branch}/
+#master_sites        gnome:sources/${name}/${branch}/
+git.url             https://gitlab.gnome.org/christophecvr/libgedit-amtk
+git.branch          origin/geditcvr
 
-use_xz              yes
+#use_xz              yes
 
 checksums           rmd160  64f830b47ba0f9e2b7c0aaa74afcfb96228e7443 \
                     sha256  7fc3348bef242e08967bdbb9a6698cf39f7810f95051fd8132910f36ed2d6d15 \
