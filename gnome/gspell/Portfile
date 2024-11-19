@@ -53,7 +53,7 @@ variant quartz {}
 
 if {[variant_isset quartz]} {
     require_active_variants gtk3 quartz
-    depends_lib-append      port:gtk-osx-application-gtk3
+    depends_lib-append      path:lib/pkgconfig/gtk-mac-integration-gtk3.pc:gtk-osx-application-gtk3
 } else {
     require_active_variants gtk3 x11
 }
