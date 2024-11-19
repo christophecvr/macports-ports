@@ -39,7 +39,7 @@ export PATH="$bundle_bin:$PATH"
 #export XDG_DATA_DIRS="$prefix/share"
 #$prefix/bin/xdg-user-dirs-update >> $HOME/aGEDITRUN.log 2>&1
 #exec /opt/local/bin/gedit >> $HOME/aGEDITRUN.log 2>&1
-exec "$bundle_contents/MacOS/gedit-bin"
+exec "$bundle_contents/MacOS/gedit-bin" >> $HOME/aGEDITRUN.log 2>&1
 echo "$logtime Do we continu ?" >> $HOME/aGEDITRUN.log
 echo "$logtime PATH=$PATH " >> $HOME/aGEDITRUN.log
 exit

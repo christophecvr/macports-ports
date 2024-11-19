@@ -1,0 +1,20 @@
+--- src/gtkosx-image.c.orig	2024-11-16 15:06:44.000000000 +0100
++++ src/gtkosx-image.c	2024-11-18 20:34:06.000000000 +0100
+@@ -101,12 +101,17 @@
+ #if MAC_OS_X_VERSION_MAX_ALLOWED < 101000
+     imageContext = [[NSGraphicsContext currentContext] graphicsPort];
+ #else
++# if MAC_OS_X_VERSION_MIN_REQUIRED < 101000
+   if (gdk_quartz_osx_version () < GDK_OSX_YOSEMITE)
+     imageContext = [[NSGraphicsContext currentContext] graphicsPort];
+   else
++#endif
+     imageContext = [[NSGraphicsContext currentContext] CGContext];
+ #endif
+ 
++
++
++
+   CGContextDrawImage (imageContext, * (CGRect*)&imageRect, image);
+   [newImage unlockFocus];
+   CGImageRelease (image);

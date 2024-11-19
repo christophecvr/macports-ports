@@ -1,0 +1,309 @@
+--- gedit/gedit-app-osx.m.orig	2024-11-14 06:23:42.000000000 +0100
++++ gedit/gedit-app-osx.m	2024-11-14 14:36:04.000000000 +0100
+@@ -36,11 +36,19 @@
+ 
+ NSWindow *gdk_quartz_window_get_nswindow(GdkWindow *window);
+ NSEvent *gdk_quartz_event_get_nsevent(GdkEvent *event);
++static void release_ns_application (GeditAppOSX *app);
++static void remove_recent_actions (GeditAppOSX *app);
++static void gedit_app_osx_set_window_title_impl (GeditApp    *app,
++                                     GeditWindow *window,
++                                     const gchar *title);
++
++static void update_open_sensitivity (GeditAppOSX *app);
+ 
+ static GeditWindow *
+ ensure_window (GeditAppOSX *app,
+                gboolean     with_empty_document)
+ {
++	g_message ("CVR DEBUG ensure_window (GeditAppOSX *app, ... is used");
+ 	GList *windows;
+ 	GeditWindow *ret = NULL;
+ 
+@@ -96,59 +104,83 @@
+ 	id<NSApplicationDelegate> orig;
+ }
+ 
+-- (id)initWithApp:(GeditAppOSX *)theApp;
+-- (void)release;
+-
+-- (id)forwardingTargetForSelector:(SEL)aSelector;
+-- (BOOL)respondsToSelector:(SEL)aSelector;
+-
+-- (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication hasVisibleWindows:(BOOL)flag;
+-- (void)applicationWillBecomeActive:(NSNotification *)aNotification;
+-- (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames;
+-
++//- (id)initWithApp:(GeditAppOSX *)theApp;
++//- (BOOL)applicationShouldHandleReopen:(NSApplication *)sender hasVisibleWindows:(BOOL)flag;
++//- (id)forwardingTargetForSelector:(SEL)aSelector;
++//- (BOOL)respondsToSelector:(SEL)aSelector;
++//-
++//- (void)applicationWillBecomeActive:(NSNotification *)aNotification;
++//- (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames;
++//- (void)release;
+ @end
+ 
+ @implementation GeditAppOSXDelegate
+ - (id)initWithApp:(GeditAppOSX *)theApp
+ {
++	g_message ("CVR DEBUG - (id)initWithApp:(GeditAppOSX *)theApp is used");
+ 	[super init];
+ 	app = theApp;
+ 
+ 	orig = [NSApp delegate];
+ 	[NSApp setDelegate:self];
+-
++	if (self)
++	{
++		g_message ("CVR DEBUG - (id)initWithApp:(GeditAppOSX *)theApp : App Delegate Initialized");
++		NSLog(@"App Delegate Initialized");
++	}
+ 	return self;
+ }
+ 
+-- (void)release
++- (BOOL)applicationShouldHandleReopen:(NSApplication *)sender hasVisibleWindows:(BOOL)flag
+ {
+-	[NSApp setDelegate:orig];
+-	[super release];
++	g_message ("CVR DEBUG applicationShouldHandleReopen:(GeditAppOSX *)theApp hasVisibleWindows:(BOOL)flag is used");
++	ensure_window (app, TRUE);
++	return true;
+ }
+ 
+ - (id)forwardingTargetForSelector:(SEL)aSelector
+ {
++	g_message ("CVR DEBUG - (id)forwardingTargetForSelector:(SEL)aSelector is used");
+ 	return orig;
+ }
+ 
+ - (BOOL)respondsToSelector:(SEL)aSelector
+ {
++    g_message ("CVR DEBUG - (BOOL)respondsToSelector:(SEL)aSelector is used");
+     return [super respondsToSelector:aSelector] || [orig respondsToSelector:aSelector];
+ }
+ 
+-- (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication hasVisibleWindows:(BOOL)flag
++- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+ {
++	//ensure_window (app, TRUE);
++	g_message ("CVR DEBUG  - (void)applicationDidFinishLaunching:(NSNotification *)aNotification is used");
++	release_ns_application (app);
+ 	ensure_window (app, TRUE);
+-	return NO;
++	update_open_sensitivity(app);
++}
++
++- (void)applicationWillTerminate:(NSNotification *)aNotification
++{
++	g_message ("CVR DEBUG - (void)applicationWillTerminate:(NSNotification *)aNotification");
+ }
+ 
++/*
++- (void)release
++{
++	g_message ("CVR DEBUG - (void)release is used");
++	[NSApp setDelegate:orig];
++	[super release];
++}
++*/
+ - (void)applicationWillBecomeActive:(NSNotification *)aNotification
+ {
++	g_message ("CVR DEBUG - (void)applicationWillBecomeActive:(NSNotification *)aNotification is used");
+ 	ensure_window (app, TRUE);
+ }
+ 
+ - (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames
+ {
++	g_message ("CVR DEBUG - (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames is used");
+ 	ensure_window (app, FALSE);
+ 	[orig application:sender openFiles:filenames];
+ }
+@@ -171,8 +203,17 @@
+ G_DEFINE_TYPE (GeditAppOSX, gedit_app_osx, GEDIT_TYPE_APP)
+ 
+ static void
++release_ns_application (GeditAppOSX *app)
++{
++	g_message ("CVR DEBUG release_ns_application (GeditAppOSX *app)");
++	remove_recent_actions (app);
++	[app->app_delegate release];
++}
++
++static void
+ remove_recent_actions (GeditAppOSX *app)
+ {
++	g_message ("CVR DEBUG remove_recent_actions (GeditAppOSX *app) is used");
+ 	while (app->recent_actions)
+ 	{
+ 		gchar *action_name = app->recent_actions->data;
+@@ -188,6 +229,7 @@
+ static void
+ gedit_app_osx_finalize (GObject *object)
+ {
++	g_message ("CVR DEBUG gedit_app_osx_finalize (GObject *object) is used");
+ 	GeditAppOSX *app = GEDIT_APP_OSX (object);
+ 
+ 	g_object_unref (app->recent_files_menu);
+@@ -204,10 +246,13 @@
+ 	G_OBJECT_CLASS (gedit_app_osx_parent_class)->finalize (object);
+ }
+ 
++
++
+ gboolean
+ gedit_app_osx_show_url (GeditAppOSX *app,
+                         const gchar *url)
+ {
++	g_message ("CVR DEBUG gedit_app_osx_show_url (GeditAppOSX *app, .. is used");
+ 	return [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]]];
+ }
+ 
+@@ -217,6 +262,7 @@
+                               const gchar *name,
+                               const gchar *link_id)
+ {
++	g_message ("CVR DEBUG gedit_app_osx_show_help_impl (GeditApp    *app, is used");
+ 	gboolean ret = FALSE;
+ 
+ 	if (name == NULL || g_strcmp0 (name, "gedit") == 0)
+@@ -245,6 +291,7 @@
+                                      GeditWindow *window,
+                                      const gchar *title)
+ {
++	g_message ("CVR DEBUG gedit_app_osx_set_window_title_impl (GeditApp    *app, ... is used");
+ 	NSWindow *native;
+ 	GeditDocument *document;
+ 	GdkWindow *wnd;
+@@ -308,6 +355,7 @@
+ recent_file_info_free (gpointer  data,
+                        GClosure *closure)
+ {
++	g_message ("CVR DEBUG recent_file_info_free (gpointer  data, is used");
+ 	RecentFileInfo *info = data;
+ 
+ 	g_object_unref (info->app);
+@@ -321,6 +369,7 @@
+                        GVariant       *parameter,
+                        RecentFileInfo *info)
+ {
++	g_message ("CVR DEBUG recent_file_activated (GAction        *action, ... is used");
+ 	GeditWindow *window;
+ 	const gchar *uri;
+ 	GFile *file;
+@@ -337,6 +386,7 @@
+ static void
+ recent_files_menu_populate (GeditAppOSX *app)
+ {
++	g_message ("CVR DEBUG recent_files_menu_populate (GeditAppOSX *app) is used");
+ 	GList *items;
+ 	gint i = 0;
+ 
+@@ -394,6 +444,7 @@
+ recent_manager_changed (GtkRecentManager *manager,
+                         GeditAppOSX      *app)
+ {
++	g_message ("CVR DEBUG recent_manager_changed (GtkRecentManager *manager, ... is used");
+ 	recent_files_menu_populate (app);
+ }
+ 
+@@ -402,16 +453,18 @@
+                 GVariant      *parameter,
+                 gpointer       userdata)
+ {
++	g_message ("CVR DEBUG open_activated (GSimpleAction *action, ... is used");
+ 	_gedit_cmd_file_open (NULL, NULL, NULL);
+ }
+ 
+ static GActionEntry app_entries[] = {
+-	{ "open", open_activated, NULL, NULL, NULL }
++	{ "open", open_activated, NULL, NULL, NULL, {0,0,0}}
+ };
+ 
+ static void
+ update_open_sensitivity (GeditAppOSX *app)
+ {
++	g_message ("CVR DEBUG update_open_sensitivity (GeditAppOSX *app) is used");
+ 	GAction *action;
+ 	gboolean has_windows;
+ 
+@@ -424,6 +477,7 @@
+ static void
+ gedit_app_osx_startup (GApplication *application)
+ {
++	g_message ("CVR DEBUG gedit_app_osx_startup (GApplication *application) is used");
+ 	const gchar *replace_accels[] = {
+ 		"<Primary><Alt>F",
+ 		NULL
+@@ -481,6 +535,7 @@
+ static void
+ set_window_allow_fullscreen (GeditWindow *window)
+ {
++	g_message ("CVR DEBUG set_window_allow_fullscreen (GeditWindow *window) is used");
+ 	GdkWindow *wnd;
+ 	NSWindow *native;
+ 
+@@ -496,12 +551,14 @@
+ static void
+ on_window_realized (GtkWidget *widget)
+ {
++	g_message ("CVR DEBUG on_window_realized (GtkWidget *widget) is used");
+ 	set_window_allow_fullscreen (GEDIT_WINDOW (widget));
+ }
+ 
+ static GeditWindow *
+ gedit_app_osx_create_window_impl (GeditApp *app)
+ {
++	g_message ("CVR DEBUG gedit_app_osx_create_window_impl (GeditApp *app) is used");
+ 	GeditWindow *window;
+ 
+ 	window = GEDIT_APP_CLASS (gedit_app_osx_parent_class)->create_window (app);
+@@ -523,6 +580,7 @@
+                                          GeditWindow *window,
+                                          GdkEvent    *event)
+ {
++	g_message ("CVR DEBUG gedit_app_osx_process_window_event_impl (GeditApp    *app, is used");
+ 	NSEvent *nsevent;
+ 
+ 	/* For OS X we will propagate the event to NSApp, which handles some OS X
+@@ -542,6 +600,7 @@
+ gedit_app_osx_constructed (GObject *object)
+ {
+ 	/* FIXME: should we do this on all platforms? */
++	g_message ("CVR DEBUG gedit_app_osx_constructed (GObject *object) is used");
+ 	g_object_set (object, "register-session", TRUE, NULL);
+ 	G_OBJECT_CLASS (gedit_app_osx_parent_class)->constructed (object);
+ }
+@@ -550,6 +609,7 @@
+ gedit_app_osx_window_added (GtkApplication *application,
+                             GtkWindow      *window)
+ {
++	g_message ("CVR DEBUG gedit_app_osx_window_added (GtkApplication *application, ... is used");
+ 	GTK_APPLICATION_CLASS (gedit_app_osx_parent_class)->window_added (application, window);
+ 
+ 	update_open_sensitivity (GEDIT_APP_OSX (application));
+@@ -559,6 +619,7 @@
+ gedit_app_osx_window_removed (GtkApplication *application,
+                               GtkWindow      *window)
+ {
++	g_message ("CVR DEBUG gedit_app_osx_window_removed (GtkApplication *application, ... is used");
+ 	GTK_APPLICATION_CLASS (gedit_app_osx_parent_class)->window_removed (application, window);
+ 
+ 	update_open_sensitivity (GEDIT_APP_OSX (application));
+@@ -567,6 +628,7 @@
+ static void
+ gedit_app_osx_class_init (GeditAppOSXClass *klass)
+ {
++	g_message ("CVR DEBUG gedit_app_osx_class_init (GeditAppOSXClass *klass) is used");
+ 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+ 	GeditAppClass *app_class = GEDIT_APP_CLASS (klass);
+ 	GApplicationClass *application_class = G_APPLICATION_CLASS (klass);
+@@ -589,6 +651,7 @@
+ static void
+ gedit_app_osx_init (GeditAppOSX *app)
+ {
++	g_message ("CVR DEBUG gedit_app_osx_init (GeditAppOSX *app) is used");
+ 	/* This is required so that Cocoa is not going to parse the
+ 	   command line arguments by itself and generate OpenFile events.
+ 	   We already parse the command line ourselves, so this is needed

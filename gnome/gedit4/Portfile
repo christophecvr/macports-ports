@@ -17,9 +17,9 @@ if { ${os.platform} eq "darwin" && ${os.major} >= 18 && ${build_arch} eq "x86_64
 name                gedit4
 conflicts           gedit
 version             48.0
-revision            0
+revision            1
 license             GPL-2+
-set branch          [join [lrange [split ${version} .] 0 0 ] .]
+#set branch          [join [lrange [split ${version} .] 0 0 ] .]
 set my_name         gedit
 description         GNOME Text editor.
 long_description    gedit is an easy-to-use and general-purpose text editor. Its development started \
@@ -27,10 +27,14 @@ long_description    gedit is an easy-to-use and general-purpose text editor. Its
 categories          gnome x11 quartz editors
 maintainers         {christophecvr @christophecvr} openmaintainer
 homepage            https://gedit-technology.github.io/apps/gedit/
-master_sites        gnome:sources/${my_name}/${branch}/
-distname            ${my_name}-${version}
+fetch.type          git
+git.url             https://gitlab.gnome.org/christophecvr/${my_name}.git
+git.branch          origin/geditcvr
 
-use_xz              yes
+#master_sites        gnome:sources/${my_name}/${branch}/
+#distname            ${my_name}-${version}
+
+#use_xz              yes
 
 compiler.c_standard 2017
 compiler.cxx_standard 2017
@@ -41,9 +45,11 @@ checksums           rmd160  02231a01f8ea6840848f7553f1e9acf9cdf62950 \
                     sha256  fe0fef9b7b0799120db86ae893a060036a13445352ded9169bab28d38acf0e80 \
                     size    2889116
 
-patchfiles          patch-meson-build-python3.diff \
-                    patch-gedit-app-osx.diff \
-                    patch-gedit-dirs.diff
+patchfiles          cvrnew-gedit-app-osx.patch
+
+#patch-meson-build-python3.diff \
+#                    patch-gedit-app-osx.diff \
+#                    patch-gedit-dirs.diff
 
 depends_build-append \
                     port:desktop-file-utils \

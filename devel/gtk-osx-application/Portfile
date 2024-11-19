@@ -38,10 +38,12 @@ checksums           sha256  f19e35bc4534963127bbe629b9b3ccb9677ef012fc7f8e97fd5e
 # Fix merged by upstream via:
 #   https://gitlab.gnome.org/GNOME/gtk-mac-integration/-/merge_requests/6
 if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    patchfiles-append   patch-gnsmenuitem-setclocale.diff \
-                        patch-update-hebrew-translation.diff \
-                        patch-deprecated-itemsinfo.diff \
-                        patch-deprecated-nsitems.diff
+    patchfiles-append   patch-locale-gettext.diff
+
+#    patchfiles-append   patch-gnsmenuitem-setclocale.diff \
+#                        patch-update-hebrew-translation.diff \
+#                        patch-deprecated-itemsinfo.diff \
+#                        patch-deprecated-nsitems.diff
 }
 
 if {${os.platform} eq "darwin" && ${os.major} < 18} {

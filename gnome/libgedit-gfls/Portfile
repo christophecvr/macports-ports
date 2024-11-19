@@ -5,9 +5,9 @@ PortGroup           meson 1.0
 
 name                libgedit-gfls
 version             0.2.0
-revision            0
+revision            1
 license             LGPL-2.1+
-set branch          [join [lrange [split ${version} .] 0 1] .]
+#set branch          [join [lrange [split ${version} .] 0 1] .]
 description         ${name} is File loading and saving of Gedit Technology
 long_description    It is a module dedicated to file loading and saving for the needs of gedit and \
                     other similar text editors.
@@ -15,9 +15,12 @@ long_description    It is a module dedicated to file loading and saving for the 
 maintainers         {christophecvr @christophecvr} openmaintainer
 categories          gnome
 homepage            https://gitlab.gnome.org/World/gedit/${name}
-master_sites        gnome:sources/${name}/${branch}/
+fetch.type          git
+git.url             https://gitlab.gnome.org/christophecvr/${name}
+git.branch          origin/geditcvr
+#master_sites        gnome:sources/${name}/${branch}/
 
-use_xz              yes
+#use_xz              yes
 
 checksums           rmd160  7c7676c6530b8116cb77878c71baadab8ede9d76 \
                     sha256  c88bc2bbf1ec1155b61766f372ac44a7f272792234b86e8ad5ea4f7365171acb \

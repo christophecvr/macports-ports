@@ -5,17 +5,20 @@ PortGroup           meson 1.0
 
 name                libgedit-tepl
 version             6.11.0
-revision            0
+revision            1
 license             LGPL-2
-set branch          [join [lrange [split ${version} .] 0 1] .]
+#set branch          [join [lrange [split ${version} .] 0 1] .]
 description         GNOME text editor support
 long_description    ${description}
 maintainers         {christophecvr @christophecvr} openmaintainer
 categories          gnome
 homepage            https://gedit-technology.github.io/
-master_sites        gnome:sources/${name}/${branch}/
+fetch.type          git
+git.url             https://gitlab.gnome.org/christophecvr/${name}
+git.branch          origin/geditcvr
+#master_sites        gnome:sources/${name}/${branch}/
 
-use_xz              yes
+#use_xz              yes
 
 checksums           rmd160  c753d49065ef80dfc8cd6400520f2ac90f2bffc5 \
                     sha256  30814663de8324acbbdce623ead4690ed75a9ff7c90023a04997d67e2c0121aa \
