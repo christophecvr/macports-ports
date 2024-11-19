@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github  1.0
 PortGroup           cargo   1.0
 
-github.setup        jdx mise 2024.11.8 v
+github.setup        jdx mise 2024.11.16 v
 github.tarball_from archive
 revision            0
 
@@ -25,9 +25,9 @@ maintainers         {outlook.com:gjq.uoiai @MisLink} \
                     openmaintainer
 
 checksums           ${distname}${extract.suffix} \
-                    rmd160  ddac006b38db0ca4602bd3f950d86e5776627e38 \
-                    sha256  2cb33bcbc9a852cbfaf03d1bf13c967200a319636665f302f62bf332f1506896 \
-                    size    3153641
+                    rmd160  bde4def30b250979aa6c3111004011b9d52a1cb7 \
+                    sha256  c38f06c75d5dfb5ab0a67888edaaac19f55037c9391190835d83e48be02a75e3 \
+                    size    3170378
 
 patchfiles          patch-src_cli_self_update.diff
 
@@ -110,7 +110,7 @@ cargo.crates \
     bit-vec                          0.7.0  d2c54ff287cfc0a34f38a6b832ea1bd8e448a330b3e40a50859e6488bee07f22 \
     bitflags                         2.6.0  b048fb63fd8b5923fc5aa7b340d8e156aec7ec02f0c78fa8a6ddc2613f6f71de \
     block-buffer                    0.10.4  3078c7629b62d3f0439517fa394996acacc5cbc91c5a20d8c658e77abd503a71 \
-    bstr                            1.10.0  40723b8fb387abc38f4f4a37c09073622e41dd12327033091ef8950659e6dc0c \
+    bstr                            1.11.0  1a68f1f47cdf0ec8ee4b941b2eee2a80cb796db73118c0dd09ac63fbe405be22 \
     built                            0.7.5  c360505aed52b7ec96a3636c3f039d99103c37d1d9b4f7a8c743d3ea9ffcd03b \
     bumpalo                         3.16.0  79296716171880943b8470b5f8d03aa55eb2e645a4874bdbb28adb49162e012c \
     bytecount                        0.6.8  5ce89b21cab1437276d2650d57e971f9d548a2d9037cc231abdc0562b97498ce \
@@ -120,7 +120,7 @@ cargo.crates \
     bzip2-sys                 0.1.11+1.0.8  736a955f3fa7875102d57c82b8cac37ec45224a07fd32d58f9f7a186b6cd4cdc \
     calm_io                          0.1.1  2ea0608700fe42d90ec17ad0f86335cf229b67df2e34e7f463e8241ce7b8fa5f \
     calmio_filters                   0.1.0  846501f4575cd66766a40bb7ab6d8e960adc7eb49f753c8232bd8e0e09cf6ca2 \
-    cc                              1.1.37  40545c26d092346d8a8dab71ee48e7685a7a9cba76e634790c215b41a4a7b4cf \
+    cc                               1.2.1  fd9de9f2205d5ef3fd67e685b0df337994ddd4495e2a28d185500d0e1edfea47 \
     cfg-if                           1.0.0  baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd \
     cfg_aliases                      0.2.1  613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724 \
     chrono                          0.4.38  a21f936df1771bf62b77f047b726c4625ff2e8aa607c01ec06e5a05bd8463401 \
@@ -128,10 +128,10 @@ cargo.crates \
     chrono-tz-build                  0.3.0  0c088aee841df9c3041febbb73934cfc39708749bf96dc827e3359cd39ef11b1 \
     ci_info                        0.14.14  840dbb7bdd1f2c4d434d6b08420ef204e0bfad0ab31a07a80a1248d24cc6e38b \
     cipher                           0.4.4  773f3b9af64447d2ce9850330c473515014aa235e6a783b02db81ff39e4a3dad \
-    clap                            4.5.20  b97f376d85a664d5837dbae44bf546e6477a679ff6610010f17276f686d867e8 \
-    clap_builder                    4.5.20  19bc80abd44e4bed93ca373a0704ccbd1b710dc5749406201bb018272808dc54 \
+    clap                            4.5.21  fb3b4b9e5a7c7514dfa52869339ee98b3156b0bfb4e8a77c4ff4babb64b1604f \
+    clap_builder                    4.5.21  b17a95aa67cc7b5ebd32aa5370189aa0d79069ef1c64ce893bd30fb24bff20ec \
     clap_derive                     4.5.18  4ac6a0c7b1a9e9a5186361f67dfa1b88213572f427fb9ab038efb2bd8c582dab \
-    clap_lex                         0.7.2  1462739cb27611015575c0c11df5df7601141071f07518d56fcc1be504cbec97 \
+    clap_lex                         0.7.3  afb84c814227b90d6895e01398aee0d8033c00e7466aca416fb6a8e0eb19d8a7 \
     clap_mangen                     0.2.24  fbae9cbfdc5d4fa8711c09bd7b83f644cb48281ac35bf97af3e47b0675864bdf \
     color-eyre                       0.6.3  55146f5e46f237f7423d74111267d4597b59b0dad0ffaf7303bce9945d843ad5 \
     color-print                      0.3.7  3aa954171903797d5623e047d9ab69d91b493657917bdfb8c2c80ecaf9cdb6f4 \
@@ -193,7 +193,7 @@ cargo.crates \
     filetime                        0.2.25  35c0522e981e68cbfa8c3f978441a5f34b30b96e146b33cd3359176b50fe8586 \
     filetime_creation                0.2.0  c25b5d475550e559de5b0c0084761c65325444e3b6c9e298af9cefe7a9ef3a5f \
     fixedbitset                      0.4.2  0ce7134b9999ecaf8bcd65542e436736ef32ddca1b3e06094cb6ec5755203b80 \
-    flate2                          1.0.34  a1b589b4dc103969ad3cf85c950899926ec64300a1a46d76c03a6072957036f0 \
+    flate2                          1.0.35  c936bfdafb507ebbf50b8074c54fa31c5be9a1e7e5f467dd659697041407d07c \
     float-cmp                        0.9.0  98de4bbd547a563b716d8dfa9aad1cb19bfab00f4fa09a6a4ed21dbcf44ce9c4 \
     fnv                              1.0.7  3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1 \
     foreign-types                    0.3.2  f6f339eb8adc052cd2ca78910fda869aefa38d22d5cb648e6485e4d3fc06f3b1 \
@@ -251,11 +251,10 @@ cargo.crates \
     indenter                         0.3.3  ce23b50ad8242c51a442f3ff322d56b02f08852c77e4c0b4d3fd684abc89c683 \
     indexmap                         1.9.3  bd070e393353796e801d209ad339e89596eb4c8d430d18ede6a1cced8fafbd99 \
     indexmap                         2.6.0  707907fe3c25f5424cce2cb7e1cbcafee6bdbe735ca90ef77c29e84591e5b9da \
-    indicatif                       0.17.8  763a5a8f45087d6bcea4222e7b72c291a054edf80e4ef6efd2a4979878c7bea3 \
+    indicatif                       0.17.9  cbf675b85ed934d3c67b5c5469701eec7db22689d0a2139d856e0925fa28b281 \
     indoc                            2.0.5  b248f5224d1d606005e02c97f5aa4e88eeb230488bcc03bc9ca4d7991399f2b5 \
     inout                            0.1.3  a0c10553d664a4d0bcff9f4215d0aac67a639cc68ef660840afe309b807bc9f5 \
     insta                           1.41.1  7e9ffc4d4892617c50a928c52b2961cb5174b6fc6ebf252b2fac9d21955c48b8 \
-    instant                         0.1.13  e0242819d153cba4b4b05a5a8f2a7e9bbf97b6055b2a002b395c96b5ff3c0222 \
     ipnet                           2.10.1  ddc24109865250148c2e0f3d25d4f0f479571723792d3802153c60922a4fb708 \
     is_terminal_polyfill            1.70.1  7943c866cc5cd64cbc25b2e01621d07fa8eb2a1a23160ee81ce38704e97b8ecf \
     itertools                       0.13.0  413ee7dfc52ee1a4949ceeb7dbc8a33f2d6c088194d9f922fb8318faf1f01186 \
@@ -266,7 +265,7 @@ cargo.crates \
     lazy-regex                       3.3.0  8d8e41c97e6bc7ecb552016274b99fbb5d035e8de288c582d9b933af6677bfda \
     lazy-regex-proc_macros           3.3.0  76e1d8b05d672c53cb9c7b920bbba8783845ae4f0b076e02a3db1d02c81b4163 \
     lazy_static                      1.5.0  bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe \
-    libc                           0.2.162  18d287de67fe55fd7e1581fe933d965a5a9477b38e949cfa9f8574ef01506398 \
+    libc                           0.2.164  433bfe06b8c75da9b2e3fbea6e5329ff87748f0b144ef75306e674c3f6f7c13f \
     libgit2-sys               0.17.0+1.8.1  10472326a8a6477c3c20a64547b0059e4b0d086869eee31e6d7da728a8eb7224 \
     libm                            0.2.11  8355be11b20d696c8f18f6cc018c4e372165b1fa8126cef092399c9951984ffa \
     libredox                         0.1.3  c0ff37bd590ca25063e35af745c343cb7a0271906fb7b37e4813e8f79f00268d \
@@ -350,8 +349,8 @@ cargo.crates \
     proc-macro-error-attr            1.0.4  a1be40180e52ecc98ad80b184934baf3d0d29f979574e439af5a55274b35f869 \
     proc-macro2                     1.0.89  f139b0662de085916d1fb67d2b4169d1addddda1919e696f3252b740b629986e \
     quick-xml                       0.23.1  11bafc859c6815fbaffbbbf4229ecb767ac913fecb27f9ad4343662e9ef099ea \
-    quinn                           0.11.5  8c7c5fdde3cdae7203427dc4f0a68fe0ed09833edc525a03456b153b79828684 \
-    quinn-proto                     0.11.8  fadfaed2cd7f389d0161bb73eeb07b7b78f8691047a6f3e73caaeae55310a4a6 \
+    quinn                           0.11.6  62e96808277ec6f97351a2380e6c25114bc9e67037775464979f3037c92d05ef \
+    quinn-proto                     0.11.9  a2fe5ef3495d7d2e377ff17b1a8ce2ee2ec2a18cde8b6ad6619d65d0701c135d \
     quinn-udp                        0.5.7  7d5a626c6807713b15cac82a6acaccd6043c9a5408c24baae07611fec3f243da \
     quote                           1.0.37  b5b9d34b8991d19d98081b46eacdd8eb58c6f2b201139f7c5f643cc155a633af \
     rand                             0.8.5  34af8d1a0e25924bc5b7c43c079c942339d8f0a8b57c39049bef581b46327404 \
@@ -374,7 +373,7 @@ cargo.crates \
     rustc-hash                       2.0.0  583034fd73374156e66797ed8e5b0d5690409c9226b22d87cb7f19821c05d152 \
     rustc_version                    0.4.1  cfcb3a22ef46e85b45de6ee7e79d063319ebb6594faafcf1c225ea92ab6e9b92 \
     rustix                         0.38.40  99e4ea3e1cdc4b559b8e5650f9c8e5998e3e5c1343b4eaf034565f32318d63c0 \
-    rustls                         0.23.16  eee87ff5d9b36712a58574e12e9f0ea80f915a5b0ac518d322b24a465617925e \
+    rustls                         0.23.17  7f1a745511c54ba6d4465e8d5dfbd81b45791756de28d4981af70d6dca128f1e \
     rustls-native-certs              0.8.0  fcaf18a4f2be7326cd874a5fa579fae794320a0f388d365dca7e480e55f83f8a \
     rustls-pemfile                   2.2.0  dce314e5fee3f39953d46bb63bb8a46d40c2f8fb7cc5a3b6cab2bde9721d6e50 \
     rustls-pki-types                1.10.0  16f1201b3c9a7ee8039bcadc17b7e605e2945b27eee7631788c1bd2b0643674b \
@@ -393,7 +392,7 @@ cargo.crates \
     serde-value                      0.7.0  f3a1a3341211875ef120e117ea7fd5228530ae7e7036a779fdc9117be6b3282c \
     serde_derive                   1.0.215  ad1e866f866923f252f05c889987993144fb74e722403468a4ebd70c3cd756c0 \
     serde_ignored                   0.1.10  a8e319a36d1b52126a0d608f24e93b2d81297091818cd70625fcf50a15d84ddf \
-    serde_json                     1.0.132  d726bfaff4b320266d395898905d0eba0345aae23b54aee3a737e260fd46db03 \
+    serde_json                     1.0.133  c7fceb2473b9166b2294ef05efcb65a3db80803f0b03ef86a5fc88a2b85ee377 \
     serde_spanned                    0.6.8  87607cb1398ed59d48732e575a4c28a7a8ebf2454b964fe3f224f2afc07909e1 \
     serde_urlencoded                 0.7.1  d3491c14715ca2294c4d6a88f15e84739788c1d030eed8c110436aafdaa2f3fd \
     serde_yaml           0.9.34+deprecated  6a8b1a1a2ebf674015cc02edccce75287f1a0130d394307b36743c2f5d504b47 \
@@ -482,11 +481,12 @@ cargo.crates \
     unicode-ident                   1.0.13  e91b56cd4cadaeb79bbf1a5645f6b4f8dc5bde8834ad5894a8db35fda9efa1fe \
     unicode-segmentation            1.12.0  f6ccf251212114b54433ec949fd6a7841275f9ada20dddd2f29e9ceea4501493 \
     unicode-width                   0.1.11  e51733f11c9c4f72aa0c160008246859e340b00807569a0da0e7a1079b27ba85 \
+    unicode-width                    0.2.0  1fc81956842c57dac11422a97c3b8195a1ff727f06e85c84ed2e8aa277c9a0fd \
     unsafe-libyaml                  0.2.11  673aac59facbab8a9007c7f6108d11f63b603f7cabff99fabf650fea5c32b861 \
     untrusted                        0.9.0  8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1 \
     url                              2.5.3  8d157f1b96d14500ffdc1f10ba712e780825526c03d9a49b4d0324b0d9113ada \
     urlencoding                      2.1.3  daf8dba3b7eb870caf1ddeed7bc9d2a049f3cfdfae7cb521b087cc33ae4c49da \
-    usage-lib                        1.3.0  2cc06aea8587a38beb1691e4ecf680b8bcd1ab425e2350279c778de1d60d70aa \
+    usage-lib                        1.3.2  92a5a09b800c368c08956eae3c15a4bcb3d24f5a2e9ae406684bea35354ea5fc \
     utf16_iter                       1.0.5  c8232dd3cdaed5356e0f716d285e4b40b932ac434100fe9b7e0e8e935b9e6246 \
     utf8_iter                        1.0.4  b6c140620e7ffbb22c2dee59cafe6084a59b5ffc27a8859a5f0d494b5d52b6be \
     utf8parse                        0.2.2  06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821 \
@@ -494,7 +494,7 @@ cargo.crates \
     vcpkg                           0.2.15  accd4ea62f7bb7a82fe23066fb0957d48ef677f6eeb8215f372f52e48bb32426 \
     version_check                    0.9.5  0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a \
     versions                         6.3.2  f25d498b63d1fdb376b4250f39ab3a5ee8d103957346abacd911e2d8b612c139 \
-    vfox                             0.3.2  c36fe3d5b017c69c1f1fbddc0defdf77c358ba5cc00450cca895cf8d4a2664ae \
+    vfox                             0.3.3  5a909ee4afc8dccf80dae7b73581198b1204a0dbf7b22615f95bddd3e306a439 \
     vte                             0.10.1  6cbce692ab4ca2f1f3047fcf732430249c0e971bfdd2b234cf2c47ad93af5983 \
     vte_generate_state_changes       0.1.2  2e369bee1b05d510a7b4ed645f5faa90619e05437111783ea5848f28d97d3c2e \
     wait-timeout                     0.2.0  9f200f5b12eb75f8c1ed65abd4b2db8a6e1b138a20de009dacee265a2498f3f6 \
@@ -508,6 +508,7 @@ cargo.crates \
     wasm-bindgen-macro-support      0.2.95  26c6ab57572f7a24a4985830b120de1594465e5d500f24afe89e16b4e833ef68 \
     wasm-bindgen-shared             0.2.95  65fc09f10666a9f147042251e0dda9c18f166ff7de300607007e96bdebc1068d \
     web-sys                         0.3.72  f6488b90108c040df0fe62fa815cbdee25124641df01814dd7282749234c6112 \
+    web-time                         1.1.0  5a6580f308b1fad9207618087a65c04e7a10bc77e02c8e84e9b00dd4b12fa0bb \
     webpki-roots                    0.26.6  841c67bff177718f1d4dfefde8d8f0e78f9b6589319ba88312f567fc5841a958 \
     which                            6.0.3  b4ee928febd44d98f2f459a4a79bd4d928591333a494a10a868418ac1b39cf1f \
     which                            7.0.0  c9cad3279ade7346b96e38731a641d7343dd6a53d55083dd54eadfa5a1b38c6b \
