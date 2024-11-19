@@ -8,7 +8,8 @@ PortGroup                   legacysupport 1.1
 
 # filesystem
 legacysupport.newest_darwin_requires_legacy 18
-legacysupport.use_mp_libcxx yes
+# not required for build with xcode clang 12 or greater
+#legacysupport.use_mp_libcxx yes
 
 github.setup                strukturag libheif 1.19.3 v
 revision                    1
@@ -53,7 +54,8 @@ configure.args-append \
 configure.args-append \
                             -DENABLE_PLUGIN_LOADING:BOOL=OFF
 
-compiler.cxx_standard       2020
+# not reqiuired for build with xcode clang >= 12
+#compiler.cxx_standard       2020
 
 # error: unknown warning option '-Werror=potentially-evaluated-expression'
 compiler.blacklist-append   {clang < 700}
