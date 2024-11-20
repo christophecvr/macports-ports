@@ -65,22 +65,22 @@ proc py_setup {py_ver} {
     test.run            yes
 }
 
-variant python38 conflicts python39 python310 description {Use Python 3.8} {
-    py_setup 38
-}
-
-variant python39 conflicts python38 python310 description {Use Python 3.9} {
-    py_setup 39
-}
-
-variant python310 conflicts python38 python39 description {Use Python 3.10} {
+variant python310 conflicts python311 python312 description {Use Python 3.10} {
     py_setup 310
 }
 
-if {![variant_isset python38] && \
-    ![variant_isset python39] && \
-    ![variant_isset python310]} {
-    default_variants    +python310
+variant python311 conflicts python310 python312 description {Use Python 3.11} {
+    py_setup 311
+}
+
+variant python312 conflicts python310 python311 description {Use Python 3.12} {
+    py_setup 312
+}
+
+if {![variant_isset python310] && \
+    ![variant_isset python311] && \
+    ![variant_isset python312]} {
+    default_variants    +python312
 }
 
 # Dummy variants, to ensure user's choice cascades to dependencies
