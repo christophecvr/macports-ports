@@ -29,7 +29,7 @@ checksums           sha256  f19e35bc4534963127bbe629b9b3ccb9677ef012fc7f8e97fd5e
                     rmd160  50b403a4fa0216f87fc462b775dacd4a366935df \
                     size    349228
 
-#patchfiles          cocoa-menu-item-c.patch
+patchfiles          get-private-add-private.patch
 #patchfiles-append          gtkosx-imagec.patch
 
 #configure.cflags-append "-DMAC_OS_X_VERSION_MIN_REQUIRED=100900"
