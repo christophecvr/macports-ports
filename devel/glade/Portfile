@@ -140,7 +140,7 @@ variant x11 conflicts quartz {
 
 variant quartz conflicts x11 {
     require_active_variants gtk3 quartz x11
-    depends_lib-append port:gtk-osx-application-gtk3
+    depends_lib-append path:lib/pkgconfig/gtk-mac-integration-gtk3.pc:gtk-mac-integration
 # disable dependency on devhelp at runtime
 # until +quartz problem solved for webkit2-gtk (#52688)
     depends_run-delete port:devhelp

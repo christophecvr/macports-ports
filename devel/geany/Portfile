@@ -71,7 +71,7 @@ if {![variant_isset python310]} {
 
 variant quartz conflicts x11 description {Better support Mac interface conventions} {
      depends_lib-append \
-                    port:gtk-osx-application-gtk3
+                    path:lib/pkgconfig/gtk-mac-integration-gtk3.pc:gtk-mac-integration 
 }
 
 variant x11 conflicts quartz description {Interface more consistent with other X11 systems} {
