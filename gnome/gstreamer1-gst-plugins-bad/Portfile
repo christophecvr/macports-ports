@@ -137,10 +137,9 @@ configure.args-append \
                     -Dsctp=disabled \
                     -Dsrtp=disabled \
                     -Dx11=enabled \
-                    -Dvulkan=disabled
+                    
+configure.args-append   -Dvulkan=disabled
 
-configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
-configure.cxxflags-append   -std=gnu++11
 configure.env-append        "HAVE_CXX=yes"
 
 variant faac description {Enable faac AAC plugin} {
@@ -232,6 +231,7 @@ if {${universal_possible} && [variant_isset universal]} {
 } else {
     build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
     destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+    notes-append            "compiler setup  ${configure.cc} ${configure.cc_archflags}" 
 }
 
 livecheck.type      regex

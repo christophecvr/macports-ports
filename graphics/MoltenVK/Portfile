@@ -54,20 +54,39 @@ set lunarG_dlsite   https://sdk.lunarg.com/sdk/download
 
 subport ${name}-latest {
     github.setup    KhronosGroup ${name} 1.2.11 v
+    revision        1
     platforms       {darwin any} {macosx >= 17}
     conflicts       ${name}-1.1.9 ${name}-1.0.41
 
     set sdkversion  1.3.296.0
     distname        vulkansdk-macos-${sdkversion}
-    use_dmg         yes
+    use_zip         yes
     use_tar         no
 
-    checksums       sha256  6b984a8ea17028dcd1485f69465f7c3220ce8f56fbbd53b3dfb34c177af46ab8 \
-                    rmd160  c225450c5df7e12a68a297b149442ed2e9fdb327 \
-                    size    67977728
-}
+    master_sites    $lunarG_dlsite/${sdkversion}/mac/
 
-#set lunarG_dlsite   https://sdk.lunarg.com/sdk/download
+checksums           sha256  393fd11f65a4001f12fd34fdd009c38045220ca3f735bc686d97822152b0f33c \
+                    rmd160  da4a4b1cdb4bd28b50d00fef9313201c64f14435 \
+                    size    266030538
+
+    depends_build   port:p7zip
+    depends_skip_archcheck p7zip
+
+    # keep macports default work source path
+    pre-extract {
+        file mkdir ${worksrcpath}
+    }
+
+    post-extract {
+        move ${workpath}/InstallVulkan.app ${worksrcpath}
+    }
+
+    build {
+     system "${worksrcpath}/InstallVulkan.app/Contents/MacOS/InstallVulkan \
+            --root ${workpath}/VulkanSDK --accept-licenses \
+            --default-answer --confirm-command install"
+    }
+}
 
 subport ${name}-1.1.9 {
     github.setup    KhronosGroup ${name} 1.1.9 v
@@ -95,7 +114,7 @@ subport ${name}-1.1.9 {
         # bypass the installer that requires macOS 10.13
         system [join [list \
             "${prefix}/bin/7z x -aoa" \
-            "${worksrcpath}/InstallVulkan.app/Contents/Resources/installer.dat" \
+            "${workpath}/InstallVulkan.app/Contents/Resources/installer.dat" \
             "-o${workpath}/VulkanSDK" \
         ]]
     }
@@ -105,9 +124,9 @@ if {${subport} eq "${name}-latest" || ${subport} eq "${name}-1.1.9"} {
     github.tarball_from releases
     destroot {
         if {${subport} eq "${name}-latest"} {
-            set output_dir ${workpath}/MoltenVK
-            set dylib_path ${output_dir}/MoltenVK/dylib/macOS
-            set framework_path ${output_dir}/MoltenVK/static
+            set output_dir ${workpath}/VulkanSDK
+            set dylib_path ${output_dir}/macOS/lib
+            set framework_path ${output_dir}/macOS/lib
         } elseif {${subport} eq "${name}-1.1.9"} {
             set output_dir ${workpath}/VulkanSDK
             set dylib_path ${output_dir}/macOS/lib
@@ -117,7 +136,7 @@ if {${subport} eq "${name}-latest" || ${subport} eq "${name}-1.1.9"} {
         copy ${dylib_path}/libMoltenVK.dylib ${destroot}${prefix}/lib
         copy ${framework_path}/MoltenVK.xcframework ${destroot}${frameworks_dir}
 
-        if {${subport} eq "${name}-1.1.9"} {
+        if {${subport} eq "${name}-1.1.9" || ${subport} eq "${name}-latest"} {
             copy ${output_dir}/macOS/bin/MoltenVKShaderConverter \
                  ${destroot}${prefix}/bin
             file attributes \
@@ -147,10 +166,16 @@ if {${subport} eq "${name}-latest" || ${subport} eq "${name}-1.1.9"} {
         }
 
         # vulkan and vk_video are provided via vulkan-headers
-        copy ${output_dir}/MoltenVK/include/MoltenVK \
-             ${destroot}${prefix}/include
+        if {${subport} eq "${name}-1.1.9"} {
+            copy ${output_dir}/MoltenVK/include/MoltenVK \
+                ${destroot}${prefix}/include
+        } elseif {${subport} eq "${name}-latest"} {
+            copy ${output_dir}/macOS/include/MoltenVK \
+                ${destroot}${prefix}/include
+        }
     }
 }
+
 
 # The last version before moving to APFS format dmg
 subport ${name}-1.0.41 {
