@@ -6,7 +6,7 @@ PortGroup           npm 1.0
 npm.nodejs_version  22
 
 name                bun
-version             1.1.33
+version             1.1.37
 maintainers         {johnlindop.com:git @JLindop} openmaintainer
 revision            0
 
@@ -20,6 +20,6 @@ categories          devel
 homepage            https://bun.sh
 license             MIT
 
-checksums           rmd160  9bc48e6a54f381524edb868d7ee9d8e34577f8c4 \
-                    sha256  7ef103e036caa69d15f063a3db75e9fcd3750ae0c74d2ee5e23e74e929377741 \
+checksums           rmd160  8dc80d20d970aaaf925b3621ff619da65a9b555f \
+                    sha256  0b8775c0175dcedb7d9577d154f920398e725d293d4df8970da0809970425fa5 \
                     size    5395
