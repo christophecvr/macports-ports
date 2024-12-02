@@ -31,7 +31,7 @@ depends_build           port:gperf
 depends_skip_archcheck  gperf
 
 patchfiles              patch-src-Makefile.in-darwin.diff
-patchfiles-append       libiconv-h-in.patch
+#patchfiles-append       libiconv-h-in.patch
 
 # Also needed by later clangs.
 if {${os.platform} eq "darwin" && ${os.major} < 11 && ${cxx_stdlib} eq "libc++"} {
@@ -43,6 +43,8 @@ configure.cmd-prepend   mv Makefile.devel Makefile.devel.orig \
                         && sed -E {"s|^(CFLAGS *=).*|\1 $CFLAGS|"} < Makefile.devel.orig \
                         | sed -E {"/^CFLAGS *=/s| -arch +[^ ]+||"} > Makefile.devel &&
 configure.cppflags
+configure.cflags
+configure.cflags-append -fno-strict-aliasing
 configure.ldflags
 configure.args \
     ac_cv_prog_AWK=/usr/bin/awk \
