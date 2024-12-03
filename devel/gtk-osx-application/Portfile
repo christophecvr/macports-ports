@@ -6,8 +6,8 @@ PortGroup           active_variants 1.1
 name                gtk-osx-application
 conflicts           ige-mac-integration
 set my_name         gtk-mac-integration
-version             3.0.1
-revision            2
+version             3.0.2
+revision            0
 
 categories          devel
 platforms           darwin
@@ -29,16 +29,18 @@ distname            ${my_name}-${version}
 use_xz              yes
 
 # sha256 from upstream, rmd160 computed locally
-checksums           sha256  f19e35bc4534963127bbe629b9b3ccb9677ef012fc7f8e97fd5e890873ceb22d \
-                    rmd160  50b403a4fa0216f87fc462b775dacd4a366935df \
-                    size    349228
+checksums           sha256  42f29e002365467eac10f4ba78435d4be785a947424d9890112c8c8d5e21be25 \
+                    rmd160  31738aa3fad57b8419805734c67321f967bf50f3 \
+                    size    361576
+
+configure.cmd   ./autogen.sh
 
 # Avoid crash when non-UTF-8 locale is set:
 #   https://trac.macports.org/ticket/65474
 # Fix merged by upstream via:
 #   https://gitlab.gnome.org/GNOME/gtk-mac-integration/-/merge_requests/6
 if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    patchfiles-append   patch-locale-gettext.diff
+    #patchfiles-append   patch-locale-gettext.diff
 
 #    patchfiles-append   patch-gnsmenuitem-setclocale.diff \
 #                        patch-update-hebrew-translation.diff \
@@ -104,7 +106,7 @@ subport ${name}-gtk3 {
 
     post-destroot {
         delete ${destroot}${prefix}/include
-        delete ${destroot}${prefix}/lib/pkgconfig/gtk-mac-integration.pc
+        #delete ${destroot}${prefix}/lib/pkgconfig/gtk-mac-integration.pc
         delete ${destroot}${prefix}/share/${subport_dir}/locale
         delete ${destroot}${prefix}/share/${subport_dir}/strings
     }
