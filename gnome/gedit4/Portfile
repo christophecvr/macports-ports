@@ -3,11 +3,11 @@
 PortSystem          1.0
 PortGroup           active_variants 1.1
 PortGroup           compiler_blacklist_versions 1.0
-PortGroup           app   1.0
+#PortGroup           app   1.0
 PortGroup           meson 1.0
 
 # Currently this port gedit4 is for gtk3 +quartz only.
-# Yelp PortGroup and yelp do not work for gtk3 +quartz.
+# Yelp PortGroup and yelp does not work for gtk3 +quartz.
 #PortGroup           yelp  1.0
 
 if { ${os.platform} eq "darwin" && ${os.major} >= 18 && ${build_arch} eq "x86_64"} {
@@ -17,9 +17,9 @@ if { ${os.platform} eq "darwin" && ${os.major} >= 18 && ${build_arch} eq "x86_64
 name                gedit4
 conflicts           gedit
 version             48.0
-revision            0
+revision            1
 license             GPL-2+
-set branch          [join [lrange [split ${version} .] 0 0 ] .]
+#set branch          [join [lrange [split ${version} .] 0 0 ] .]
 set my_name         gedit
 description         GNOME Text editor.
 long_description    gedit is an easy-to-use and general-purpose text editor. Its development started \
@@ -27,19 +27,29 @@ long_description    gedit is an easy-to-use and general-purpose text editor. Its
 categories          gnome x11 quartz editors
 maintainers         {christophecvr @christophecvr} openmaintainer
 homepage            https://gedit-technology.github.io/apps/gedit/
-master_sites        gnome:sources/${my_name}/${branch}/
-distname            ${my_name}-${version}
+fetch.type          git
+git.url             https://gitlab.gnome.org/christophecvr/${my_name}.git
+git.branch          origin/geditcvr
 
-use_xz              yes
+#master_sites        gnome:sources/${my_name}/${branch}/
+#distname            ${my_name}-${version}
+
+#use_xz              yes
 
 compiler.c_standard 2017
 compiler.cxx_standard 2017
+# disable error when searching framework linker paths
+configure.ldflags-append    -Wl,-U,_main
 
 checksums           rmd160  02231a01f8ea6840848f7553f1e9acf9cdf62950 \
                     sha256  fe0fef9b7b0799120db86ae893a060036a13445352ded9169bab28d38acf0e80 \
                     size    2889116
 
-patchfiles          patch-meson-build-python3.diff
+#patchfiles          cvrnew-gedit-app-osx.patch
+
+#patch-meson-build-python3.diff \
+#                    patch-gedit-app-osx.diff \
+#                    patch-gedit-dirs.diff
 
 depends_build-append \
                     port:desktop-file-utils \
@@ -69,6 +79,7 @@ depends_lib-append \
                     port:gdk-pixbuf2 \
                     path:lib/pkgconfig/glib-2.0.pc:glib2-exp \
                     path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
+                    path:lib/pkgconfig/gtk-mac-integration-gtk3.pc:gtk-mac-integration \
                     port:gsettings-desktop-schemas \
                     port:gspell \
                     path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
@@ -78,9 +89,7 @@ depends_lib-append \
                     port:libgedit-gfls \
                     port:libpeas \
                     port:libxml2 \
-                    port:pango \
-                    port:gtk-osx-application-common-gtk3 \
-                    port:gtk-osx-application-gtk3
+                    port:pango
 
 post-patch {
     reinplace "s|@@PYTHON3@@|${configure.python}|g" ${worksrcpath}/meson.build
@@ -133,9 +142,9 @@ if {![variant_isset python310] && \
     default_variants-append +python312
 }
 
-app.use_launch_script   yes
-app.icon                ./logo.png
-app.executable          ${my_name}
+#app.use_launch_script   yes
+#app.icon                ./logo.png
+#app.executable          ${my_name}
 
 # add symlink to lib/gedit/libgedit-48.dylib in standard libdir
 # works around introspection typelib issue
@@ -148,8 +157,9 @@ notes               "For extra functionality install gedit-plugins4"
 post-activate    {
     # I have this file already.
     #if {[variant_isset x11]} {
-    # use this launcher also for quartz until the mac integration is fully fixed.
-    system "cp -a ${filespath}/GeditBX11 ${applications_dir}/GeditBX11.app"
+    # use this Gedit4x11 launcher also for quartz until the mac integration is fully fixed.
+    system "cp -a ${filespath}/Gedit4X11 ${applications_dir}/Gedit4X11.app"
+    system "cp -a ${filespath}/Gedit4Quartz ${applications_dir}/Gedit4Quartz.app"
     #}
     system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
     system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
@@ -159,6 +169,15 @@ post-activate    {
     set icondirs [ glob -nocomplain -directory ${prefix}/share/icons -type d * ]
     foreach icondir ${icondirs} {
         system "${prefix}/bin/gtk-update-icon-cache-3.0 -f -t ${icondir}"
+    }
+}
+
+post-deactivate {
+    if {[file isdirectory ${applications_dir}/Gedit4X11.app]} {
+        system "rm -rf ${applications_dir}/Gedit4X11.app"
+    }
+    if {[file isdirectory ${applications_dir}/Gedit4Quartz.app]} {
+        system "rm -rf ${applications_dir}/Gedit4Quartz.app"
     }
 }
 

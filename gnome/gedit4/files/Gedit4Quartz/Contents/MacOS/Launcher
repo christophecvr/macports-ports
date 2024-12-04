@@ -1,0 +1,3 @@
+#!/bin/bash
+#echo "Dit is een test" > ~/aGEDIT.log
+exec /opt/local/bin/gedit "$@" 

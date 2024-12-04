@@ -6,7 +6,7 @@ PortGroup           meson 1.0
 
 name                libgedit-gtksourceview
 version             299.3.0
-revision            0
+revision            1
 
 categories          gnome
 license             LGPL-2.1+
@@ -17,11 +17,13 @@ long_description    GtkSourceView is a text widget that extends GtkTextView \
                     by implementing syntax highlighting and other features \
                     typical of a source editor.
 homepage            https://wiki.gnome.org/Projects/GtkSourceView
+fetch.type          git
+git.url             https://gitlab.gnome.org/christophecvr/${name}.git
+git.branch          origin/geditcvr
+#set branch          [lindex [split ${version} .] 0]
+#master_sites        gnome:sources/${name}/${branch}/
 
-set branch          [lindex [split ${version} .] 0]
-master_sites        gnome:sources/${name}/${branch}/
-
-use_xz              yes
+#use_xz              yes
 
 checksums           rmd160  537a15280c1ad5fec5257204ff7a5e3297cf49c3 \
                     sha256  5ab049520010501e78ca4a19df96e2041412756ce90a3dde0a8a1ae6d88af052 \
@@ -92,4 +94,4 @@ test.target         test
 
 livecheck.type      gnome
 livecheck.name      ${name}
-livecheck.regex     "LATEST-IS-(${branch}\\.\\d*\[02468\](?:\\.\\d+)*)"
+#livecheck.regex     "LATEST-IS-(${branch}\\.\\d*\[02468\](?:\\.\\d+)*)"

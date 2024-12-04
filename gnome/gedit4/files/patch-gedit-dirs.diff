@@ -1,0 +1,64 @@
+--- gedit/gedit-dirs.c.orig	2024-09-14 07:18:34.000000000 +0200
++++ gedit/gedit-dirs.c	2024-11-10 11:07:31.000000000 +0100
+@@ -19,11 +19,10 @@
+  */
+ 
+ #include "config.h"
+-
+ #include "gedit-dirs.h"
+ 
+ #if OS_MACOS
+-#include <gtkosxapplication.h>
++#include <gedit-app-osx.h>
+ #endif
+ 
+ static gchar *user_config_dir        = NULL;
+@@ -37,6 +36,7 @@
+ void
+ gedit_dirs_init (void)
+ {
++	g_message ("CVR DEBUG INIT GEDIT DIRS");
+ #ifdef G_OS_WIN32
+ 	gchar *win32_dir;
+ 
+@@ -60,9 +60,38 @@
+ #endif /* G_OS_WIN32 */
+ 
+ #if OS_MACOS
+-	if (gtkosx_application_get_bundle_id () != NULL)
++	g_message ("CVR DEBUG USING if OS_MACOS");
++
++	const gchar *bundle_path = gedit_app_osx_get_bundle_path();
++	const gchar *bundle_executable_path = gedit_app_osx_get_executable_path();
++	const gchar *bundle_resource_dir = gedit_app_osx_get_resource_path();
++	const gchar *bundle_id = gedit_app_osx_get_bundle_id();
++
++	if (bundle_path != NULL)
++	{
++		g_message ("CVR DEBUG Bundle Path = %s", bundle_path);
++	}
++	if (bundle_executable_path != NULL)
++	{
++		g_message ("CVR DEBUG Bundle Exec Path = %s", bundle_executable_path);
++	}
++	if (bundle_resource_dir != NULL)
++	{
++		g_message ("CVR DEBUG resource path = %s", bundle_resource_dir);
++	}
++	if (g_strcmp0 (bundle_path, bundle_resource_dir) == 0)
++	{
++		g_message ("CVR DEBUG Gedit running from terminal or X11 application Launcher");
++	}
++	else
++	{
++		g_message ("CVR DEBUG Gedit running from Quartz application Launcher");
++	}	
++	if (bundle_id != NULL)
+ 	{
+-		const gchar *bundle_resource_dir = gtkosx_application_get_resource_path ();
++		g_message ("CVR DEBUG bundle id found = %s", bundle_id);
++		const gchar *bundle_info = gedit_app_osx_get_bundle_info ("CFBundleGetInfoString");
++		g_message ("CVR DEBUG BundleInfoString = %s", bundle_info);
+ 
+ 		gedit_locale_dir = g_build_filename (bundle_resource_dir,
+ 						     "share",

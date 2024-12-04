@@ -15,14 +15,13 @@ long_description            ${name} is {*}${description}.
 
 # filesystem
 legacysupport.newest_darwin_requires_legacy 18
-legacysupport.use_mp_libcxx yes
+# not required for macos >= 10.15 xcode >: 1.2.4
+#legacysupport.use_mp_libcxx yes
 
 set port_latest yes
 platform darwin {
     # Fallback to last pre-C++20 release for 10.5 and earlier
-    # On 10.6 is a failure happens during the linking phase
-    # even with the latest compatible version of ld
-    if {${os.major} < 11} {
+    if {${os.major} < 10} {
         set port_latest no
     }
 }
@@ -35,7 +34,7 @@ if {${port_latest}} {
                             sha256  d3cf0a76076115a070f9bc87cf5259b333a1f05806500045338798486d0afbaf \
                             size    1716856
 
-    compiler.cxx_standard   2020
+    #compiler.cxx_standard   2020
 } else {
     github.setup            strukturag libheif 1.18.2 v
     revision                1
@@ -96,7 +95,7 @@ platform darwin {
         # Do not enable on PPC until Rust is fixed or it becomes possible to build with gccrs.
         # See: https://trac.macports.org/ticket/65434
         if {[variant_isset rav1e]} {
-            error "Variant rav1e not supported for macOS 10.5 and earlier, or PPC"
+            #error "Variant rav1e not supported for macOS 10.5 and earlier, or PPC"
         }
     }
 }
