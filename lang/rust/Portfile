@@ -25,7 +25,7 @@ name                        rust
 # Keep macOS 10.12 and below frozen to 1.78.0
 if {${os.platform} eq "darwin" && ${os.major} > 16} {
     # (CURRENT) macOS 10.13 and later
-    version                 1.83.0
+    version                 1.82.0
 } else {
     # macOS 10.12 and earlier
     version                 1.78.0
