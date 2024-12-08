@@ -177,6 +177,7 @@ if { ${os.platform} eq "darwin" } {
     # Patch generated from https://github.com/iains/gcc-14-branch
     # git diff --no-prefix releases/gcc-14.2.0 gcc-14.2-darwin-r1
     patchfiles-append      patch-darwin-gcc-${version}.diff
+
     # GCC fixinc work-around for sys/ucred.h on OSX10.14.4 no longer seems to work ???
     if { ${os.major} == 18 } {
         patchfiles-append  patch-OSX10.14-ucred-atomic-define.diff
@@ -193,6 +194,10 @@ if { ${os.platform} eq "darwin" } {
                            0002-libgcc-Darwin-Drop-the-legacy-library-build-for-macO.patch \
                            0003-libgcc-Darwin-Don-t-build-legacy-libgcc_s.1-on-macOS.patch
     }
+
+    # This patch has been merged upstream in https://github.com/gcc-mirror/gcc/commit/1cfe4a4d0d4447b364815d5e5c889deb2e533669
+    # Remove it when upgrading gcc to a version that has it.
+    patchfiles-append      darwin-ppc-fpu.patch
 }
 
 # Since GCC 7.4.0, during configure, it detects features supported by target-as.
@@ -579,13 +584,15 @@ if {${subport} eq ${name}} {
 if { ${subport} ne ${libcxxname} } {
 
     post-destroot {
-        # Ensure all dylibs in destroot have our extra rpath added ..
-        # https://trac.macports.org/ticket/65503
-        foreach dlib [ exec find ${destroot}${prefix} -type f -and -name "*.dylib" ] {
-            ui_debug "Ensuring DYLIB '${dlib}' has RPATH '${mp_extra_rpath}'"
-            # Note install_name_tool returns a failure if the dylib already has the entry
-            # We don't want that here so force final status to be true...
-            system "install_name_tool -add_rpath ${mp_extra_rpath} ${dlib} > /dev/null 2>&1 ; true"
+        if {${os.platform} eq "darwin" && ${os.major} > 8} {
+            # Ensure all dylibs in destroot have our extra rpath added ..
+            # https://trac.macports.org/ticket/65503
+            foreach dlib [ exec find ${destroot}${prefix} -type f -and -name "*.dylib" ] {
+                ui_debug "Ensuring DYLIB '${dlib}' has RPATH '${mp_extra_rpath}'"
+                # Note install_name_tool returns a failure if the dylib already has the entry
+                # We don't want that here so force final status to be true...
+                system "install_name_tool -add_rpath ${mp_extra_rpath} ${dlib} > /dev/null 2>&1 ; true"
+            }
         }
     }
 

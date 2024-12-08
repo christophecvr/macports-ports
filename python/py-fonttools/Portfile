@@ -5,7 +5,7 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-fonttools
-version             4.55.0
+version             4.55.2
 revision            0
 
 description         XML<->TrueType/OpenType Converter
@@ -20,9 +20,9 @@ categories-append   print
 license             MIT
 maintainers         {amake @amake} openmaintainer
 
-checksums           rmd160  9403283a736599ed9e20271863ddd0726f61f149 \
-                    sha256  7636acc6ab733572d5e7eec922b254ead611f1cdad17be3f0be7418e8bfaca71 \
-                    size    3490431
+checksums           rmd160  03a56dc4d89f812a8003718c1dc04766fac470b9 \
+                    sha256  45947e7b3f9673f91df125d375eb57b9a23f2a603f438a1aebf3171bffa7a205 \
+                    size    3492954
 
 python.versions     39 310 311 312 313
 
