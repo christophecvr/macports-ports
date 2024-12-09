@@ -85,7 +85,7 @@ subport ${name}-gtk3 {
 
     post-destroot {
         delete ${destroot}${prefix}/include
-        delete ${destroot}${prefix}/lib/pkgconfig/gtk-mac-integration.pc
+        #delete ${destroot}${prefix}/lib/pkgconfig/gtk-mac-integration.pc
         delete ${destroot}${prefix}/share/${subport_dir}/locale
         delete ${destroot}${prefix}/share/${subport_dir}/strings
     }
