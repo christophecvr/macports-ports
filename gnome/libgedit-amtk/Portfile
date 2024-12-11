@@ -19,7 +19,7 @@ maintainers         {christophecvr @christophecvr} openmaintainer
 categories          gnome
 homepage            https://gitlab.gnome.org/World/gedit/${name}
 #master_sites        gnome:sources/${name}/${branch}/
-git.url             https://gitlab.gnome.org/christophecvr/${name}
+git.url             https://gitlab.gnome.org/christophecvr/${name}.git
 git.branch          origin/geditcvr
 
 #use_xz              yes

@@ -18,7 +18,7 @@ long_description    GtkSourceView is a text widget that extends GtkTextView \
                     typical of a source editor.
 homepage            https://wiki.gnome.org/Projects/GtkSourceView
 fetch.type          git
-git.url             https://gitlab.gnome.org/christophecvr/${name}
+git.url             https://gitlab.gnome.org/christophecvr/${name}.git
 git.branch          origin/geditcvr
 #set branch          [lindex [split ${version} .] 0]
 #master_sites        gnome:sources/${name}/${branch}/

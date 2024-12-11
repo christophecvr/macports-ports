@@ -27,14 +27,14 @@ long_description    gedit is an easy-to-use and general-purpose text editor. Its
 categories          gnome x11 quartz editors
 maintainers         {christophecvr @christophecvr} openmaintainer
 homepage            https://gedit-technology.github.io/apps/gedit/
-#fetch.type          git
-#git.url             https://gitlab.gnome.org/christophecvr/${my_name}.git
-#git.branch          origin/geditcvr
+fetch.type          git
+git.url             https://gitlab.gnome.org/christophecvr/${my_name}.git
+git.branch          origin/geditcvr
 
-master_sites        gnome:sources/${my_name}/${branch}/
-distname            ${my_name}-${version}
+#master_sites        gnome:sources/${my_name}/${branch}/
+#distname            ${my_name}-${version}
 
-use_xz              yes
+#use_xz              yes
 
 compiler.c_standard 2017
 compiler.cxx_standard 2017
