@@ -4,24 +4,25 @@ PortSystem          1.0
 PortGroup           meson 1.0
 
 name                gedit-plugins
-version             3.38.2
-revision            1
+version             44.2
+revision            0
 license             GPL-2+
-set branch          [join [lrange [split ${version} .] 0 1] .]
+set branch          [lindex [split ${version} .] 0]
 description         Plug-ins for GEdit
 long_description    Various additional plug-ins for GEdit
 maintainers         nomaintainer
 categories          gnome editors
-platforms           darwin
 homepage            https://wiki.gnome.org/Apps/Gedit
 master_sites        gnome:sources/${name}/${branch}/
 
 use_xz              yes
 
-checksums           rmd160  67891cc09e22383f4a1a6bac50279a35209fc588 \
-                    sha256  978c58fc1bcdf5f1e6235105e624ee16c32deb1482f34d4c98e1847092f43db0 \
-                    size    958668
+# Disable unexpected download of subprojects
+meson.wrap_mode     nodownload
 
+checksums           rmd160  674349ae4e74199bc224c6f60ae81cd7e016074a \
+                    sha256  8c59b8e9fac0525f24d3757689b69a34f85df27190ba6a758b038849919df755 \
+                    size    915256
 
 depends_build-append \
                     port:pkgconfig \
@@ -38,9 +39,7 @@ depends_lib         port:gedit \
                     port:libpeas \
                     path:bin/vala:vala
 
-patchfiles          patch-python3-bin.diff \
-                    patch-meson-61.0.diff \
-                    vala.diff
+patchfiles          patch-python3-bin.diff
 
 post-patch {
     reinplace "s|@@PYTHON3_BIN@@|${configure.python}|" \
@@ -74,16 +73,6 @@ post-patch {
 
 # require C11 compiler
 compiler.c_standard   2011
-
-if {${os.platform} eq "darwin" && ${os.major} >= 18} {
-    configure.compiler macports-clang-17
-    configure.env-append "AR=${prefix}/libexec/llvm-17/bin/llvm-ar"
-    compiler.cxx_standard       2011
-    configure.cflags-append     -std=c11 -funroll-loops -fstrict-aliasing
-    configure.cxxflags-append   -std=c++11
-    configure.ldflags-append    -Wl,-U,_main
-    universal_variant           no
-}
 
 configure.args      -Dplugin_charmap=false \
                     -Dplugin_git=false \
@@ -135,29 +124,12 @@ variant python310 conflicts python38 python39 description {Plugins use Python 3.
     configure.python    ${prefix}/bin/python3.10
 }
 
-variant python311 conflicts python38 python39 description {Plugins use Python 3.11} {
-    depends_lib-append  port:py311-gobject3 \
-                        port:dbus-python311
-
-    configure.python    ${prefix}/bin/python3.11
-}
-
-variant python312 conflicts python38 python39 description {Plugins use Python 3.12} {
-    depends_lib-append  port:py312-gobject3 \
-                        port:dbus-python312
-
-    configure.python    ${prefix}/bin/python3.12
-}
-
 if {![variant_isset python38] && \
     ![variant_isset python39] && \
-    ![variant_isset python310] && \
-    ![variant_isset python311] && \
-    ![variant_isset python312] } {
-    default_variants +python312
+    ![variant_isset python310]} {
+    default_variants +python310
 }
 
-default_variants-append +charmap +synctex
 # libpeas expects plugin modules with .so extensions
 # make .so symlink for each plugin module built as .dylib
 post-destroot {
