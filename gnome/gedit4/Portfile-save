@@ -16,34 +16,34 @@ if { ${os.platform} eq "darwin" && ${os.major} >= 18 && ${build_arch} eq "x86_64
 
 name                gedit4
 conflicts           gedit
-version             48.1
+version             48.0
 revision            1
 license             GPL-2+
-set branch          [join [lrange [split ${version} .] 0 0 ] .]
+#set branch          [join [lrange [split ${version} .] 0 0 ] .]
 set my_name         gedit
 description         GNOME Text editor.
 long_description    gedit is an easy-to-use and general-purpose text editor. Its development started \
                     in 1998, at the beginnings of the GNOME project .
 categories          gnome x11 quartz editors
 maintainers         {christophecvr @christophecvr} openmaintainer
-homepage            https://gedit-technology.github.io/apps/gedit
-#fetch.type          git
-#git.url             https://gitlab.gnome.org/christophecvr/${my_name}.git
-#git.branch          origin/geditcvr
+homepage            https://gedit-technology.github.io/apps/gedit/
+fetch.type          git
+git.url             https://gitlab.gnome.org/christophecvr/${my_name}.git
+git.branch          origin/geditcvr
 
-master_sites        gnome:sources/${my_name}/${branch}/
-distname            ${my_name}-${version}
+#master_sites        gnome:sources/${my_name}/${branch}/
+#distname            ${my_name}-${version}
 
-use_xz              yes
+#use_xz              yes
 
 compiler.c_standard 2017
 compiler.cxx_standard 2017
 # disable error when searching framework linker paths
 configure.ldflags-append    -Wl,-U,_main
 
-checksums           rmd160  9ca4afdda8a4d4c3602a5420722f252057b8c051 \
-                    sha256  971e7ac26bc0a3a3ded27a7563772415687db0e5a092b4547e5b10a55858b30a \
-                    size    2813580
+checksums           rmd160  02231a01f8ea6840848f7553f1e9acf9cdf62950 \
+                    sha256  fe0fef9b7b0799120db86ae893a060036a13445352ded9169bab28d38acf0e80 \
+                    size    2889116
 
 #patchfiles          cvrnew-gedit-app-osx.patch
 
@@ -146,10 +146,10 @@ if {![variant_isset python310] && \
 #app.icon                ./logo.png
 #app.executable          ${my_name}
 
-# add symlink to lib/gedit/libgedit-{version}.dylib in standard libdir
-# works around introspection typelib issue and some plugins load issues
+# add symlink to lib/gedit/libgedit-48.dylib in standard libdir
+# works around introspection typelib issue
 post-destroot {
-    ln -s ${prefix}/lib/gedit/libgedit-${version}.dylib  ${destroot}${prefix}/lib/libgedit-${version}.dylib
+    ln -s ${prefix}/lib/gedit/libgedit-48.dylib  ${destroot}${prefix}/lib/libgedit-48.dylib
 }
 
 notes               "For extra functionality install gedit-plugins4"
@@ -181,6 +181,6 @@ post-deactivate {
     }
 }
 
-livecheck.type "gnome"
+livecheck.type      gnome
 
 
