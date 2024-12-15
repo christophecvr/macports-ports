@@ -31,7 +31,9 @@ homepage            https://gedit-technology.github.io/apps/gedit
 #git.url             https://gitlab.gnome.org/christophecvr/${my_name}.git
 #git.branch          origin/geditcvr
 
-master_sites        gnome:sources/${my_name}/${branch}/
+master_sites        https://download.gnome.org/sources/${my_name}/${branch}/ \
+                    gnome:sources/${my_name}/${branch}/
+
 distname            ${my_name}-${version}
 
 use_xz              yes
@@ -181,6 +183,6 @@ post-deactivate {
     }
 }
 
-livecheck.type "gnome"
+livecheck.type gnome
 
 
