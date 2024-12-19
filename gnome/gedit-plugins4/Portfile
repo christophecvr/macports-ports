@@ -14,16 +14,16 @@ long_description    Various additional plug-ins for GEdit
 maintainers         nomaintainer
 categories          gnome editors
 homepage            https://gedit-technology.github.io/apps/gedit/
-#fetch.type          git
-#git.url             https://gitlab.gnome.org/christophecvr/${my_name}.git
-#git.branch          origin/geditcvr
+fetch.type          git
+git.url             https://gitlab.gnome.org/christophecvr/${my_name}.git
+git.branch          origin/geditcvr
 
-master_sites        https://download.gnome.org/sources/${my_name}/${branch}/ \
-                    gnome:sources/${my_name}/${branch}/
+#master_sites        https://download.gnome.org/sources/${my_name}/${branch}/ \
+#                    gnome:sources/${my_name}/${branch}/
 
-distname            ${my_name}-${version}
+#distname            ${my_name}-${version}
 
-use_xz              yes
+#use_xz              yes
 
 checksums           rmd160  d569a8e0dbfc5986617b12a490416776fa09de92 \
                     sha256  9026bfe71a678f8c47f46316837437e7b357918fd6c3d4d65be27fc95b710e1c \

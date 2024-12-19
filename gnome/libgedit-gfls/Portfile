@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           meson 1.0
 
 name                libgedit-gfls
-version             0.2.0
+version             0.2.1
 revision            1
 license             LGPL-2.1+
 #set branch          [join [lrange [split ${version} .] 0 1] .]
