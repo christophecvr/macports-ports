@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           meson 1.0
 
 name                devhelp
-version             3.38.1
+version             43.0
 revision            1
 license             GPL-2+
 description         Devhelp is an API documentation browser for GTK+ and GNOME.
@@ -16,15 +16,15 @@ long_description    Devhelp is an API documentation browser for GTK+ and GNOME. 
 maintainers         {devans @dbevans} openmaintainer
 categories          gnome
 homepage            https://wiki.gnome.org/Apps/Devhelp
-set branch          [join [lrange [split ${version} .] 0 1] .]
+set branch          [join [lrange [split ${version} .] 0 0 ] .]
 
 master_sites        gnome:sources/${name}/${branch}/
 
 use_xz              yes
 
-checksums           rmd160  4d890c43114992c69c93e356576ba8255f7be31f \
-                    sha256  4da8f5951b3a5920df73d057beab3ebe1855a75eae41208a9d89305a6b114a8f \
-                    size    313948
+checksums           rmd160  a8632bba01fda5c1028620b5239dd82c1e219904 \
+                    sha256  63ceeefd05392e02044881ef1ecd724293553da5735b7efc082b2d13fe85dd04 \
+                    size    327508
 
 depends_build       path:bin/pkg-config:pkgconfig \
                     port:gettext \
@@ -32,7 +32,7 @@ depends_build       path:bin/pkg-config:pkgconfig \
                     port:itstool
 
 depends_lib         port:desktop-file-utils \
-                    port:amtk \
+                    port:libgedit-amtk \
                     port:gettext-runtime \
                     path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
@@ -42,8 +42,7 @@ depends_lib         port:desktop-file-utils \
 
 depends_run         port:adwaita-icon-theme
 
-patchfiles          dont-use-version-script.patch \
-                    meson-0.61.patch
+patchfiles          dont-use-version-script.patch
 
 configure.args      -Dgtk_doc=true
 
@@ -59,7 +58,9 @@ if {${universal_possible} && [variant_isset universal]} {
 }
 
 post-activate {
-    system "${prefix}/bin/gtk-update-icon-cache -f -t ${prefix}/share/icons/hicolor"
+    # this last add will create and or update icons theme caches.
+    # gtk-update-icon-cache-3.0 is a part of gtk3 package.
+    system "/usr/bin/find ${prefix}/share/icons -type d -depth 1 -execdir ${prefix}/bin/gtk-update-icon-cache-3.0 -f -t {} '\;'"
     system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
     system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
 }
