@@ -39,7 +39,8 @@ checksums           sha256  42f29e002365467eac10f4ba78435d4be785a947424d9890112c
 #      76 | -(void) application: (NSApplication*)theApplication openFiless: (NSArray<NSString *> *) files
 #         | ^
 # See: https://trac.macports.org/ticket/71548
-patchfiles-append   patch-gtk-app-delegate.diff
+# only reuired for old macos commented this patch.
+#patchfiles-append   patch-gtk-app-delegate.diff
 
 depends_build-append \
                     port:pkgconfig
@@ -96,7 +97,7 @@ subport ${name}-gtk3 {
 
     post-destroot {
         delete ${destroot}${prefix}/include
-        delete ${destroot}${prefix}/lib/pkgconfig/gtk-mac-integration.pc
+        #delete ${destroot}${prefix}/lib/pkgconfig/gtk-mac-integration.pc
         delete ${destroot}${prefix}/share/${subport_dir}/locale
         delete ${destroot}${prefix}/share/${subport_dir}/strings
     }
