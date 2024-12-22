@@ -3,7 +3,7 @@ use framework "Foundation"
 use scripting additions
 
 --global GeditExec and set GeditExec to <...>does not work use property to declare and use a global value at top level.
-property GeditExec : "export PATH=/opt/local/bin:/opt/local/sbin:$PATH;exec gedit"
+property GeditExec : "export PATH=/opt/geditb/bin:/opt/geditb/sbin:$PATH;exec gedit"
 
 -- when using open command without file.
 -- when clicking on application in finder.

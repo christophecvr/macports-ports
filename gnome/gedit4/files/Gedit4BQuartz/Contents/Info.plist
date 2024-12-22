@@ -16,7 +16,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>io.github.gedit-technology.apps.gedit.Gedit4</string>
 	<key>CFBundleName</key>
-	<string>Gedit4Quartz</string>
+	<string>Gedit4BQuartz</string>
 	<key>CFBundleDisplayName</key>
 	<string>GeditQuartz</string>
 	<key>CFBundlePackageType</key>
