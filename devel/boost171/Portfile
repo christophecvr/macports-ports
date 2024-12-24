@@ -102,6 +102,9 @@ patchfiles-append patch-add-support-for-arm64.diff
 # https://trac.macports.org/ticket/67324
 patchfiles-append patch-boost-clang16-cpp17-compat.diff
 
+# Fix building with C++17
+patchfiles-append patch-boost-cpp17-compat.diff
+
 proc write_jam s {
     global worksrcpath
     set config [open ${worksrcpath}/user-config.jam a]
@@ -117,8 +120,9 @@ mpi.setup          -gcc
 # Further: Building Boost using C++11 compliance does not seem to then
 # require ports depending on Boost to also require C++11 compliance,
 # and requiring it does make such building easier for those ports.
-configure.cxxflags-append -std=gnu++11
-compiler.cxx_standard     2011
+configure.cxxflags-append -std=gnu++17
+# ICU requires C++17
+compiler.cxx_standard     2017
 
 # It turns out that ccache and distcc can produce boost libraries that, although they
 # compile without warning, have all sorts of runtime errors especially with pointer corruption.
@@ -331,7 +335,7 @@ subport ${name}-numpy {
 }
 
 if {$subport eq $name} {
-    revision 8
+    revision 9
 
     patchfiles-append patch-disable-numpy-extension.diff
 
