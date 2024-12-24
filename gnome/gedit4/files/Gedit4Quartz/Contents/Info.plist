@@ -14,7 +14,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleIdentifier</key>
-	<string>io.github.gedit-technology.apps.gedit.Gedit4</string>
+	<string>gedit-technology.github.io</string>
 	<key>CFBundleName</key>
 	<string>Gedit4Quartz</string>
 	<key>CFBundleDisplayName</key>
@@ -22,11 +22,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>48.0</string>
+	<string>48.1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>48.0</string>
+	<string>48.1</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright 1998-2021, GNU General Public License.</string>
 	<key>NSSupportsSuddenTermination</key>
