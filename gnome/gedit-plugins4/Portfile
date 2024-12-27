@@ -13,7 +13,7 @@ description         Plug-ins for GEdit
 long_description    Various additional plug-ins for GEdit
 maintainers         nomaintainer
 categories          gnome editors
-homepage            https://gedit-technology.github.io/apps/gedit/
+homepage            https://gedit-technology.github.io
 fetch.type          git
 git.url             https://gitlab.gnome.org/christophecvr/${my_name}.git
 git.branch          origin/geditcvr
