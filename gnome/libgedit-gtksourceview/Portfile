@@ -5,8 +5,8 @@ PortGroup           active_variants 1.1
 PortGroup           meson 1.0
 
 name                libgedit-gtksourceview
-version             299.3.0
-revision            1
+version             299.4.0
+revision            0
 
 categories          gnome
 license             LGPL-2.1+

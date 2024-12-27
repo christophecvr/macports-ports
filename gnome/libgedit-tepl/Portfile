@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           meson 1.0
 
 name                libgedit-tepl
-version             6.11.0
-revision            1
+version             6.12.0
+revision            0
 license             LGPL-2
 #set branch          [join [lrange [split ${version} .] 0 1] .]
 description         GNOME text editor support
