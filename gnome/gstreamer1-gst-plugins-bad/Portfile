@@ -137,7 +137,8 @@ configure.args-append \
                     -Dsctp=disabled \
                     -Dsrtp=disabled \
                     -Dx11=enabled \
-                    
+                    -Dx265=disabled
+              
 configure.args-append   -Dvulkan=disabled
 
 configure.env-append        "HAVE_CXX=yes"
