@@ -4,16 +4,16 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Crypt-URandom 0.48
+perl5.setup         Crypt-URandom 0.50 ../../authors/id/D/DD/DDICK
 revision            0
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Crypt::URandom - Provide non blocking randomness
 long_description    {*}${description}
 
-checksums           rmd160  5dbcf330300302d956199d0973b184702f8b33ac \
-                    sha256  5208b6869018fc59edc601b29c12c4d265e549697e0a540a51b1f343e8f120af \
-                    size    20802
+checksums           rmd160  7b168323b5abd4a2c2926849d2cfe847bf55e983 \
+                    sha256  fa1fba2827dfda3b75f78c77800fe811920e6d511a84c060ffd63d47a63c9653 \
+                    size    20944
 
 if {${perl5.major} != ""} {
     depends_build-append \
