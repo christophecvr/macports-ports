@@ -50,25 +50,34 @@
  option('runtime_libdir',
         type : 'string',
         value : '',
---- gio/meson.build.orig	2024-04-15 12:57:35.000000000 -0400
-+++ gio/meson.build	2024-04-15 12:57:52.000000000 -0400
-@@ -390,16 +390,23 @@
+--- gio/meson.build.orig	2024-01-21 20:48:20.000000000 +0100
++++ gio/meson.build	2024-05-18 12:07:01.000000000 +0200
+@@ -389,16 +389,32 @@
      'gunixoutputstream.h',
    )
  
-+  appinfo_backend = get_option('appinfo_backend')
++	appinfo_backend = get_option('appinfo_backend')
    if glib_have_cocoa
      settings_sources += files('gnextstepsettingsbackend.m')
 -    contenttype_sources += files('gosxcontenttype.m')
--    unix_sources += files('gosxappinfo.m')
+-    appinfo_sources += files('gosxappinfo.m')
 +    if appinfo_backend == 'native'
 +      contenttype_sources += files('gosxcontenttype.m')
-+      unix_sources += files('gosxappinfo.m')
++      appinfo_sources += files('gosxappinfo.m')
 +      application_headers += files('gosxappinfo.h')
 +    else
 +      contenttype_sources += files('gcontenttype.c')
-+      unix_sources += files('gdesktopappinfo.c')
++      appinfo_sources += files('gdesktopappinfo.c')
 +      gio_unix_include_headers += files('gdesktopappinfo.h')
++      launch_desktop_sources = files('gio-launch-desktop.c')
++      gio_launch_desktop = executable('gio-launch-desktop', launch_desktop_sources,
++        include_directories : glibinc,
++        install : true,
++        install_dir : multiarch_libexecdir,
++        install_tag : 'bin',
++        c_args : gio_c_args,
++        # intl.lib is not compatible with SAFESEH
++        link_args : noseh_link_args)
 +    endif
      framework_dep = dependency('appleframeworks', modules : ['Foundation', 'CoreFoundation', 'AppKit'])
      platform_deps += [framework_dep]
@@ -78,11 +87,12 @@
 -    application_headers += files('gosxappinfo.h')
    else
      contenttype_sources += files('gcontenttype.c')
-     unix_sources += files('gdesktopappinfo.c')
-@@ -832,6 +839,12 @@
+     appinfo_sources += files('gdesktopappinfo.c')
+@@ -828,6 +844,13 @@
    )
  endif
  
++appinfo_backend = get_option('appinfo_backend') 
 +if appinfo_backend == 'native'
 +  glib_conf.set('USE_APPINFO_NATIVE', 1)
 +else
